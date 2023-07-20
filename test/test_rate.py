@@ -1,12 +1,13 @@
 import time
+
+import serial
 from PySide6.QtWidgets import QApplication
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtCore import QFile
 from datetime import datetime
-import serial
 
 
-# 泵的命令行组成
+
 class Pump_com():
     """dict_func_bit = {'001': '启停控制', '002':'电机方向',
                   '003':'运行模式', '004':'FLASH保存',
@@ -179,16 +180,9 @@ class Pump_com():
         if self.func_register == 1:
             self.datal = [self.data]
         elif self.func_register == 2:
-            self.baudrate = {
-                1200: 0,
-                2400: 1,
-                4800: 2,
-                9600: 3,
-                19200: 4,
-                38400: 5,
-                57600: 6,
-                115200: 7
-            }
+            self.baudrate = {1200: 0, 2400: 1, 4800: 2, 9600: 3,
+                             19200: 4, 38400: 5, 57600: 6,
+                             115200: 7}
             self.datal = [self.baudrate[self.data]]
         elif self.func_register == 3:
             self.datal = [self.data]
@@ -214,109 +208,13 @@ class Pump_com():
             self.datal = [0, int(self.data[2:4], 16)]
 
 
-# 泵的具体运转
-class Pump():
-    # 初始化操作
-    def __init__(self) -> None:
-
-        self.cm = Pump_com()
-
-    # 开启泵的运行
-    def pump_run(self, slave_add, run, direction, speed=None):
-        """"
-        设计泵的开启，分别传入三个参数对泵的初始值进行设置
-
-        Args:
-            * slave_add:蠕动泵的地址
-            * run:泵的运行状态
-            * direction:泵的运行方向
-            * speed:泵的运行速度
-
-        """
-        self.run = run  # 启动电机数值
-        self.motor_direction = direction  # 电机方向,0为为顺时针，1为逆时针
-        if speed is None:
-            self.run_speed = 0
-        else:
-            self.run_speed = speed
-
-        if self.run:
-            if self.motor_direction:
-                self.data = 3
-            else:
-                self.data = 2
-        else:
-            self.data = 0
-        self.begin_cmd = self.cm.write_bits(slave_add, '001', self.data)
-        self.time1 = time.time()
-        while True:
-            self.time2 = time.time()
-            ser.write(self.begin_cmd)
-            self.resp1 = list(ser.read(32))
-            if self.resp1 != []:
-                break
-            self.time = self.time2 - self.time1
-            if self.time > 10:
-                break
-        if run and self.run_speed:
-            self.speed_cmd = self.cm.write_registers(slave_add, '009',
-                                                     self.run_speed)
-            self.time1 = time.time()
-            while True:
-                self.time2 = time.time()
-                ser.write(self.speed_cmd)
-                self.resp12 = list(ser.read(32))
-                if self.resp2 != []:
-                    break
-                # 加一个时间的报错
-                if self.time > 10:
-                    break
-            return self.begin_cmd, self.resp1, self.speed_cmd, self.resp2
-        return self.begin_cmd, self.resp1
-
-    def run_time(self, volume):
-        """"
-        根据泵的速度和需要进液的容量确定泵的运行时间，需要设置一定的时间冗余，
-        对于泵停止所需要的时间需要进行相应的调整。需做出一个统计
-        Args:
-            * direction 泵的运行方向
-            * speed 泵的运行速度
-
-        """
-
-        self.volume = volume  # 需要进液的体积
-        self.time_tube = 0  # 从泵开启在管道中运输过程中所需要的时间
-        self.redundancy = 0  # 泵的运行冗余时间
-        # print(self.volume / self.flow_rate())
-        self.time1 = self.time_tube + (self.volume /
-                                       self.flow_rate()) + self.redundancy
-        return self.time1
-
-    # 流量矫正
-    def flow_rate(self):
-        """"
-        对速度值进行相应的矫正，返回一个具体的流量数值
-        目前只是一个粗略的设置，需要通过实验进行相应的速度矫正模块
-        """
-        self.rate = self.run_speed / 5000
-        return self.rate
-
-
 class Stats:
 
     def __init__(self):
+        self.a = 0
+        
 
-        global ser
-        ser = serial.Serial('com5', 9600, timeout=1)
-
-        # 数据位为8位
-        ser.bytesize = serial.EIGHTBITS
-        # 停止位为1位
-        ser.stopbits = serial.STOPBITS_ONE
-        # 无奇偶校验位
-        ser.parity = serial.PARITY_NONE
-
-        self.pump_ever = Pump()
+        self.connected = False
 
         # 从文件中加载UI定义
         qfile_stats = QFile("D:\\2 code\\control-motor\\ui\\Kamor pump.ui")
@@ -326,107 +224,77 @@ class Stats:
         self.ui = QUiLoader().load(qfile_stats)
 
         # 6、第一个泵的控制
-        self.ui.pump1_open_button.clicked.connect(
-            lambda: self.pump_open_button(3))
-        self.ui.pump1_stop_button.clicked.connect(
-            lambda: self.pump_stop_button(3))
-        # 7、第二个泵的控制
-        self.ui.pump2_open_button.clicked.connect(
-            lambda: self.pump_stop_button(5))
-        self.ui.pump2_stop_button.clicked.connect(
-            lambda: self.pump_stop_button(5))
-        # 8、第三个泵的控制
-        self.ui.pump3_open_button.clicked.connect(
-            lambda: self.pump_open_button(4))
-        self.ui.pump3_stop_button.clicked.connect(
-            lambda: self.pump_stop_button(4))
-        # 9、第四个泵的控制
-        self.ui.pump4_open_button.clicked.connect(
-            lambda: self.pump_open_button(5))
-        self.ui.pump4_stop_button.clicked.connect(
-            lambda: self.pump_stop_button(5))
-        # 10、第五个泵的控制
-        self.ui.pump5_open_button.clicked.connect(
-            lambda: self.pump_open_button(6))
-        self.ui.pump5_stop_button.clicked.connect(
-            lambda: self.pump_stop_button(6))
+        self.ui.pump1_open_button.clicked.connect(lambda: self.pump_open_button(1))
+        self.ui.pump1_stop_button.clicked.connect(lambda: self.pump_stop_button(1))
         # 文本框清除按钮
         self.ui.clear_button.clicked.connect(self.clear_result_text)
 
     # 点击开始第一种泵的运转
     def pump_open_button(self, add):
         self.slave_add = add
-        if self.slave_add == 3:
-            self.speed = int(self.ui.pump1_spinbox.text()) * 100
-        elif self.slave_add == 5:
-            self.speed = int(self.ui.pump2_spinbox.text()) * 100
-
-        self.first = 'first pump open'
-        self.second = 'second pump open'
-        # 第一个泵的开启和命令展示
-        if self.speed == 0:
-            self.cmd1, self.cmd2 = self.pump_ever.pump_run(
-                self.slave_add, 1, 1, self.speed)
-            self.newline(self.first)
-            self.newline(self.cmd1)
-            self.newline(self.cmd2)
-        else:
-            self.cmd1, self.cmd2, self.cmd3, self.cmd4, = self.pump_ever.pump_run(
-                self.slave_add + 1, 1, 1, self.speed)
-            self.newline(self.first)
-            self.newline(self.cmd1)
-            self.newline(self.cmd2)
-            self.newline(self.cmd3)
-            self.newline(self.cmd4)
-
-        # 第二个泵的开启和命令展示
-        if self.speed == 0:
-            self.cmd1, self.cmd2 = self.pump_ever.pump_run(
-                self.slave_add, 1, 1, self.speed)
-            self.newline(self.second)
-            self.newline(self.cmd1)
-            self.newline(self.cmd2)
-        else:
-            self.cmd1, self.cmd2, self.cmd3, self.cmd4, = self.pump_ever.pump_run(
-                self.slave_add + 1, 1, 1, self.speed)
-            self.newline(self.second)
-            self.newline(self.cmd1)
-            self.newline(self.cmd2)
-            self.newline(self.cmd3)
-            self.newline(self.cmd4)
+        self.speed = int(self.ui.pump1_spinbox.text()) * 100
+        self.com = Pump_com()
+        if self.a == 0:
+            self.cmd = self.com.write_bits(1, '001', 3)
+            self.a = 1
+        print(self.cmd)
+        ser.write(self.cmd)
+        resp = ser.read(32)
+        print(list(resp))
+        self.t1 = False
+        if self.speed != 0:
+            self.cmd = self.com.write_registers(1, '009', self.speed)
+            print(self.cmd)
+            ser.write(self.cmd)
+            resp = ser.read(32)
+            print(list(resp))
+            self.t1 = time.time()
+        newline = f"{datetime.now().strftime('%H:%M:%S.%f')[:-3]}→'start'\n"
+        self.ui.display_text.append(newline)
 
     # 点击开始第二种泵的停止
     def pump_stop_button(self, add):
+        self.a = 0
         self.slave_add = add
-        self.first = 'first pump stop'
-        self.second = 'second pump stop'
-        self.cmd1, self.cmd2 = self.pump_ever.pump_run(self.slave_add, 0, 0)
-        self.newline(self.first)
-        self.newline(self.cmd1)
-        self.newline(self.cmd2)
+        self.cmd = self.com.write_bits(1, '001', 0)
+        print(self.cmd)
+        ser.write(self.cmd)
+        resp = ser.read(32)
+        print(list(resp))
+        self.t2 = time.time()
+        if self.t1:
+            self.t = self.t2 - self.t1
+            newline2 = f"总共运行时间为{self.t:.2f}s"
+            self.ui.display_text.append(newline2)
+        else:
+            pass
+        newline1 = f"{datetime.now().strftime('%H:%M:%S.%f')[:-3]}→'stop'\n"
+        self.ui.display_text.append(newline1)
+        # 关闭串口
+        
 
-        self.cmd1, self.cmd2 = self.pump_ever.pump_run(self.slave_add + 1, 0,
-                                                       0)
-        self.newline(self.second)
-        self.newline(self.cmd1)
-        self.newline(self.cmd2)
 
     # 清除文本框内容
     def clear_result_text(self):
         self.ui.display_text.clear()
 
-    def newline(self, cmd):
-        newline = f"{datetime.now().strftime('%H:%M:%S.%f')[:-3]}→{cmd}\n"
-        self.ui.display_text.append(newline)
-
 
 def main():
+    global ser
+    ser = serial.Serial('com4', 9600, timeout=1)
+
+    # 数据位为8位
+    ser.bytesize = serial.EIGHTBITS
+    # 停止位为1位
+    ser.stopbits = serial.STOPBITS_ONE
+    # 无奇偶校验位
+    ser.parity = serial.PARITY_NONE
     app = QApplication([])
     stats = Stats()
     stats.ui.show()
     app.exec()
+    ser.close()
 
 
 if __name__ == "__main__":
-
     main()

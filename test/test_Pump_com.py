@@ -1,10 +1,6 @@
 import time
-
 import serial
-from PySide6.QtWidgets import QApplication
-from PySide6.QtUiTools import QUiLoader
-from PySide6.QtCore import QFile
-from datetime import datetime
+
 
 
 
@@ -208,10 +204,10 @@ class Pump_com():
             self.datal = [0, int(self.data[2:4], 16)]
 
 
-"""def main():
+def main():
 
     global ser
-    ser = serial.Serial('com5', 9600, timeout=1)
+    ser = serial.Serial('com4', 9600, timeout=1)
 
     # 数据位为8位
     ser.bytesize = serial.EIGHTBITS
@@ -221,12 +217,12 @@ class Pump_com():
     ser.parity = serial.PARITY_NONE
 
     com = Pump_com()
-    cmd = com.write_bits(4, '001', 0)
+    cmd = com.write_bit(4, '001', 1)
     print(cmd)
     ser.write(cmd)
     resp = ser.read(32)
     print(list(resp))
-    cmd = com.write_registers(4, '009', 12345)
+    cmd = com.write_registers(1, '009', 12345)
     print(cmd)
     ser.write(cmd)
     resp = ser.read(32)
@@ -235,86 +231,6 @@ class Pump_com():
     # 关闭串口
     ser.close()
 
-"""
-class Stats:
-
-    def __init__(self):
-        self.connected = False
-
-        # 从文件中加载UI定义
-        qfile_stats = QFile("D:\\2code\\control-motor\\ui\\Kamor pump.ui")
-        qfile_stats.open(QFile.ReadOnly)
-        qfile_stats.close()
-
-        self.ui = QUiLoader().load(qfile_stats)
-
-        # 6、第一个泵的控制
-        self.ui.pump1_open_button.clicked.connect(lambda: self.pump_open_button(2))
-        self.ui.pump1_stop_button.clicked.connect(lambda: self.pump_stop_button(2))
-        # 7、第二个泵的控制
-        self.ui.pump2_open_button.clicked.connect(lambda: self.pump_open_button(3))
-        self.ui.pump2_stop_button.clicked.connect(lambda: self.pump_stop_button(3))
-        # 8、第三个泵的控制
-        self.ui.pump3_open_button.clicked.connect(lambda: self.pump_open_button(4))
-        self.ui.pump3_stop_button.clicked.connect(lambda: self.pump_stop_button(4))
-        # 9、第四个泵的控制
-        self.ui.pump4_open_button.clicked.connect(lambda: self.pump_open_button(5))
-        self.ui.pump4_stop_button.clicked.connect(lambda: self.pump_stop_button(5))
-        # 10、第五个泵的控制
-        self.ui.pump5_open_button.clicked.connect(lambda: self.pump_open_button(6))
-        self.ui.pump5_stop_button.clicked.connect(lambda: self.pump_stop_button(6))
-        # 文本框清除按钮
-        self.ui.clear_button.clicked.connect(self.clear_result_text)
-
-    # 点击开始第一种泵的运转
-    def pump_open_button(self, add):
-        self.slave_add = add
-        if self.slave_add == 2:
-            self.speed = int(self.ui.pump1_spinbox.text()) * 100
-        elif self.slave_add == 3:
-            self.speed = int(self.ui.pump2_spinbox.text()) * 100
-        elif self.slave_add == 4:
-            self.speed = int(self.ui.pump3_spinbox.text()) * 100
-        elif self.slave_add == 5:
-            self.speed = int(self.ui.pump4_spinbox.text()) * 100
-        elif self.slave_add == 6:
-            self.speed = int(self.ui.pump5_spinbox.text()) * 100
-
-        com = Pump_com()
-        com.write_bits(self.slave_add, '001', 3)
-        self.t1 = False
-        if self.speed != 0:
-            com.write_registers(self.slave_add, '009', self.speed)
-            self.t1 = time.time()
-        newline = f"{datetime.now().strftime('%H:%M:%S.%f')[:-3]}→'start'\n"
-        self.ui.display_text.append(newline)
-
-    # 点击开始第二种泵的停止
-    def pump_stop_button(self, add):
-        self.slave_add = add
-        com = Pump_com()
-        com.write_bits(self.slave_add, '001', 0)
-        self.t2 = time.time()
-        if self.t1:
-            self.t = self.t2 - self.t1
-            newline2 = f"总共运行时间为{self.t:.2f}s"
-            self.ui.display_text.append(newline2)
-        else:
-            pass
-        newline1 = f"{datetime.now().strftime('%H:%M:%S.%f')[:-3]}→'stop'\n"
-        self.ui.display_text.append(newline1)
-
-
-    # 清除文本框内容
-    def clear_result_text(self):
-        self.ui.display_text.clear()
-
-
-def main():
-    app = QApplication([])
-    stats = Stats()
-    stats.ui.show()
-    app.exec()
 
 
 if __name__ == "__main__":
