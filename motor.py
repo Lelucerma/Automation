@@ -239,14 +239,20 @@ class Pump():
         print(self.data)
         self.begin_cmd = self.cm.write_bits(slave_add, '001', self.data)
         print(self.begin_cmd)
-        ser.write(self.begin_cmd)
-        self.resp1 = list(ser.read(32))
+        while True:
+            ser.write(self.begin_cmd)
+            self.resp1 = list(ser.read(32))
+            if self.resp1 != []:
+                break
         print(self.resp1)
         if run and self.run_speed:
             self.speed_cmd = self.cm.write_registers(slave_add, '009', self.run_speed)
             print(self.speed_cmd)
-            ser.write(self.speed_cmd)
-            self.resp2 = list(ser.read(32))
+            while True:
+                ser.write(self.speed_cmd)
+                self.resp12 = list(ser.read(32))
+                if self.resp2 != []:
+                    break
             print(self.resp2)
 
     def run_time(self, volume):
