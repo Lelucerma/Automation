@@ -207,7 +207,7 @@ class Pump_com():
 def main():
 
     global ser
-    ser = serial.Serial('com4', 9600, timeout=1)
+    ser = serial.Serial('com5', 9600, timeout=1)
 
     # 数据位为8位
     ser.bytesize = serial.EIGHTBITS
@@ -217,12 +217,12 @@ def main():
     ser.parity = serial.PARITY_NONE
 
     com = Pump_com()
-    cmd = com.write_bit(4, '001', 1)
+    cmd = com.write_bit(5, '001', 0)
     print(cmd)
     ser.write(cmd)
     resp = ser.read(32)
     print(list(resp))
-    cmd = com.write_registers(1, '009', 12345)
+    cmd = com.write_registers(5, '009', 12345)
     print(cmd)
     ser.write(cmd)
     resp = ser.read(32)

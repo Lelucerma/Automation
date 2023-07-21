@@ -1,5 +1,4 @@
 import time
-import minimalmodbus
 import serial
 
 # 泵的命令行组成

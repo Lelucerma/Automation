@@ -307,7 +307,7 @@ class Stats:
     def __init__(self):
 
         global ser
-        ser = serial.Serial('com4', 9600, timeout=1)
+        ser = serial.Serial('com5', 9600, timeout=1)
 
         # 数据位为8位
         ser.bytesize = serial.EIGHTBITS
@@ -332,7 +332,7 @@ class Stats:
             lambda: self.pump_stop_button(3))
         # 7、第二个泵的控制
         self.ui.pump2_open_button.clicked.connect(
-            lambda: self.pump_stop_button(5))
+            lambda: self.pump_open_button(5))
         self.ui.pump2_stop_button.clicked.connect(
             lambda: self.pump_stop_button(5))
         # 8、第三个泵的控制
@@ -372,7 +372,7 @@ class Stats:
             self.newline(self.cmd2)
         else:
             self.cmd1, self.cmd2, self.cmd3, self.cmd4, = self.pump_ever.pump_run(
-                self.slave_add + 1, 1, 1, self.speed)
+                self.slave_add, 1, 1, self.speed)
             self.newline(self.first)
             self.newline(self.cmd1)
             self.newline(self.cmd2)
@@ -382,13 +382,13 @@ class Stats:
         # 第二个泵的开启和命令展示
         if self.speed == 0:
             self.cmd1, self.cmd2 = self.pump_ever.pump_run(
-                self.slave_add, 1, 1, self.speed)
+                self.slave_add+1, 1, 1, self.speed)
             self.newline(self.second)
             self.newline(self.cmd1)
             self.newline(self.cmd2)
         else:
             self.cmd1, self.cmd2, self.cmd3, self.cmd4, = self.pump_ever.pump_run(
-                self.slave_add + 1, 1, 1, self.speed)
+                self.slave_add+1, 1, 1, self.speed)
             self.newline(self.second)
             self.newline(self.cmd1)
             self.newline(self.cmd2)
