@@ -1,6 +1,6 @@
 import time
-import minimalmodbus
 import serial
+
 
 # 泵的命令行组成
 class Pump_com():
@@ -175,9 +175,16 @@ class Pump_com():
         if self.func_register == 1:
             self.datal = [self.data]
         elif self.func_register == 2:
-            self.baudrate = {1200: 0, 2400: 1, 4800: 2, 9600: 3,
-                             19200: 4, 38400: 5, 57600: 6,
-                             115200: 7}
+            self.baudrate = {
+                1200: 0,
+                2400: 1,
+                4800: 2,
+                9600: 3,
+                19200: 4,
+                38400: 5,
+                57600: 6,
+                115200: 7
+            }
             self.datal = [self.baudrate[self.data]]
         elif self.func_register == 3:
             self.datal = [self.data]
@@ -231,7 +238,7 @@ class Pump():
 
         if self.run:
             if self.motor_direction:
-                self.data = 3                
+                self.data = 3
             else:
                 self.data = 2
         else:
@@ -240,17 +247,18 @@ class Pump():
         self.begin_cmd = self.cm.write_bits(slave_add, '001', self.data)
         print(self.begin_cmd)
         while True:
-            ser.write(self.begin_cmd)
-            self.resp1 = list(ser.read(32))
+            ser_pump.write(self.begin_cmd)
+            self.resp1 = list(ser_pump.read(32))
             if self.resp1 != []:
                 break
         print(self.resp1)
         if run and self.run_speed:
-            self.speed_cmd = self.cm.write_registers(slave_add, '009', self.run_speed)
+            self.speed_cmd = self.cm.write_registers(slave_add, '009',
+                                                     self.run_speed)
             print(self.speed_cmd)
             while True:
-                ser.write(self.speed_cmd)
-                self.resp12 = list(ser.read(32))
+                ser_pump.write(self.speed_cmd)
+                self.resp12 = list(ser_pump.read(32))
                 if self.resp2 != []:
                     break
             print(self.resp2)
@@ -269,9 +277,10 @@ class Pump():
         self.time_tube = 0  # 从泵开启在管道中运输过程中所需要的时间
         self.redundancy = 0  # 泵的运行冗余时间
         # print(self.volume / self.flow_rate())
-        self.time1 = self.time_tube + (self.volume / self.flow_rate()) + self.redundancy
+        self.time1 = self.time_tube + (self.volume /
+                                       self.flow_rate()) + self.redundancy
         return self.time1
-    
+
     # 流量矫正
     def flow_rate(self):
         """"
@@ -317,7 +326,7 @@ class Module():
             pass
         else:
             self.pump_ever.pump_run(slave_add2, False, False)
-        
+
     def wash_unit(self, slave_add1, speed1, slave_add2, speed2):
         """"
         对于洗涤的蠕动泵进行相应的控制，超过控制时间后蠕动泵停止工作
@@ -339,29 +348,26 @@ class Module():
         time.sleep(self.pump_ever.run_time(20))
         self.pump_ever.pump_run(slave_add1, False, False, speed1)
         self.pump_ever.pump_run(slave_add2, False, False, speed2)
-        
-
-
 
 
 def main(com):
     t1 = time.time()
-    global ser
-    ser = serial.Serial(com, 9600, timeout=1)
+    global ser_pump
+    ser_pump = serial.Serial(com, 9600, timeout=1)
 
     # 数据位为8位
-    ser.bytesize = serial.EIGHTBITS
+    ser_pump.bytesize = serial.EIGHTBITS
     # 停止位为1位
-    ser.stopbits = serial.STOPBITS_ONE
+    ser_pump.stopbits = serial.STOPBITS_ONE
     # 无奇偶校验位
-    ser.parity = serial.PARITY_NONE
+    ser_pump.parity = serial.PARITY_NONE
 
     c = Module()
     c.reactor_unit(4, 12345)
     # c.wash_unit(5, 12345, 6, 12345)
 
     # 关闭串口
-    ser.close()
+    ser_pump.close()
     t2 = time.time()
     print((t2 - t1))
 
@@ -369,5 +375,3 @@ def main(com):
 if __name__ == "__main__":
 
     main('com5')
-
-
