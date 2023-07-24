@@ -332,19 +332,19 @@ class Stats:
             lambda: self.pump_stop_button(3))
         # 7、第二个泵的控制
         self.ui.pump2_open_button.clicked.connect(
-            lambda: self.pump_open_button(5))
+            lambda: self.pump_open_button(4))
         self.ui.pump2_stop_button.clicked.connect(
-            lambda: self.pump_stop_button(5))
+            lambda: self.pump_stop_button(4))
         # 8、第三个泵的控制
         self.ui.pump3_open_button.clicked.connect(
-            lambda: self.pump_open_button(4))
+            lambda: self.pump_open_button(5))
         self.ui.pump3_stop_button.clicked.connect(
-            lambda: self.pump_stop_button(4))
+            lambda: self.pump_stop_button(5))
         # 9、第四个泵的控制
         self.ui.pump4_open_button.clicked.connect(
-            lambda: self.pump_open_button(5))
+            lambda: self.pump_open_button(6))
         self.ui.pump4_stop_button.clicked.connect(
-            lambda: self.pump_stop_button(5))
+            lambda: self.pump_stop_button(6))
         # 10、第五个泵的控制
         self.ui.pump5_open_button.clicked.connect(
             lambda: self.pump_open_button(6))
@@ -357,29 +357,34 @@ class Stats:
     def pump_open_button(self, add):
         self.slave_add = add
         if self.slave_add == 3:
-            self.speed = int(self.ui.pump1_spinbox.text()) * 100
+            self.speed = int(int(self.ui.pump1_spinbox.text()) * 138.89)
+            self.time1 = time.time()
+            self.first = '3 pump open'
+        elif self.slave_add == 4:
+            self.speed = int(int(self.ui.pump2_spinbox.text()) * 138.89)
+            self.time2 = time.time()
+            self.first = '4 pump open'
         elif self.slave_add == 5:
-            self.speed = int(self.ui.pump2_spinbox.text()) * 100
+            self.speed = int(int(self.ui.pump3_spinbox.text()) * 138.89)
+            self.time3 = time.time()
+            self.first = '5 pump open'
+        elif self.slave_add == 6:
+            self.speed = int(int(self.ui.pump4_spinbox.text()) * 138.89)
+            self.time4 = time.time()
+            self.first = '6 pump open'
+            self.newline(self.speed)
 
-        self.first = 'first pump open'
-        self.second = 'second pump open'
         # 第一个泵的开启和命令展示
-        if self.speed == 0:
-            self.cmd1, self.cmd2 = self.pump_ever.pump_run(
-                self.slave_add, 1, 1, self.speed)
-            self.newline(self.first)
-            self.newline(self.cmd1)
-            self.newline(self.cmd2)
-        else:
-            self.cmd1, self.cmd2, self.cmd3, self.cmd4, = self.pump_ever.pump_run(
-                self.slave_add, 1, 1, self.speed)
-            self.newline(self.first)
-            self.newline(self.cmd1)
-            self.newline(self.cmd2)
-            self.newline(self.cmd3)
-            self.newline(self.cmd4)
+        self.pump_ever.pump_run(self.slave_add, 1, 1, self.speed)
+        self.newline(self.first)
+            # self.newline(self.cmd1)
+            # self.newline(self.cmd2)
+            # self.newline(self.cmd1)
+            # self.newline(self.cmd2)
+            # self.newline(self.cmd3)
+            # self.newline(self.cmd4)
 
-        # 第二个泵的开启和命令展示
+        """# 第二个泵的开启和命令展示
         if self.speed == 0:
             self.cmd1, self.cmd2 = self.pump_ever.pump_run(
                 self.slave_add+1, 1, 1, self.speed)
@@ -394,22 +399,39 @@ class Stats:
             self.newline(self.cmd2)
             self.newline(self.cmd3)
             self.newline(self.cmd4)
-
+"""
     # 点击开始第二种泵的停止
     def pump_stop_button(self, add):
         self.slave_add = add
-        self.first = 'first pump stop'
-        self.second = 'second pump stop'
-        self.cmd1, self.cmd2 = self.pump_ever.pump_run(self.slave_add, 0, 0)
+        if self.slave_add == 3:
+            self.time5 = time.time()
+            self.first = '3 pump stop'
+            self.newline(self.time5-self.time1)
+        elif self.slave_add == 4:
+            self.time6 = time.time()
+            self.first = '4 pump stop'
+            self.newline(self.time6-self.time2)
+        elif self.slave_add == 5:
+            self.time7 = time.time()
+            self.first = '5 pump stop'
+            self.newline(self.time7-self.time3)
+        elif self.slave_add == 6:
+            self.time8 = time.time()
+            self.first = '6 pump stop'
+            self.newline(self.time8-self.time4)
+        # self.first = 'first pump stop'
+        # self.second = 'second pump stop'
         self.newline(self.first)
-        self.newline(self.cmd1)
-        self.newline(self.cmd2)
+        self.cmd1, self.cmd2 = self.pump_ever.pump_run(self.slave_add, 0, 0)
+        # self.newline(self.cmd1)
+        # self.newline(self.cmd2)
 
-        self.cmd1, self.cmd2 = self.pump_ever.pump_run(self.slave_add + 1, 0,
+
+        """self.cmd1, self.cmd2 = self.pump_ever.pump_run(self.slave_add + 1, 0,
                                                        0)
         self.newline(self.second)
         self.newline(self.cmd1)
-        self.newline(self.cmd2)
+        self.newline(self.cmd2)"""
 
     # 清除文本框内容
     def clear_result_text(self):

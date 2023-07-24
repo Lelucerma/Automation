@@ -237,10 +237,10 @@ class Stats:
         if self.a == 0:
             self.cmd = self.com.write_bits(1, '001', 3)
             self.a = 1
-        print(self.cmd)
+        # print(self.cmd)
         ser.write(self.cmd)
         resp = ser.read(32)
-        print(list(resp))
+        # print(list(resp))
         self.t1 = False
         if self.speed != 0:
             self.cmd = self.com.write_registers(1, '009', self.speed)

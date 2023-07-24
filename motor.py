@@ -216,6 +216,7 @@ class Pump():
     def __init__(self) -> None:
 
         self.cm = Pump_com()
+        self.begin = True
 
     # 开启泵的运行
     def pump_run(self, slave_add, run, direction, speed=None):

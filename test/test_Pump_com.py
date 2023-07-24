@@ -217,12 +217,12 @@ def main():
     ser.parity = serial.PARITY_NONE
 
     com = Pump_com()
-    cmd = com.write_bit(5, '001', 0)
+    cmd = com.write_bit(4, '001', 0)
     print(cmd)
     ser.write(cmd)
     resp = ser.read(32)
     print(list(resp))
-    cmd = com.write_registers(5, '009', 12345)
+    cmd = com.write_registers(4, '009', 12345)
     print(cmd)
     ser.write(cmd)
     resp = ser.read(32)
