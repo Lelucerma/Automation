@@ -1,3 +1,4 @@
+import math
 import time
 import serial
 
@@ -235,7 +236,9 @@ class Pump():
         if speed is None:
             self.run_speed = 0
         else:
-            self.run_speed = speed
+            # 将数值调整成相应的电机转速数值，根据实际测试，约为138.89，采用140作为冗余
+            self.run_speed = speed * 140
+
 
         if self.run:
             if self.motor_direction:
@@ -244,61 +247,63 @@ class Pump():
                 self.data = 2
         else:
             self.data = 0
-        print(self.data)
+        # print(self.data)
         self.begin_cmd = self.cm.write_bits(slave_add, '001', self.data)
-        print(self.begin_cmd)
-        while True:
-            ser_pump.write(self.begin_cmd)
-            self.resp1 = list(ser_pump.read(32))
-            if self.resp1 != []:
-                break
-        print(self.resp1)
+        # print(self.begin_cmd)
+        self.resp1 = self.answer(self.begin_cmd)
+
+        # print(self.resp1)
         if run and self.run_speed:
             self.speed_cmd = self.cm.write_registers(slave_add, '009',
                                                      self.run_speed)
-            print(self.speed_cmd)
-            while True:
-                ser_pump.write(self.speed_cmd)
-                self.resp12 = list(ser_pump.read(32))
-                if self.resp2 != []:
-                    break
-            print(self.resp2)
+            # print(self.speed_cmd)
+            self.resp2 = self.answer(self.speed_cmd)
+            # print(self.resp2)
 
-    def run_time(self, volume):
-        """"
-        根据泵的速度和需要进液的容量确定泵的运行时间，需要设置一定的时间冗余，
-        对于泵停止所需要的时间需要进行相应的调整。需做出一个统计
-        Args:
-            * direction 泵的运行方向
-            * speed 泵的运行速度
+    def speed_change(self, slave_add):
+        self.speed_change_cmd = self.cm.write_registers(slave_add, '009',
+                                                 self.run_speed)
+        # print(self.speed_cmd)
+        self.resp3 = self.answer(self.speed_change_cmd)
+        # print(self.resp3)
 
-        """
+    def answer(self, cmd):
+        self.cmd = cmd
+        t = 0
+        ser_pump.write(self.cmd)
+        try:
+            self.resp = list(ser_pump.read(32))
+            return self.resp
+        except:
+            return 0
 
-        self.volume = volume  # 需要进液的体积
-        self.time_tube = 0  # 从泵开启在管道中运输过程中所需要的时间
-        self.redundancy = 0  # 泵的运行冗余时间
-        # print(self.volume / self.flow_rate())
-        self.time1 = self.time_tube + (self.volume /
-                                       self.flow_rate()) + self.redundancy
-        return self.time1
+
+        # while True:
+        #     ser_pump.write(self.cmd)
+        #     self.resp = list(ser_pump.read(32))
+        #     if self.resp != []:
+        #         return self.resp
+        #     if t > 10:
+        #         return '无法通信，请查找问题'
+        #     t += 1
+
+
+
 
     # 流量矫正
-    def flow_rate(self):
-        """"
-        对速度值进行相应的矫正，返回一个具体的流量数值
-        目前只是一个粗略的设置，需要通过实验进行相应的速度矫正模块
-        """
-        self.rate = self.run_speed / 5000
-        return self.rate
+
 
 
 # 一个单元泵的运行
 class Module():
-
     def __init__(self) -> None:
-        pass
 
-    def reactor_unit(self, slave_add1, speed1, slave_add2=None, speed2=None):
+        self.pump_ever = Pump()
+
+
+
+
+    def reactor_unit(self, slave_add1, speed1, speed2, speed3, speed4):
         """"
         对于反应器的蠕动泵进行相应的控制，超过控制时间后蠕动泵停止工作
         首个反应单元有两个蠕动泵，因此有两个设备地址。
@@ -309,24 +314,64 @@ class Module():
             * speed 泵的运行速度
 
         """
-        self.time_starts = time.time()
-        self.time_start = time.time()
-        self.time2 = 0
-        self.pump_ever = Pump()
-        self.speed2 = speed2
-        self.pump_ever.pump_run(slave_add1, 1, 1, speed=speed1)
-        # 如果未传入第二个泵的地址，则不发送相关指令。
-        if slave_add2 is None:
-            pass
+        self.slave_add1, self.slave_add2 = slave_add1, slave_add1+1
+        self.slave_add3, self.slave_add4 = slave_add1+2, slave_add1+3
+        self.speed1, self.speed2 = speed1, speed2
+        self.speed3, self.speed4 = speed3, speed4
+
+        # 进行各个时间的计算程序
+        self.run_time()
+
+        # 这个时间是主物料开始到洗涤单元的时间（应该以数值的进度作为判断）
+        self.time1 = self.pump1_intime + self.pump1_outtime
+        + self.reactor_intime + self.reactor_outtime + self.reactor_time
+
+        # 这个时间是副物料开始到洗涤单元的时间（应该以数值的进度作为判断）
+        self.time2 = self.pump1_intime + self.pump1_outtime
+        + self.reactor_intime + self.reactor_outtime + self.reactor_time
+
+        # 这个应该是洗涤泵到洗涤单元的时间
+        self.time3 = self.pump3_intime + self.pump3_outtime
+
+        # 第三个泵的开启时间为time1-time3
+        self.time4 = self.time1 - self.time3
+
+        # 开始计时
+        self.time_starts = time.time()  # 这个是总计时，不能更改
+        self.time_start = time.time()  # 这个是可以作为部分计时，可以更改
+
+        # 判断哪一个运行时间长，先开启哪一个泵
+        if self.time4 >= 0:
+            self.pump_ever.pump_run(self.slave_add3, 1, 1, self.speed3)
+            self.pump_ever.pump_run(self.slave_add4, 1, 1, self.speed4)
+            time.sleep(self.time4)
+            if (time.time() - self.time_start) >= self.time4:
+                print('1')
+                self.pump_ever.pump_run(self.slave_add1, 1, 1, self.speed1)
+                self.pump_ever.pump_run(self.slave_add2, 1, 1, self.speed2)
         else:
-            self.pump_ever.pump_run(slave_add2, True, True, speed=speed2)
-        # print(self.pump_ever.run_time(20))
-        time.sleep(self.pump_ever.run_time(20))
-        self.pump_ever.pump_run(slave_add1, 0, 0)
-        if slave_add2 is None:
-            pass
-        else:
-            self.pump_ever.pump_run(slave_add2, False, False)
+            self.pump_ever.pump_run(self.slave_add1, 1, 1, self.speed1)
+            self.pump_ever.pump_run(self.slave_add2, 1, 1, self.speed2)
+            time.sleep(-self.time4)
+            if (time.time() - self.time_start) > (-self.time4):
+                print('2')
+                self.pump_ever.pump_run(self.slave_add3, 1, 1, self.speed3)
+                self.pump_ever.pump_run(self.slave_add4, 1, 1, self.speed4)
+
+        self.pump1_runtime = self.volume_time(60, self.speed1) + self.time1
+        self.pump2_runtime = self.volume_time(60, self.speed2) + self.time2
+        self.pump3_runtime = self.volume_time(120, self.speed3) + self.time2
+        time.sleep(self.pump1_runtime)
+        if (time.time() - self.time_start) > (self.pump1_runtime):
+            print('3')
+            self.pump_ever.pump_run(self.slave_add1, 0, 0)
+            self.pump_ever.pump_run(self.slave_add2, 0, 0)
+        time.sleep(self.pump3_runtime-self.pump1_runtime)
+        if (time.time() - self.time_start) > (self.pump3_runtime):
+            print('4')
+            self.pump_ever.pump_run(self.slave_add3, 0, 0)
+            self.pump_ever.pump_run(self.slave_add4, 0, 0)
+
 
     def wash_unit(self, slave_add1, speed1, slave_add2, speed2):
         """"
@@ -350,6 +395,48 @@ class Module():
         self.pump_ever.pump_run(slave_add1, False, False, speed1)
         self.pump_ever.pump_run(slave_add2, False, False, speed2)
 
+    def tube_time(self, length, speed, diameter=6):
+        """"
+        根据泵的速度和需要进液的容量确定泵的运行时间，需要设置一定的时间冗余，
+        对于泵停止所需要的时间需要进行相应的调整。需做出一个统计
+        Args:
+            * direction 泵的运行方向
+            * speed 泵的运行速度
+
+        """
+
+        self.length = length  # 管道的长度
+        self.diameter = diameter   # 管道的直径
+        self.speed = speed
+        self.tube_volume = self.length * \
+                           math.pow((self.diameter/4), 2) * math.pi
+        self.tube_time1 = self.tube_volume / self.speed
+        return self.tube_time1*2
+
+    def run_time(self):
+        """"
+        对速度值进行相应的矫正，返回一个具体的流量数值
+        目前只是一个粗略的设置，需要通过实验进行相应的速度矫正模块
+        """
+        self.pump1_intime = self.tube_time(46, self.speed1)
+        self.pump1_outtime = self.tube_time(23, self.speed1)
+        self.pump2_intime = self.tube_time(46, self.speed2)
+        self.pump2_outtime = self.tube_time(23, self.speed2)
+        self.pump3_intime = self.tube_time(56, self.speed3)
+        self.pump3_outtime = self.tube_time(70, self.speed3)
+        self.pump4_intime = self.tube_time(67, self.speed4)
+        self.pump4_outtime = self.tube_time(40, self.speed4)
+        self.reactor_intime = self.tube_time(10,self.speed2)
+        self.reactor_outtime = self.tube_time(56, self.speed2)
+        self.reactor_time = self.tube_time(30, self.speed2)
+
+    def volume_time(self, volume, speed):
+        self.volume = volume
+        self.speed = speed
+        self.pump_runtime = self.volume / self.speed + 10
+        return self.pump_runtime
+
+
 
 def main(com):
     t1 = time.time()
@@ -364,15 +451,15 @@ def main(com):
     ser_pump.parity = serial.PARITY_NONE
 
     c = Module()
-    c.reactor_unit(4, 12345)
+    c.reactor_unit(3,60,60,60,120)
     # c.wash_unit(5, 12345, 6, 12345)
 
     # 关闭串口
     ser_pump.close()
     t2 = time.time()
-    print((t2 - t1))
+    print(f'{t2 - t1}s')
 
 
 if __name__ == "__main__":
 
-    main('com5')
+    main('com6')
