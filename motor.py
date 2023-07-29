@@ -342,35 +342,44 @@ class Module():
 
         # 判断哪一个运行时间长，先开启哪一个泵
         if self.time4 >= 0:
-            self.pump_ever.pump_run(self.slave_add3, 1, 1, self.speed3)
-            self.pump_ever.pump_run(self.slave_add4, 1, 1, self.speed4)
-            time.sleep(self.time4)
-            if (time.time() - self.time_start) >= self.time4:
-                print('1')
-                self.pump_ever.pump_run(self.slave_add1, 1, 1, self.speed1)
-                self.pump_ever.pump_run(self.slave_add2, 1, 1, self.speed2)
-        else:
             self.pump_ever.pump_run(self.slave_add1, 1, 1, self.speed1)
             self.pump_ever.pump_run(self.slave_add2, 1, 1, self.speed2)
+            time.sleep(self.time4)
+            # if (time.time() - self.time_start) >= self.time4:
+            print('1')
+            self.pump_ever.pump_run(self.slave_add3, 1, 1, self.speed3)                
+        else:
+            self.pump_ever.pump_run(self.slave_add3, 1, 1, self.speed3)            
             time.sleep(-self.time4)
-            if (time.time() - self.time_start) > (-self.time4):
-                print('2')
-                self.pump_ever.pump_run(self.slave_add3, 1, 1, self.speed3)
-                self.pump_ever.pump_run(self.slave_add4, 1, 1, self.speed4)
+            # if (time.time() - self.time_start) > (-self.time4):
+            print('2')
+            self.pump_ever.pump_run(self.slave_add1, 1, 1, self.speed1)
+            self.pump_ever.pump_run(self.slave_add2, 1, 1, self.speed2)
+        
+        # 当物料进入洗涤单元时，开启洗涤单元废料泵
+        # time.sleep(self.time1-self.time4-8) # 3是冗余时间
+        self.pump_ever.pump_run(self.slave_add4, 1, 1, self.speed4)
 
+        time.sleep(10) # 3是冗余时间
+        
+        # 计算各个泵需要的运行时间
         self.pump1_runtime = self.volume_time(60, self.speed1) + self.time1
         self.pump2_runtime = self.volume_time(60, self.speed2) + self.time2
-        self.pump3_runtime = self.volume_time(120, self.speed3) + self.time2
+        self.pump3_runtime = self.volume_time(140, self.speed3) + self.time2
+
+        # 等物料输入结束后，关闭各个泵
         time.sleep(self.pump1_runtime)
-        if (time.time() - self.time_start) > (self.pump1_runtime):
-            print('3')
-            self.pump_ever.pump_run(self.slave_add1, 0, 0)
-            self.pump_ever.pump_run(self.slave_add2, 0, 0)
+        # if (time.time() - self.time_start) > (self.pump1_runtime):
+        #     print('3')
+        self.pump_ever.pump_run(self.slave_add1, 0, 0)
+        self.pump_ever.pump_run(self.slave_add2, 0, 0)
+        time.sleep(10)
+        self.pump_ever.pump_run(self.slave_add4, 0, 0)
+
         time.sleep(self.pump3_runtime-self.pump1_runtime)
-        if (time.time() - self.time_start) > (self.pump3_runtime):
-            print('4')
-            self.pump_ever.pump_run(self.slave_add3, 0, 0)
-            self.pump_ever.pump_run(self.slave_add4, 0, 0)
+        # if (time.time() - self.time_start) > (self.pump3_runtime):
+        print('4')
+        self.pump_ever.pump_run(self.slave_add3, 0, 0)
 
 
     def wash_unit(self, slave_add1, speed1, slave_add2, speed2):
@@ -433,7 +442,8 @@ class Module():
     def volume_time(self, volume, speed):
         self.volume = volume
         self.speed = speed
-        self.pump_runtime = self.volume / self.speed + 10
+        self.pump_runtime = (self.volume / self.speed)*60 + 10
+        print(f'体积为:{self.volume}, 速度为：{self.speed},时间为：{self.pump_runtime}')
         return self.pump_runtime
 
 
@@ -451,7 +461,7 @@ def main(com):
     ser_pump.parity = serial.PARITY_NONE
 
     c = Module()
-    c.reactor_unit(3,60,60,60,120)
+    c.reactor_unit(3,60,60,60,240)
     # c.wash_unit(5, 12345, 6, 12345)
 
     # 关闭串口
@@ -462,4 +472,4 @@ def main(com):
 
 if __name__ == "__main__":
 
-    main('com6')
+    main('com5')
