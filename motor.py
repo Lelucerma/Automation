@@ -633,12 +633,12 @@ def press(com_press):
 
 if __name__ == "__main__":
 
-    auto = threading.Thread(target=pump_automation, kwargs={'com_pump':'com6'})
-    ui = threading.Thread(target=pump_ui)
-    pre = threading.Thread(target=press, kwargs={'com_press':'com5'})
+    auto_thread = threading.Thread(target=pump_automation, kwargs={'com_pump':'com6'})
+    ui_pump_thread = threading.Thread(target=pump_ui)
+    press_thread = threading.Thread(target=press, kwargs={'com_press':'com5'})
 
-    ui.daemon = True
+    ui_pump_thread.daemon = True
 
-    auto.start()
-    ui.start()
-    pre.start()
+    auto_thread.start()
+    ui_pump_thread.start()
+    press_thread.start()
