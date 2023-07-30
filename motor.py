@@ -1,6 +1,12 @@
 import math
 import time
 import serial
+from PySide6.QtWidgets import QApplication
+from PySide6.QtUiTools import QUiLoader
+from PySide6.QtCore import QFile
+from datetime import datetime
+import threading
+import pressure
 
 
 # 泵的命令行组成
@@ -236,7 +242,7 @@ class Pump():
         if speed is None:
             self.run_speed = 0
         else:
-            # 将数值调整成相应的电机转速数值，根据实际测试，约为138.89，采用140作为冗余
+            # 将数值调整成相应的电机转速数值，根据实际测试，约为140，采用140作为冗余
             self.run_speed = speed * 140
 
 
@@ -259,6 +265,8 @@ class Pump():
             # print(self.speed_cmd)
             self.resp2 = self.answer(self.speed_cmd)
             # print(self.resp2)
+
+
 
     def speed_change(self, slave_add):
         self.speed_change_cmd = self.cm.write_registers(slave_add, '009',
@@ -291,7 +299,6 @@ class Pump():
 
 
     # 流量矫正
-
 
 
 # 一个单元泵的运行
@@ -346,13 +353,13 @@ class Module():
             self.pump_ever.pump_run(self.slave_add2, 1, 1, self.speed2)
             time.sleep(self.time4)
             # if (time.time() - self.time_start) >= self.time4:
-            print('1')
+            # print('1')
             self.pump_ever.pump_run(self.slave_add3, 1, 1, self.speed3)                
         else:
             self.pump_ever.pump_run(self.slave_add3, 1, 1, self.speed3)            
             time.sleep(-self.time4)
             # if (time.time() - self.time_start) > (-self.time4):
-            print('2')
+            # print('2')
             self.pump_ever.pump_run(self.slave_add1, 1, 1, self.speed1)
             self.pump_ever.pump_run(self.slave_add2, 1, 1, self.speed2)
         
@@ -378,7 +385,7 @@ class Module():
 
         time.sleep(self.pump3_runtime-self.pump1_runtime)
         # if (time.time() - self.time_start) > (self.pump3_runtime):
-        print('4')
+        # print('4')
         self.pump_ever.pump_run(self.slave_add3, 0, 0)
 
 
@@ -446,12 +453,146 @@ class Module():
         print(f'体积为:{self.volume}, 速度为：{self.speed},时间为：{self.pump_runtime}')
         return self.pump_runtime
 
+class Stats:
+
+    def __init__(self):
+
+        self.pump_ever = Pump()
+
+        # 从文件中加载UI定义
+        qfile_stats = QFile("D:\\2 code\\control-motor\\ui\\Kamor pump.ui")
+        qfile_stats.open(QFile.ReadOnly)
+        qfile_stats.close()
+
+        self.ui = QUiLoader().load(qfile_stats)
+
+        # 6、第一个泵的控制
+        self.ui.pump1_open_button.clicked.connect(
+            lambda: self.pump_open_button(3))
+        self.ui.pump1_stop_button.clicked.connect(
+            lambda: self.pump_stop_button(3))
+        # 7、第二个泵的控制
+        self.ui.pump2_open_button.clicked.connect(
+            lambda: self.pump_open_button(4))
+        self.ui.pump2_stop_button.clicked.connect(
+            lambda: self.pump_stop_button(4))
+        # 8、第三个泵的控制
+        self.ui.pump3_open_button.clicked.connect(
+            lambda: self.pump_open_button(5))
+        self.ui.pump3_stop_button.clicked.connect(
+            lambda: self.pump_stop_button(5))
+        # 9、第四个泵的控制
+        self.ui.pump4_open_button.clicked.connect(
+            lambda: self.pump_open_button(6))
+        self.ui.pump4_stop_button.clicked.connect(
+            lambda: self.pump_stop_button(6))
+        # 10、第五个泵的控制
+        self.ui.pump5_open_button.clicked.connect(
+            lambda: self.pump_open_button(6))
+        self.ui.pump5_stop_button.clicked.connect(
+            lambda: self.pump_stop_button(6))
+        # 文本框清除按钮
+        self.ui.clear_button.clicked.connect(self.clear_result_text)
+
+    # 点击开始第一种泵的运转
+    def pump_open_button(self, add):
+        self.slave_add = add
+        if self.slave_add == 3:
+            self.speed = int(int(self.ui.pump1_spinbox.text()) * 140)
+            self.time1 = time.time()
+            self.first = '3 pump open'
+        elif self.slave_add == 4:
+            self.speed = int(int(self.ui.pump2_spinbox.text()) * 140)
+            self.time2 = time.time()
+            self.first = '4 pump open'
+        elif self.slave_add == 5:
+            self.speed = int(int(self.ui.pump3_spinbox.text()) * 140)
+            self.time3 = time.time()
+            self.first = '5 pump open'
+        elif self.slave_add == 6:
+            self.speed = int(int(self.ui.pump4_spinbox.text()) * 140)
+            self.time4 = time.time()
+            self.first = '6 pump open'
+            self.newline(self.speed)
+
+        # 第一个泵的开启和命令展示
+        self.pump_ever.pump_run(self.slave_add, 1, 1, self.speed)
+        self.newline(self.first)
+            # self.newline(self.cmd1)
+            # self.newline(self.cmd2)
+            # self.newline(self.cmd1)
+            # self.newline(self.cmd2)
+            # self.newline(self.cmd3)
+            # self.newline(self.cmd4)
+
+        """# 第二个泵的开启和命令展示
+        if self.speed == 0:
+            self.cmd1, self.cmd2 = self.pump_ever.pump_run(
+                self.slave_add+1, 1, 1, self.speed)
+            self.newline(self.second)
+            self.newline(self.cmd1)
+            self.newline(self.cmd2)
+        else:
+            self.cmd1, self.cmd2, self.cmd3, self.cmd4, = self.pump_ever.pump_run(
+                self.slave_add+1, 1, 1, self.speed)
+            self.newline(self.second)
+            self.newline(self.cmd1)
+            self.newline(self.cmd2)
+            self.newline(self.cmd3)
+            self.newline(self.cmd4)
+"""
+    # 点击开始第二种泵的停止
+    def pump_stop_button(self, add):
+        self.slave_add = add
+        if self.slave_add == 3:
+            self.time5 = time.time()
+            self.first = '3 pump stop'
+            self.newline(self.time5-self.time1)
+        elif self.slave_add == 4:
+            self.time6 = time.time()
+            self.first = '4 pump stop'
+            self.newline(self.time6-self.time2)
+        elif self.slave_add == 5:
+            self.time7 = time.time()
+            self.first = '5 pump stop'
+            self.newline(self.time7-self.time3)
+        elif self.slave_add == 6:
+            self.time8 = time.time()
+            self.first = '6 pump stop'
+            self.newline(self.time8-self.time4)
+        # self.first = 'first pump stop'
+        # self.second = 'second pump stop'
+        self.newline(self.first)
+        self.pump_ever.pump_run(self.slave_add, 0, 0)
+        # self.newline(self.cmd1)
+        # self.newline(self.cmd2)
 
 
-def main(com):
+        """self.cmd1, self.cmd2 = self.pump_ever.pump_run(self.slave_add + 1, 0,
+                                                       0)
+        self.newline(self.second)
+        self.newline(self.cmd1)
+        self.newline(self.cmd2)"""
+
+    # 清除文本框内容
+    def clear_result_text(self):
+        self.ui.display_text.clear()
+
+    def newline(self, cmd):
+        newline = f"{datetime.now().strftime('%H:%M:%S.%f')[:-3]}→{cmd}\n"
+        self.ui.display_text.append(newline)
+
+
+def pump_ui():
+    app = QApplication([])
+    stats = Stats()
+    stats.ui.show()
+    app.exec()
+
+def pump_automation(com_pump):
     t1 = time.time()
     global ser_pump
-    ser_pump = serial.Serial(com, 9600, timeout=1)
+    ser_pump = serial.Serial(com_pump, 9600, timeout=1)
 
     # 数据位为8位
     ser_pump.bytesize = serial.EIGHTBITS
@@ -469,7 +610,35 @@ def main(com):
     t2 = time.time()
     print(f'{t2 - t1}s')
 
+def press(com_press):
+    global ser_press
+    ser_press = serial.Serial(com_press, 9600, timeout=1)
+
+    # 数据位为8位
+    ser_press.bytesize = serial.EIGHTBITS
+    # 停止位为1位
+    ser_press.stopbits = serial.STOPBITS_ONE
+    # 无奇偶校验位
+    ser_press.parity = serial.PARITY_NONE
+    slave_press = pressure.Every_press()
+    file_name = 'D:\\2 code\\Automation\\data\\230731\\'
+    file_nameo = file_name + '1' + '.txt'
+    file_namet = file_name + '2' + '.txt'
+    slave_press(1, 200, file_nameo, file_namet)
+    # for i in range(4):
+    #     slave_press.slave(i + 2)  # slave_add从第二个开始使用，保留第一个的从机地址
+
+    # 关闭串口
+    ser_press.close()
 
 if __name__ == "__main__":
 
-    main('com5')
+    auto = threading.Thread(target=pump_automation, kwargs={'com_pump':'com6'})
+    ui = threading.Thread(target=pump_ui)
+    pre = threading.Thread(target=press, kwargs={'com_press':'com5'})
+
+    ui.daemon = True
+
+    auto.start()
+    ui.start()
+    pre.start()

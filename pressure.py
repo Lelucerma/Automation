@@ -98,14 +98,14 @@ class Press_get():
     def press_uint(self, slave_add):
         # 确定这个仪器返回数值的单位是什么
         self.unit = self.cm.read(slave_add, '002')
-        ser.write(self.unit)
-        resp = ser.read(32)
+        ser_press.write(self.unit)
+        resp = ser_press.read(32)
         self.unit_resp = list(resp)[4]
 
         # 确定一个这个仪器的返回的数值后面有几位小数
         self.demical = self.cm.read(slave_add, '003')
-        ser.write(self.demical)
-        resp = ser.read(32)
+        ser_press.write(self.demical)
+        resp = ser_press.read(32)
         self.demiacal_resp = list(resp)[4]
         return self.unit_resp
 
@@ -113,8 +113,8 @@ class Press_get():
         # 获取压力的数值
         self.press_cmd = self.cm.read(slave_add, '004')
         # print(self.press_cmd)
-        ser.write(self.press_cmd)
-        resp = ser.read(32)
+        ser_press.write(self.press_cmd)
+        resp = ser_press.read(32)
         # print(resp)
         self.pressure_resp = list(resp)[3:5]
         return self.pressure_resp
@@ -176,7 +176,14 @@ class Every_press():
     def __init__(self) -> None:
         pass
 
-    def slave(self, slave_add):
+    def slave(self, slave_add, run_time, file_name_origin, file_name_tran):
+        """
+        :param slave_add: 从机地址
+        :param run_time: 运行时间
+        :param file_name_origin: 原始数据文件
+        :param file_name_tran: 转化后的数据文件
+        :return: 目前无返回值
+        """
         # 开始时间
         self.time_starts = time.time()
         # 空白数据组，用来放入内存中存入压数值
@@ -198,13 +205,13 @@ class Every_press():
                 self.time_start = time.time()
                 # print(time1)
                 # file = input("请输入文件名：")
-                self.file_name_origin = "./230607/origin_test1.txt"
+                self.file_name_origin = file_name_origin
                 self.save1.save(self.data_origin, self.file_name_origin, self.unit)
-                self.file_name_tran = "./230607/tran_test1.txt"
+                self.file_name_tran = file_name_tran
                 self.save1.save(self.data_tran, self.file_name_tran, self.unit)
                 self.data_origin = []
                 self.data_tran = []
-                if self.time2 > 10:
+                if self.time2 > run_time:
                     break
             # time.sleep(0.05)
             self.time2 = time.time() - self.time_starts
@@ -216,22 +223,22 @@ class Every_press():
 
 def main():
 
-    global ser
-    ser = serial.Serial('com5', 9600, timeout=1)
+    global ser_press
+    ser_press = serial.Serial('com5', 9600, timeout=1)
 
     # 数据位为8位
-    ser.bytesize = serial.EIGHTBITS
+    ser_press.bytesize = serial.EIGHTBITS
     # 停止位为1位
-    ser.stopbits = serial.STOPBITS_ONE
+    ser_press.stopbits = serial.STOPBITS_ONE
     # 无奇偶校验位
-    ser.parity = serial.PARITY_NONE
+    ser_press.parity = serial.PARITY_NONE
     slave_press = Every_press()
     for i in range(4):
 
         slave_press.slave(i+2)  # slave_add从第二个开始使用，保留第一个的从机地址
 
     # 关闭串口
-    ser.close()
+    ser_press.close()
 
 
 if __name__ == "__main__":
