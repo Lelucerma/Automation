@@ -6,7 +6,8 @@ from PySide6.QtUiTools import QUiLoader
 from PySide6.QtCore import QFile
 from datetime import datetime
 import threading
-import pressure
+import pressure as p
+import analysis
 
 
 # 泵的命令行组成
@@ -610,35 +611,25 @@ def pump_automation(com_pump):
     t2 = time.time()
     print(f'{t2 - t1}s')
 
-def press(com_press):
-    global ser_press
-    ser_press = serial.Serial(com_press, 9600, timeout=1)
-
-    # 数据位为8位
-    ser_press.bytesize = serial.EIGHTBITS
-    # 停止位为1位
-    ser_press.stopbits = serial.STOPBITS_ONE
-    # 无奇偶校验位
-    ser_press.parity = serial.PARITY_NONE
-    slave_press = pressure.Every_press()
-    file_name = 'D:\\2 code\\Automation\\data\\230731\\'
-    file_nameo = file_name + '1' + '.txt'
-    file_namet = file_name + '2' + '.txt'
-    slave_press(1, 200, file_nameo, file_namet)
+def press_gain(com_press, file):
+    slave_press = p.PressUnit()
+    slave_press.slave(com_press, 1, 10, file)
     # for i in range(4):
     #     slave_press.slave(i + 2)  # slave_add从第二个开始使用，保留第一个的从机地址
 
-    # 关闭串口
-    ser_press.close()
 
 if __name__ == "__main__":
-
-    auto_thread = threading.Thread(target=pump_automation, kwargs={'com_pump':'com6'})
+    # print(dir(p), p.__name__, p.__doc__)
+    file_name_start = 'D:\\2 code\\Automation\\data\\230731\\'
+    filename = '2'
+    file_name = file_name_start + filename + '.txt'
+    auto_thread = threading.Thread(target=pump_automation, kwargs={'com_pump':'com5'})
     ui_pump_thread = threading.Thread(target=pump_ui)
-    press_thread = threading.Thread(target=press, kwargs={'com_press':'com5'})
+    press_thread = threading.Thread(target=press_gain, kwargs={'com_press':'com3', 'file':f'{file_name}'})
 
     ui_pump_thread.daemon = True
 
     auto_thread.start()
     ui_pump_thread.start()
     press_thread.start()
+    analysis.plt_picture(file_name)
