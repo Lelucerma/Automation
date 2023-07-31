@@ -3,7 +3,7 @@ import time
 
 
 # 生成命令
-class Press_com():
+class PressCom():
     """dict_press_func = {'000': '获取丛机地址', '001':'获取波特率',
                   '002':'获取单位', '003':'获取小数位数',
                   '004':'获取输出值', '005':'获取量程零点',
@@ -91,9 +91,9 @@ class Press_com():
         return self.cmd
 
 
-class Press_get():
+class PressGet():
     def __init__(self):
-        self.cm = Press_com()
+        self.cm = PressCom()
 
     def press_uint(self, slave_add):
         # 确定这个仪器返回数值的单位是什么
@@ -140,7 +140,7 @@ class Press_get():
         return self.press
 
 
-class Data_save():
+class DataSave():
     def save(self, data, file_name, unit, slave_add):
         """
         通过将获得的数据值存入具体的文件内
@@ -171,12 +171,12 @@ class Data_save():
         file_a.close()
 
 
-class Every_press():
+class PressUnit():
 
     def __init__(self) -> None:
         pass
 
-    def slave(self, slave_add, run_time, file_name_origin, file_name_tran):
+    def slave(self, com_press, slave_add, run_time, file_name_origin, file_name_tran):
         """
         :param slave_add: 从机地址
         :param run_time: 运行时间
@@ -184,6 +184,16 @@ class Every_press():
         :param file_name_tran: 转化后的数据文件
         :return: 目前无返回值
         """
+        global ser_press
+        ser_press = serial.Serial(com_press, 9600, timeout=1)
+
+        # 数据位为8位
+        ser_press.bytesize = serial.EIGHTBITS
+        # 停止位为1位
+        ser_press.stopbits = serial.STOPBITS_ONE
+        # 无奇偶校验位
+        ser_press.parity = serial.PARITY_NONE
+
         # 开始时间
         self.time_starts = time.time()
         # 空白数据组，用来放入内存中存入压数值
@@ -192,8 +202,8 @@ class Every_press():
         self.data_origin = []
         self.data_tran = []
         self.time2 = 0
-        self.save1 = Data_save()
-        self.c1 = Press_get()
+        self.save1 = DataSave()
+        self.c1 = PressGet()
         self.unit = self.c1.press_uint(slave_add)
         while True:
             self.time1 = time.time() - self.time_start
@@ -217,32 +227,35 @@ class Every_press():
             self.time2 = time.time() - self.time_starts
             print(self.time2)
             continue
+        
+        # 关闭串口
+        ser_press.close()
 
 
 
 
-def main():
+# def main():
 
-    global ser_press
-    ser_press = serial.Serial('com5', 9600, timeout=1)
+#     global ser_press
+#     ser_press = serial.Serial('com5', 9600, timeout=1)
 
-    # 数据位为8位
-    ser_press.bytesize = serial.EIGHTBITS
-    # 停止位为1位
-    ser_press.stopbits = serial.STOPBITS_ONE
-    # 无奇偶校验位
-    ser_press.parity = serial.PARITY_NONE
-    slave_press = Every_press()
-    for i in range(4):
+#     # 数据位为8位
+#     ser_press.bytesize = serial.EIGHTBITS
+#     # 停止位为1位
+#     ser_press.stopbits = serial.STOPBITS_ONE
+#     # 无奇偶校验位
+#     ser_press.parity = serial.PARITY_NONE
+#     slave_press = PressUnit()
+#     for i in range(4):
 
-        slave_press.slave(i+2)  # slave_add从第二个开始使用，保留第一个的从机地址
+#         slave_press.slave(i+2)  # slave_add从第二个开始使用，保留第一个的从机地址
 
-    # 关闭串口
-    ser_press.close()
+#     # 关闭串口
+#     ser_press.close()
 
 
-if __name__ == "__main__":
-    t1 = time.time()
-    main()
-    t2 = time.time()
-    print((t2-t1)/60)
+# if __name__ == "__main__":
+#     t1 = time.time()
+#     main()
+#     t2 = time.time()
+#     print((t2-t1)/60)
