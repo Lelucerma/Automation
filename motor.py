@@ -311,7 +311,7 @@ class Module():
 
 
 
-    def reactor_unit(self, slave_add1, speed1, speed2, speed3, speed4):
+    def reactor_unit(self, slave_add1, speed):
         """"
         对于反应器的蠕动泵进行相应的控制，超过控制时间后蠕动泵停止工作
         首个反应单元有两个蠕动泵，因此有两个设备地址。
@@ -324,8 +324,9 @@ class Module():
         """
         self.slave_add1, self.slave_add2 = slave_add1, slave_add1+1
         self.slave_add3, self.slave_add4 = slave_add1+2, slave_add1+3
-        self.speed1, self.speed2 = speed1, speed2
-        self.speed3, self.speed4 = speed3, speed4
+        self.speed1, self.speed2 = speed[0], speed[1]
+        self.speed3, self.speed4 = speed[2], speed[3]
+        
 
         # 进行各个时间的计算程序
         self.run_time()
@@ -603,7 +604,8 @@ def pump_automation(com_pump):
     ser_pump.parity = serial.PARITY_NONE
 
     c = Module()
-    c.reactor_unit(3,60,60,60,240)
+    speeds= list(input("请输入速度值（列表形式）："))1
+    c.reactor_unit(3,speeds)
     # c.wash_unit(5, 12345, 6, 12345)
 
     # 关闭串口
@@ -620,16 +622,17 @@ def press_gain(com_press, file):
 
 if __name__ == "__main__":
     # print(dir(p), p.__name__, p.__doc__)
-    file_name_start = 'D:\\2 code\\Automation\\data\\230731\\'
-    filename = '2'
+    file_name_start = 'D:\\2 code\\Automation\\data\\230801\\'
+    filename = str(input("请输入文件名"))
     file_name = file_name_start + filename + '.txt'
-    auto_thread = threading.Thread(target=pump_automation, kwargs={'com_pump':'com5'})
-    ui_pump_thread = threading.Thread(target=pump_ui)
-    press_thread = threading.Thread(target=press_gain, kwargs={'com_press':'com3', 'file':f'{file_name}'})
-
-    ui_pump_thread.daemon = True
+    auto_thread = threading.Thread(target=pump_automation, kwargs={'com_pump':'com4'})
+    ui_pump_thread = threading.Thread(target=pump_ui,daemon = True)
+    # press_thread = threading.Thread(target=press_gain, kwargs={'com_press':'com3', 'file':f'{file_name}'})
 
     auto_thread.start()
     ui_pump_thread.start()
-    press_thread.start()
-    analysis.plt_picture(file_name)
+    # press_thread.start()
+    auto_thread.join(220)
+    # press_thread.join(1)
+    print('1')
+    # analysis.plt_picture(file_name)
