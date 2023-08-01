@@ -164,7 +164,7 @@ class DataSave():
             8: 'mmh2'
         }
         self.unit = self.units[unit]
-        file_a.write(f'第{slave_add-1}个压力表的压力数据\n')  # 写入第几个从机地址的数据，进行数据间的区分
+        # file_a.write(f'第{slave_add-1}个压力表的压力数据\n')  # 写入第几个从机地址的数据，进行数据间的区分
         for j in self.data:
             file_a.write(f'{self.num}: {j}{self.unit}\n')
             self.num += 1
@@ -218,14 +218,14 @@ class PressUnit():
                 # self.file_name_origin = file_name_origin
                 # self.save1.save(self.data_origin, self.file_name_origin, self.unit)
                 self.file_name_tran = file_name_tran
-                self.save1.save(self.data_tran, self.file_name_tran, self.unit)
+                self.save1.save(self.data_tran, self.file_name_tran, self.unit, slave_add)
                 self.data_origin = []
                 self.data_tran = []
                 if self.time2 > run_time:
                     break
             # time.sleep(0.05)
             self.time2 = time.time() - self.time_starts
-            print(self.time2)
+            # print(self.time2)
             continue
         
         # 关闭串口

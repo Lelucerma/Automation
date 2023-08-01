@@ -4,7 +4,7 @@ import numpy as np
 
 def opne_file(file_name):
     # 打开数据文件
-    # file_path = "D:\\2 code\\pressure\\data\\230723\\230723\\"
+    # file_path = "D:\\2 code\\automation\\data\\230723\\230723\\"
     file1 = file_name
     a = open(file1, "r+")
     data = a.readlines()
@@ -35,7 +35,7 @@ def plt_picture(file_name):
     # 显示图例
     plt.legend(loc="upper right")
     # 保存图片
-    picture_path = "D:\\2 code\\pressure\\data\\picture\\"
+    picture_path = "D:\\2 code\\automation\\data\\picture\\"
     picture_name = file_name[5:-4] + ".png"
     picture_name = picture_path + picture_name
     # print(picture_name)
@@ -75,7 +75,7 @@ def plt_pictures(file_name, m=8):
     # 显示图例
     plt.legend(loc="upper right")
     # 保存图片
-    picture_path = "D:\\2 code\\pressure\\data\\picture\\"
+    picture_path = "D:\\2 code\\automation\\data\\picture\\"
     picture_name = file_name[0][5:m] + ".png"
     picture_name = picture_path + picture_name
     # print(picture_name)

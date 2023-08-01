@@ -453,7 +453,7 @@ class Module():
         self.volume = volume
         self.speed = speed
         self.pump_runtime = (self.volume / self.speed)*60 + 10
-        print(f'体积为:{self.volume}, 速度为：{self.speed},时间为：{self.pump_runtime}')
+        # print(f'体积为:{self.volume}, 速度为：{self.speed},时间为：{self.pump_runtime}')
         return self.pump_runtime
 
 class Stats:
@@ -619,11 +619,12 @@ def pump_automation(com_pump):
     # 关闭串口
     ser_pump.close()
     t2 = time.time()
-    print(f'{t2 - t1}s')
+    # print(f'{t2 - t1}s')
 
 def press_gain(com_press, file):
     slave_press = p.PressUnit()
-    slave_press.slave(com_press, 1, 10, file)
+    press_runtime = int(input("请输入压力程序运行的时间："))
+    slave_press.slave(com_press, 1, press_runtime, file)
     # for i in range(4):
     #     slave_press.slave(i + 2)  # slave_add从第二个开始使用，保留第一个的从机地址
 
