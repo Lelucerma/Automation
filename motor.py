@@ -430,7 +430,7 @@ class Module():
         # self.tube_volume = self.length * \
         #                    math.pow((self.diameter/4), 2) * math.pi
         self.tube_time1 = self.length * 0.23
-        return self.tube_time1*2
+        return self.tube_time1
 
     def run_time(self):
         """"
