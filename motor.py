@@ -311,7 +311,7 @@ class Module():
 
 
 
-    def reactor_unit(self, slave_add1, speed1, speed2, speed3, speed4):
+    def reactor_unit(self, slave_add1, speed, volume):
         """"
         对于反应器的蠕动泵进行相应的控制，超过控制时间后蠕动泵停止工作
         首个反应单元有两个蠕动泵，因此有两个设备地址。
@@ -324,8 +324,9 @@ class Module():
         """
         self.slave_add1, self.slave_add2 = slave_add1, slave_add1+1
         self.slave_add3, self.slave_add4 = slave_add1+2, slave_add1+3
-        self.speed1, self.speed2 = speed1, speed2
-        self.speed3, self.speed4 = speed3, speed4
+        self.speed1, self.speed2 = speed[0], speed[1]
+        self.speed3, self.speed4 = speed[2], speed[3]
+        
 
         # 进行各个时间的计算程序
         self.run_time()
@@ -371,9 +372,9 @@ class Module():
         time.sleep(10) # 3是冗余时间
         
         # 计算各个泵需要的运行时间
-        self.pump1_runtime = self.volume_time(60, self.speed1) + self.time1
-        self.pump2_runtime = self.volume_time(60, self.speed2) + self.time2
-        self.pump3_runtime = self.volume_time(140, self.speed3) + self.time2
+        self.pump1_runtime = self.volume_time(volume[0], self.speed1) + self.time1
+        self.pump2_runtime = self.volume_time(volume[1], self.speed2) + self.time2
+        self.pump3_runtime = self.volume_time(volume[2], self.speed3) + self.time2
 
         # 等物料输入结束后，关闭各个泵
         time.sleep(self.pump1_runtime)
@@ -408,11 +409,12 @@ class Module():
         self.pump_ever.pump_run(slave_add1, True, True, speed1)
         self.pump_ever.pump_run(slave_add2, True, True, speed2)
         # print(self.pump_ever.run_time(20))
-        time.sleep(self.pump_ever.run_time(20))
+        # time.sleep(self.pump_ever.run_time(20))
         self.pump_ever.pump_run(slave_add1, False, False, speed1)
         self.pump_ever.pump_run(slave_add2, False, False, speed2)
 
-    def tube_time(self, length, speed, diameter=6):
+    def tube_time(self, length, speed, diameter=0.5):
+
         """"
         根据泵的速度和需要进液的容量确定泵的运行时间，需要设置一定的时间冗余，
         对于泵停止所需要的时间需要进行相应的调整。需做出一个统计
@@ -423,11 +425,11 @@ class Module():
         """
 
         self.length = length  # 管道的长度
-        self.diameter = diameter   # 管道的直径
-        self.speed = speed
-        self.tube_volume = self.length * \
-                           math.pow((self.diameter/4), 2) * math.pi
-        self.tube_time1 = self.tube_volume / self.speed
+        # self.diameter = diameter   # 管道的直径
+        # self.speed = speed
+        # self.tube_volume = self.length * \
+        #                    math.pow((self.diameter/4), 2) * math.pi
+        self.tube_time1 = self.length * 0.23
         return self.tube_time1*2
 
     def run_time(self):
@@ -603,7 +605,15 @@ def pump_automation(com_pump):
     ser_pump.parity = serial.PARITY_NONE
 
     c = Module()
-    c.reactor_unit(3,60,60,60,240)
+    speeds = []
+    speed = input("请输入速度值：").split(',')
+    for i in speed:
+        speeds.append(int(i))
+    volumes = []
+    volume = input("请输入体积值：").split(',')
+    for i in volume:
+        volumes.append(int(i))
+    c.reactor_unit(3, speeds, volumes)
     # c.wash_unit(5, 12345, 6, 12345)
 
     # 关闭串口
@@ -620,16 +630,17 @@ def press_gain(com_press, file):
 
 if __name__ == "__main__":
     # print(dir(p), p.__name__, p.__doc__)
-    file_name_start = 'D:\\2 code\\Automation\\data\\230731\\'
-    filename = '2'
+    file_name_start = 'D:\\2 code\\Automation\\data\\230801\\'
+    filename = str(input("请输入文件名："))
     file_name = file_name_start + filename + '.txt'
     auto_thread = threading.Thread(target=pump_automation, kwargs={'com_pump':'com5'})
-    ui_pump_thread = threading.Thread(target=pump_ui)
+    ui_pump_thread = threading.Thread(target=pump_ui,daemon = True)
     press_thread = threading.Thread(target=press_gain, kwargs={'com_press':'com3', 'file':f'{file_name}'})
-
-    ui_pump_thread.daemon = True
 
     auto_thread.start()
     ui_pump_thread.start()
     press_thread.start()
+    auto_thread.join()
+    press_thread.join(1)
+    # print('1')
     analysis.plt_picture(file_name)

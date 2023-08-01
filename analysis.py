@@ -4,8 +4,8 @@ import numpy as np
 
 def opne_file(file_name):
     # 打开数据文件
-    file_path = "D:\\2 code\\pressure\\data\\230723\\230723\\"
-    file1 = file_path + file_name
+    # file_path = "D:\\2 code\\pressure\\data\\230723\\230723\\"
+    file1 = file_name
     a = open(file1, "r+")
     data = a.readlines()
     num_lenth = len(data)
@@ -88,19 +88,19 @@ def plt_pictures(file_name, m=8):
     #     plt.text(x1, y1, str(y1), ha='center', va='bottom', fontsize=10)
 
 
-def main():
-    # file_name1 = ['tran_wang_deprotection.txt', 'tran_wang_deprotection2.txt']
-    # file_name2 = ['tran_gly1_couple.txt', 'tran_gly1_deprotection.txt']
-    # file_name3 = ['tran_gly2_couple.txt', 'tran_gly2_deprotection.txt']
-    # file_name4 = ['tran_phe_couple.txt', 'tran_phe_deprotection.txt']
-    # file_name5 = ['tran_tyr_couple.txt']
-    # plt_pictures(file_name1, 9)
-    # plt_pictures(file_name2, 9)
-    # plt_pictures(file_name3, 9)
-    # plt_pictures(file_name4)
-    # plt_pictures(file_name5)
-    file_name = 'tran_wang_deprotection.txt'
-    plt_picture(file_name)
+# def main():
+#     # file_name1 = ['tran_wang_deprotection.txt', 'tran_wang_deprotection2.txt']
+#     # file_name2 = ['tran_gly1_couple.txt', 'tran_gly1_deprotection.txt']
+#     # file_name3 = ['tran_gly2_couple.txt', 'tran_gly2_deprotection.txt']
+#     # file_name4 = ['tran_phe_couple.txt', 'tran_phe_deprotection.txt']
+#     # file_name5 = ['tran_tyr_couple.txt']
+#     # plt_pictures(file_name1, 9)
+#     # plt_pictures(file_name2, 9)
+#     # plt_pictures(file_name3, 9)
+#     # plt_pictures(file_name4)
+#     # plt_pictures(file_name5)
+#     file_name = 'tran_wang_deprotection.txt'
+#     plt_picture(file_name)
 
 
-main()
+# main()
