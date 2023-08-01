@@ -382,10 +382,9 @@ class Module():
         #     print('3')
         self.pump_ever.pump_run(self.slave_add1, 0, 0)
         self.pump_ever.pump_run(self.slave_add2, 0, 0)
-        time.sleep(10)
+        time.sleep(self.pump3_runtime - 10)
         self.pump_ever.pump_run(self.slave_add4, 0, 0)
-
-        time.sleep(self.pump3_runtime-self.pump1_runtime)
+        time.sleep(10)
         # if (time.time() - self.time_start) > (self.pump3_runtime):
         # print('4')
         self.pump_ever.pump_run(self.slave_add3, 0, 0)
