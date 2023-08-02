@@ -35,9 +35,8 @@ def plt_picture(file_name):
     # 显示图例
     plt.legend(loc="upper right")
     # 保存图片
-    picture_path = "D:\\2 code\\automation\\data\\picture\\"
-    picture_name = file_name[5:-4] + ".png"
-    picture_name = picture_path + picture_name
+    # picture_path = "D:\\2 code\\automation\\data\\picture\\"
+    picture_name = file_name + ".png"
     # print(picture_name)
     plt.savefig(picture_name)
     plt.show()

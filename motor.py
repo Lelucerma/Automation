@@ -634,13 +634,13 @@ if __name__ == "__main__":
     filename = str(input("请输入文件名："))
     file_name = file_name_start + filename + '.txt'
     auto_thread = threading.Thread(target=pump_automation, kwargs={'com_pump':'com5'})
-    ui_pump_thread = threading.Thread(target=pump_ui,daemon = True)
+    ui_pump_thread = threading.Thread(target=pump_ui)
     press_thread = threading.Thread(target=press_gain, kwargs={'com_press':'com3', 'file':f'{file_name}'})
 
     auto_thread.start()
     ui_pump_thread.start()
     press_thread.start()
     auto_thread.join()
-    press_thread.join(1)
-    # print('1')
+    press_thread.join()
+    print('1')
     analysis.plt_picture(file_name)

@@ -11,10 +11,11 @@ def tube_time(length, run_speed, diameter=0.5):
     """
 
     length = length  # 管道的长度
-    diameter = diameter  # 管道的直径
-    tube_volume = length * math.pow((diameter/4), 2) * math.pi
-    tube_time1 = tube_volume / run_speed * 60
-    return tube_time1 * 4.65
+    diameter = diameter   # 管道的直径
+    speed = run_speed
+    tube_volume = length * math.pow((diameter/2), 2) * math.pi
+    tube_time1 = tube_volume / speed / 0.8027 * 60
+    return tube_time1
 
-a = tube_time(56, 60)
+a = tube_time(23, 60)
 print(a)
