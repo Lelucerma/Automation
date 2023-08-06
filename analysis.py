@@ -88,7 +88,8 @@ def plt_pictures(file_name, m=8):
 
 
 # def main():
-#     # file_name1 = ['tran_wang_deprotection.txt', 'tran_wang_deprotection2.txt']
+#     # file_name1 = ['tran_wang_deprotection.txt',
+#                       'tran_wang_deprotection2.txt']
 #     # file_name2 = ['tran_gly1_couple.txt', 'tran_gly1_deprotection.txt']
 #     # file_name3 = ['tran_gly2_couple.txt', 'tran_gly2_deprotection.txt']
 #     # file_name4 = ['tran_phe_couple.txt', 'tran_phe_deprotection.txt']

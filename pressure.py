@@ -1,3 +1,5 @@
+import os.path
+
 import serial
 import time
 
@@ -150,7 +152,7 @@ class DataSave():
         :return:
         """
         self.data = data
-        file_a = open(file_name, 'a+')
+        file_a = open(file_name, 'w+')
         self.num = 1
         self.units = {
             0: 'Mpa',
@@ -176,7 +178,7 @@ class PressUnit():
     def __init__(self) -> None:
         pass
 
-    def slave(self, com_press, slave_add, run_time, file_name_tran):
+    def slave(self, com_press, slave_add, run_time, floder_path, file_name_tran):
         """
         :param slave_add: 从机地址
         :param run_time: 运行时间
@@ -217,7 +219,10 @@ class PressUnit():
                 # file = input("请输入文件名：")
                 # self.file_name_origin = file_name_origin
                 # self.save1.save(self.data_origin, self.file_name_origin, self.unit)
-                self.file_name_tran = file_name_tran
+                floder = os.path.exists(floder_path)
+                if not floder:
+                    os.mkdir(floder_path)
+                self.file_name_tran = floder_path + file_name_tran + '.txt'
                 self.save1.save(self.data_tran, self.file_name_tran, self.unit, slave_add)
                 self.data_origin = []
                 self.data_tran = []
@@ -234,28 +239,14 @@ class PressUnit():
 
 
 
-# def main():
+def main():
+    slave_press = PressUnit()
+    file_name = 'D:\\2 code\\Automation\\data\\230801\\1.txt'
+    slave_press.slave('com6',1,10,file_name)  # slave_add从第二个开始使用，保留第一个的从机地址
+    print(1)
 
-#     global ser_press
-#     ser_press = serial.Serial('com5', 9600, timeout=1)
-
-#     # 数据位为8位
-#     ser_press.bytesize = serial.EIGHTBITS
-#     # 停止位为1位
-#     ser_press.stopbits = serial.STOPBITS_ONE
-#     # 无奇偶校验位
-#     ser_press.parity = serial.PARITY_NONE
-#     slave_press = PressUnit()
-#     for i in range(4):
-
-#         slave_press.slave(i+2)  # slave_add从第二个开始使用，保留第一个的从机地址
-
-#     # 关闭串口
-#     ser_press.close()
-
-
-# if __name__ == "__main__":
-#     t1 = time.time()
-#     main()
-#     t2 = time.time()
-#     print((t2-t1)/60)
+if __name__ == "__main__":
+    t1 = time.time()
+    main()
+    t2 = time.time()
+    print((t2-t1)/60)

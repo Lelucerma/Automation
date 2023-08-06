@@ -1,5 +1,6 @@
 import math
 
+
 def tube_time(length, run_speed, diameter=0.5):
     """"
     根据泵的速度和需要进液的容量确定泵的运行时间，需要设置一定的时间冗余，
@@ -16,6 +17,7 @@ def tube_time(length, run_speed, diameter=0.5):
     tube_volume = length * math.pow((diameter/2), 2) * math.pi
     tube_time1 = tube_volume / speed / 0.8027 * 60
     return tube_time1
+
 
 a = tube_time(23, 60)
 print(a)

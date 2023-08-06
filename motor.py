@@ -11,7 +11,7 @@ import analysis
 
 
 # 泵的命令行组成
-class Pump_com():
+class PumpCom:
     """dict_func_bit = {'001': '启停控制', '002':'电机方向',
                   '003':'运行模式', '004':'FLASH保存',
                   '005':'恢复默认值'}
@@ -219,11 +219,13 @@ class Pump_com():
 
 
 # 泵的具体运转
-class Pump():
+class Pump:
     # 初始化操作
     def __init__(self) -> None:
 
-        self.cm = Pump_com()
+
+
+        self.cm = PumpCom()
         self.begin = True
 
     # 开启泵的运行
@@ -246,7 +248,6 @@ class Pump():
             # 将数值调整成相应的电机转速数值，根据实际测试，约为140，采用140作为冗余
             self.run_speed = speed * 140
 
-
         if self.run:
             if self.motor_direction:
                 self.data = 3
@@ -267,25 +268,22 @@ class Pump():
             self.resp2 = self.answer(self.speed_cmd)
             # print(self.resp2)
 
-
-
     def speed_change(self, slave_add):
-        self.speed_change_cmd = self.cm.write_registers(slave_add, '009',
-                                                 self.run_speed)
+        self.speed_change_cmd = self.cm.write_registers(
+            slave_add, '009', self.run_speed)
         # print(self.speed_cmd)
         self.resp3 = self.answer(self.speed_change_cmd)
         # print(self.resp3)
 
     def answer(self, cmd):
         self.cmd = cmd
-        t = 0
+        # t = 0
         ser_pump.write(self.cmd)
         try:
             self.resp = list(ser_pump.read(32))
             return self.resp
         except:
             return 0
-
 
         # while True:
         #     ser_pump.write(self.cmd)
@@ -296,51 +294,89 @@ class Pump():
         #         return '无法通信，请查找问题'
         #     t += 1
 
+    # 关闭串口
 
-
-
-    # 流量矫正
 
 
 # 一个单元泵的运行
-class Module():
-    def __init__(self) -> None:
+class Module:
+    def __init__(self,com_pump) -> None:
+
+
+        self.slave_add1, self.slave_add2 = None, None
+        self.slave_add3, self.slave_add4 = None, None
+
+        self.speed1, self.speed2 = 60, 60
+        self.speed3, self.speed4 = 60, 200
+
+        self.volume1, self.volume2 = 50, 50
+        self.volume3 = 200
+
+        self.time1, self.time2 = None, None
+        self.time3, self.time4 = None, None
+        self.speed_before = None
+
+        self.time_starts = time.time()  # 这个是总计时，不能更改
+        self.time_start = time.time()  # 这个是可以作为部分计时，可以更改
+
+        self.length, self.diameter = None, None
+        self.tube_area, self.tube_volume = None, None
+
+        global ser_pump
+        ser_pump = serial.Serial(com_pump, 9600, timeout=1)
+
+        # 数据位为8位
+        ser_pump.bytesize = serial.EIGHTBITS
+        # 停止位为1位
+        ser_pump.stopbits = serial.STOPBITS_ONE
+        # 无奇偶校验位
+        ser_pump.parity = serial.PARITY_NONE
 
         self.pump_ever = Pump()
 
-
-
-
-    def reactor_unit(self, slave_add1, speed, volume):
+    def deprotection_unit(self, slave_add1=1, speed=None, volume=None, next_unit=None, speed_before=0):
         """"
-        对于反应器的蠕动泵进行相应的控制，超过控制时间后蠕动泵停止工作
-        首个反应单元有两个蠕动泵，因此有两个设备地址。
+        直接控制一个反应单元，整体的逻辑是先判断那个管路长，依托于设别的构建相应的管路，
+        使用
 
         Args:
+
             * slave_add1 第一个泵
             * slave_add2 第二个泵
-            * speed 泵的运行速度
+            * speed 四个泵的运行速度
+            * volume 两个反应物的投料量
 
         """
-        self.slave_add1, self.slave_add2 = slave_add1, slave_add1+1
-        self.slave_add3, self.slave_add4 = slave_add1+2, slave_add1+3
-        self.speed1, self.speed2 = speed[0], speed[1]
-        self.speed3, self.speed4 = speed[2], speed[3]
-        
+        if speed is None:
+            speed = []
+        if volume is None:
+            volume = []
+        if slave_add1 == 0:
+            pass
+        else:
+            self.slave_add1, self.slave_add2 = slave_add1, slave_add1 + 1
+            self.slave_add3, self.slave_add4 = slave_add1 + 2, slave_add1 + 3
+        if not speed:
+            pass
+        else:
+            self.speed1, self.speed2 = speed[0], speed[1]
+            self.speed3, self.speed4 = speed[2], speed[3]
+        if not volume:
+            pass
+        else:
+            self.volume1, self.volume2= volume[0], volume[1]
+            self.volume3 = volume[2]
+
+        if next_unit:
+            self.speed_before = speed_before
+            self.pump_ever.pump_run(self.slave_add1-2, 1, 1, self.speed_before)
+
+
+        # 计算各个泵需要的运行时间,不同的进料体积需要不同的进料速度
+        self.volume_time()
 
         # 进行各个时间的计算程序
         self.run_time()
-
-        # 这个时间是主物料开始到洗涤单元的时间（应该以数值的进度作为判断）
-        self.time1 = self.pump1_intime + self.pump1_outtime
-        + self.reactor_intime + self.reactor_outtime + self.reactor_time
-
-        # 这个时间是副物料开始到洗涤单元的时间（应该以数值的进度作为判断）
-        self.time2 = self.pump1_intime + self.pump1_outtime
-        + self.reactor_intime + self.reactor_outtime + self.reactor_time
-
-        # 这个应该是洗涤泵到洗涤单元的时间
-        self.time3 = self.pump3_intime + self.pump3_outtime
 
         # 第三个泵的开启时间为time1-time3
         self.time4 = self.time1 - self.time3
@@ -356,30 +392,27 @@ class Module():
             time.sleep(self.time4)
             # if (time.time() - self.time_start) >= self.time4:
             # print('1')
-            self.pump_ever.pump_run(self.slave_add3, 1, 1, self.speed3)                
+            self.pump_ever.pump_run(self.slave_add3, 1, 1, self.speed3)
         else:
-            self.pump_ever.pump_run(self.slave_add3, 1, 1, self.speed3)            
+            self.pump_ever.pump_run(self.slave_add3, 1, 1, self.speed3)
             time.sleep(-self.time4)
             # if (time.time() - self.time_start) > (-self.time4):
             # print('2')
             self.pump_ever.pump_run(self.slave_add1, 1, 1, self.speed1)
             self.pump_ever.pump_run(self.slave_add2, 1, 1, self.speed2)
-        
+
         # 当物料进入洗涤单元时，开启洗涤单元废料泵
         # time.sleep(self.time1-self.time4-8) # 3是冗余时间
         self.pump_ever.pump_run(self.slave_add4, 1, 1, self.speed4)
 
-        time.sleep(10) # 3是冗余时间
-        
-        # 计算各个泵需要的运行时间
-        self.pump1_runtime = self.volume_time(volume[0], self.speed1) + self.time1
-        self.pump2_runtime = self.volume_time(volume[1], self.speed2) + self.time2
-        self.pump3_runtime = self.volume_time(volume[2], self.speed3) + self.time2
+        time.sleep(10)  # 3是冗余时间
 
         # 等物料输入结束后，关闭各个泵
         time.sleep(self.pump1_runtime)
         # if (time.time() - self.time_start) > (self.pump1_runtime):
         #     print('3')
+        if next_unit:
+            self.pump_ever.pump_run(self.slave_add1-2, 0, 0)
         self.pump_ever.pump_run(self.slave_add1, 0, 0)
         self.pump_ever.pump_run(self.slave_add2, 0, 0)
         time.sleep(self.pump3_runtime - 10)
@@ -389,31 +422,111 @@ class Module():
         # print('4')
         self.pump_ever.pump_run(self.slave_add3, 0, 0)
 
-
-    def wash_unit(self, slave_add1, speed1, slave_add2, speed2):
+    # 三个泵进行反应
+    def reaction_unit(self, slave_add1=1, speed=None, volume=None, next_unit=None, speed_before=0):
         """"
-        对于洗涤的蠕动泵进行相应的控制，超过控制时间后蠕动泵停止工作
-        每个洗涤单元有两个蠕动泵，有两个设备地址。
+        直接控制一个反应单元，整体的逻辑是先判断那个管路长，依托于设别的构建相应的管路，
+        使用
 
         Args:
+
             * slave_add1 第一个泵
             * slave_add2 第二个泵
-            * speed 泵的运行速度D
+            * speed 四个泵的运行速度
+            * volume 两个反应物的投料量
 
         """
-        self.time_starts = time.time()
-        self.time_start = time.time()
-        self.time2 = 0
-        self.pump_ever = Pump()
-        self.pump_ever.pump_run(slave_add1, True, True, speed1)
-        self.pump_ever.pump_run(slave_add2, True, True, speed2)
-        # print(self.pump_ever.run_time(20))
-        # time.sleep(self.pump_ever.run_time(20))
-        self.pump_ever.pump_run(slave_add1, False, False, speed1)
-        self.pump_ever.pump_run(slave_add2, False, False, speed2)
+        if speed is None:
+            speed = []
+        if volume is None:
+            volume = []
+        if slave_add1 == 0:
+            pass
+        else:
+            self.slave_add1, self.slave_add2 = slave_add1, slave_add1 + 1
+            self.slave_add3 = slave_add1 + 2
+        if not speed:
+            pass
+        else:
+            self.speed1, self.speed2 = speed[0], speed[1]
+            self.speed3 = speed[2]
+        if not volume:
+            pass
+        else:
+            self.volume1, self.volume2 = volume[0], volume[1]
+
+        if next_unit:
+            self.speed_before = speed_before
+            self.pump_ever.pump_run(self.slave_add1 - 2, 1, 1, self.speed_before)
+
+        # 计算各个泵需要的运行时间,不同的进料体积需要不同的进料速度
+        self.volume_time()
+
+        # 进行各个时间的计算程序
+        self.run_time()
+
+        # 第三个泵的开启时间为time1-time2
+        self.time4 = self.time1 - self.time2
+
+        # 开始计时
+        self.time_starts = time.time()  # 这个是总计时，不能更改
+        self.time_start = time.time()  # 这个是可以作为部分计时，可以更改
+
+        # 判断哪一个运行时间长，先开启哪一个泵
+        if self.time4 >= 0:
+            self.pump_ever.pump_run(self.slave_add1, 1, 1, self.speed1)
+            # self.pump_ever.pump_run(self.slave_add2, 1, 1, self.speed2)
+            time.sleep(self.time4)
+            # if (time.time() - self.time_start) >= self.time4:
+            # print('1')
+            self.pump_ever.pump_run(self.slave_add2, 1, 1, self.speed3)
+        else:
+            self.pump_ever.pump_run(self.slave_add2, 1, 1, self.speed3)
+            time.sleep(-self.time4)
+            # if (time.time() - self.time_start) > (-self.time4):
+            # print('2')
+            self.pump_ever.pump_run(self.slave_add1, 1, 1, self.speed1)
+            # self.pump_ever.pump_run(self.slave_add2, 1, 1, self.speed2)
+
+        # 当物料进入洗涤单元时，开启洗涤单元废料泵
+        # time.sleep(self.time1-self.time4-8) # 3是冗余时间
+        self.pump_ever.pump_run(self.slave_add3, 1, 1, self.speed4)
+
+        time.sleep(10)  # 3是冗余时间
+
+        # 等物料输入结束后，关闭各个泵
+        time.sleep(self.pump1_runtime)
+        # if (time.time() - self.time_start) > (self.pump1_runtime):
+        #     print('3')
+        if next_unit:
+            self.pump_ever.pump_run(self.slave_add1 - 2, 0, 0)
+        self.pump_ever.pump_run(self.slave_add1, 0, 0)
+        # self.pump_ever.pump_run(self.slave_add2, 0, 0)
+        time.sleep(self.pump3_runtime - 10)
+        self.pump_ever.pump_run(self.slave_add2, 0, 0)
+        time.sleep(3)
+        # if (time.time() - self.time_start) > (self.pump3_runtime):
+        # print('4')
+        self.pump_ever.pump_run(self.slave_add3, 0, 0)
+
+
+    # 溶胀
+    def swell(self, m, slave_add=3, speed=None):
+        self.slave_add = slave_add
+        self.swell_speed = speed
+        for i in range(m):
+            self.swell_ever()
+        self.pump_ever.pump_run(self.slave_add, 0, 0, self.swell_speed)
+
+    # 单个溶胀过程
+    def swell_ever(self):
+        self.pump_ever.pump_run(self.slave_add, 1, 0, self.swell_speed)
+        time.sleep(5)
+        self.pump_ever.pump_run(self.slave_add, 1, 1, self.swell_speed)
+
+
 
     def tube_time(self, length, speed, diameter=0.5):
-
         """"
         根据泵的速度和需要进液的容量确定泵的运行时间，需要设置一定的时间冗余，
         对于泵停止所需要的时间需要进行相应的调整。需做出一个统计
@@ -424,11 +537,11 @@ class Module():
         """
 
         self.length = length  # 管道的长度
-        # self.diameter = diameter   # 管道的直径
-        # self.speed = speed
-        # self.tube_volume = self.length * \
-        #                    math.pow((self.diameter/4), 2) * math.pi
-        self.tube_time1 = self.length * 0.23
+        self.diameter = diameter  # 管道的直径
+        self.speed = speed
+        self.tube_area = math.pi * math.pow((self.diameter/2), 2)
+        self.tube_volume = self.tube_area * self.length
+        self.tube_time1 = self.tube_volume / self.speed / 0.8027 * 60
         return self.tube_time1
 
     def run_time(self):
@@ -438,61 +551,95 @@ class Module():
         """
         self.pump1_intime = self.tube_time(46, self.speed1)
         self.pump1_outtime = self.tube_time(23, self.speed1)
-        self.pump2_intime = self.tube_time(46, self.speed2)
-        self.pump2_outtime = self.tube_time(23, self.speed2)
-        self.pump3_intime = self.tube_time(56, self.speed3)
-        self.pump3_outtime = self.tube_time(70, self.speed3)
-        self.pump4_intime = self.tube_time(67, self.speed4)
-        self.pump4_outtime = self.tube_time(40, self.speed4)
-        self.reactor_intime = self.tube_time(10,self.speed2)
+        self.pump2_intime = self.tube_time(56, self.speed3)
+        self.pump2_outtime = self.tube_time(70, self.speed3)
+        self.pump3_intime = self.tube_time(67, self.speed4)
+        self.pump3_outtime = self.tube_time(40, self.speed4)
+        self.reactor_intime = self.tube_time(10, self.speed2)
         self.reactor_outtime = self.tube_time(56, self.speed2)
         self.reactor_time = self.tube_time(30, self.speed2)
 
-    def volume_time(self, volume, speed):
-        self.volume = volume
-        self.speed = speed
-        self.pump_runtime = (self.volume / self.speed)*60 + 10
+        # 这个时间是主物料开始到洗涤单元的时间（应该以数值的进度作为判断）
+        # 120为循环时间
+        self.time1 = self.pump1_intime + self.pump1_outtime + 120
+        +self.reactor_intime + self.reactor_outtime + self.reactor_time
+
+        # 这个应该是洗涤泵到洗涤单元的时间
+        self.time2 = self.pump2_intime + self.pump2_outtime
+
+    def volume_time(self):
+        if self.volume1 < self.volume2:
+            self.pump1_runtime = (self.volume1 / self.speed1) * 60 + 3
+            self.speed2 = self.volume2 / (self.pump1_runtime / 60)
+            self.pump2_runtime = self.pump1_runtime
+        else:
+            self.pump2_runtime = (self.volume1 / self.speed1) * 60 + 3
+            self.speed1 = self.volume2 / (self.pump2_runtime / 60)
+            self.pump1_runtime = self.pump2_runtime
         # print(f'体积为:{self.volume}, 速度为：{self.speed},时间为：{self.pump_runtime}')
-        return self.pump_runtime
+        self.pump3_runtime = (self.volume3 / self.speed3) * 60 + 3
+
+    @staticmethod
+    def close_serial():
+        ser_pump.close()
 
 class Stats:
-
     def __init__(self):
 
         self.pump_ever = Pump()
 
         # 从文件中加载UI定义
-        qfile_stats = QFile("D:\\2 code\\control-motor\\ui\\Kamor pump.ui")
+        qfile_stats = QFile("D:\\2 code\\Automation\\ui\\Kamor pump.ui")
         qfile_stats.open(QFile.ReadOnly)
         qfile_stats.close()
 
         self.ui = QUiLoader().load(qfile_stats)
 
-        # 6、第一个泵的控制
-        self.ui.pump1_open_button.clicked.connect(
-            lambda: self.pump_open_button(3))
-        self.ui.pump1_stop_button.clicked.connect(
-            lambda: self.pump_stop_button(3))
-        # 7、第二个泵的控制
-        self.ui.pump2_open_button.clicked.connect(
-            lambda: self.pump_open_button(4))
-        self.ui.pump2_stop_button.clicked.connect(
-            lambda: self.pump_stop_button(4))
-        # 8、第三个泵的控制
+        # 6、第三个泵的控制
         self.ui.pump3_open_button.clicked.connect(
-            lambda: self.pump_open_button(5))
+            lambda: self.pump_open_button(3))
         self.ui.pump3_stop_button.clicked.connect(
-            lambda: self.pump_stop_button(5))
-        # 9、第四个泵的控制
+            lambda: self.pump_stop_button(3))
+        # 7、第四个泵的控制
         self.ui.pump4_open_button.clicked.connect(
-            lambda: self.pump_open_button(6))
+            lambda: self.pump_open_button(4))
         self.ui.pump4_stop_button.clicked.connect(
-            lambda: self.pump_stop_button(6))
-        # 10、第五个泵的控制
+            lambda: self.pump_stop_button(4))
+        # 8、第五个泵的控制
         self.ui.pump5_open_button.clicked.connect(
-            lambda: self.pump_open_button(6))
+            lambda: self.pump_open_button(5))
         self.ui.pump5_stop_button.clicked.connect(
+            lambda: self.pump_stop_button(5))
+        # 9、第六个泵的控制
+        self.ui.pump6_open_button.clicked.connect(
+            lambda: self.pump_open_button(6))
+        self.ui.pump6_stop_button.clicked.connect(
             lambda: self.pump_stop_button(6))
+        # 10、第七个泵的控制
+        self.ui.pump7_open_button.clicked.connect(
+            lambda: self.pump_open_button(7))
+        self.ui.pump7_stop_button.clicked.connect(
+            lambda: self.pump_stop_button(7))
+        # 11、第八个泵的控制
+        self.ui.pump8_open_button.clicked.connect(
+            lambda: self.pump_open_button(8))
+        self.ui.pump8_stop_button.clicked.connect(
+            lambda: self.pump_stop_button(8))
+        # 10、第九个泵的控制
+        self.ui.pump9_open_button.clicked.connect(
+            lambda: self.pump_open_button(9))
+        self.ui.pump9_stop_button.clicked.connect(
+            lambda: self.pump_stop_button(9))
+        # 10、第十个泵的控制
+        self.ui.pump10_open_button.clicked.connect(
+            lambda: self.pump_open_button(10))
+        self.ui.pump10_stop_button.clicked.connect(
+            lambda: self.pump_stop_button(10))
+        # 10、第十一个泵的控制
+        self.ui.pump11_open_button.clicked.connect(
+            lambda: self.pump_open_button(11))
+        self.ui.pump11_stop_button.clicked.connect(
+            lambda: self.pump_stop_button(11))
         # 文本框清除按钮
         self.ui.clear_button.clicked.connect(self.clear_result_text)
 
@@ -500,33 +647,57 @@ class Stats:
     def pump_open_button(self, add):
         self.slave_add = add
         if self.slave_add == 3:
-            self.speed = int(int(self.ui.pump1_spinbox.text()) * 140)
-            self.time1 = time.time()
-            self.first = '3 pump open'
-        elif self.slave_add == 4:
-            self.speed = int(int(self.ui.pump2_spinbox.text()) * 140)
-            self.time2 = time.time()
-            self.first = '4 pump open'
-        elif self.slave_add == 5:
             self.speed = int(int(self.ui.pump3_spinbox.text()) * 140)
             self.time3 = time.time()
-            self.first = '5 pump open'
-        elif self.slave_add == 6:
+            self.first = '3 pump open'
+        elif self.slave_add == 4:
             self.speed = int(int(self.ui.pump4_spinbox.text()) * 140)
             self.time4 = time.time()
+            self.first = '4 pump open'
+        elif self.slave_add == 5:
+            self.speed = int(int(self.ui.pump5_spinbox.text()) * 140)
+            self.time5 = time.time()
+            self.first = '5 pump open'
+        elif self.slave_add == 6:
+            self.speed = int(int(self.ui.pump6_spinbox.text()) * 140)
+            self.time6 = time.time()
+            self.first = '6 pump open'
+            self.newline(self.speed)
+        elif self.slave_add == 7:
+            self.speed = int(int(self.ui.pump7_spinbox.text()) * 140)
+            self.time7 = time.time()
+            self.first = '7 pump open'
+            self.newline(self.speed)
+        elif self.slave_add == 8:
+            self.speed = int(int(self.ui.pump8_spinbox.text()) * 140)
+            self.time8 = time.time()
+            self.first = '8 pump open'
+            self.newline(self.speed)
+        elif self.slave_add == 9:
+            self.speed = int(int(self.ui.pump9_spinbox.text()) * 140)
+            self.time9 = time.time()
+            self.first = '9 pump open'
+            self.newline(self.speed)
+        elif self.slave_add == 10:
+            self.speed = int(int(self.ui.pump10_spinbox.text()) * 140)
+            self.time10 = time.time()
+            self.first = '10 pump open'
+            self.newline(self.speed)
+        elif self.slave_add == 11:
+            self.speed = int(int(self.ui.pump11_spinbox.text()) * 140)
+            self.time11 = time.time()
             self.first = '6 pump open'
             self.newline(self.speed)
 
         # 第一个泵的开启和命令展示
         self.pump_ever.pump_run(self.slave_add, 1, 1, self.speed)
         self.newline(self.first)
-            # self.newline(self.cmd1)
-            # self.newline(self.cmd2)
-            # self.newline(self.cmd1)
-            # self.newline(self.cmd2)
-            # self.newline(self.cmd3)
-            # self.newline(self.cmd4)
-
+        # self.newline(self.cmd1)
+        # self.newline(self.cmd2)
+        # self.newline(self.cmd1)
+        # self.newline(self.cmd2)
+        # self.newline(self.cmd3)
+        # self.newline(self.cmd4)
         """# 第二个泵的开启和命令展示
         if self.speed == 0:
             self.cmd1, self.cmd2 = self.pump_ever.pump_run(
@@ -535,7 +706,8 @@ class Stats:
             self.newline(self.cmd1)
             self.newline(self.cmd2)
         else:
-            self.cmd1, self.cmd2, self.cmd3, self.cmd4, = self.pump_ever.pump_run(
+            self.cmd1, self.cmd2,
+            self.cmd3, self.cmd4, = self.pump_ever.pump_run(
                 self.slave_add+1, 1, 1, self.speed)
             self.newline(self.second)
             self.newline(self.cmd1)
@@ -543,35 +715,54 @@ class Stats:
             self.newline(self.cmd3)
             self.newline(self.cmd4)
 """
+
     # 点击开始第二种泵的停止
     def pump_stop_button(self, add):
         self.slave_add = add
         if self.slave_add == 3:
-            self.time5 = time.time()
+            self.time303 = time.time()
             self.first = '3 pump stop'
-            self.newline(self.time5-self.time1)
+            self.newline(self.time303 - self.time3)
         elif self.slave_add == 4:
-            self.time6 = time.time()
+            self.time304 = time.time()
             self.first = '4 pump stop'
-            self.newline(self.time6-self.time2)
+            self.newline(self.time304 - self.time4)
         elif self.slave_add == 5:
-            self.time7 = time.time()
+            self.time305 = time.time()
             self.first = '5 pump stop'
-            self.newline(self.time7-self.time3)
+            self.newline(self.time305 - self.time5)
         elif self.slave_add == 6:
-            self.time8 = time.time()
+            self.time306 = time.time()
             self.first = '6 pump stop'
-            self.newline(self.time8-self.time4)
+            self.newline(self.time306 - self.time6)
+        elif self.slave_add == 7:
+            self.time307 = time.time()
+            self.first = '7 pump stop'
+            self.newline(self.time307 - self.time7)
+        elif self.slave_add == 8:
+            self.time308 = time.time()
+            self.first = '6 pump stop'
+            self.newline(self.time308 - self.time8)
+        elif self.slave_add == 9:
+            self.time309 = time.time()
+            self.first = '6 pump stop'
+            self.newline(self.time309 - self.time9)
+        elif self.slave_add == 10:
+            self.time310 = time.time()
+            self.first = '6 pump stop'
+            self.newline(self.time310 - self.time10)
+        elif self.slave_add == 11:
+            self.time311 = time.time()
+            self.first = '6 pump stop'
+            self.newline(self.time311 - self.time11)
         # self.first = 'first pump stop'
         # self.second = 'second pump stop'
         self.newline(self.first)
         self.pump_ever.pump_run(self.slave_add, 0, 0)
         # self.newline(self.cmd1)
         # self.newline(self.cmd2)
-
-
-        """self.cmd1, self.cmd2 = self.pump_ever.pump_run(self.slave_add + 1, 0,
-                                                       0)
+        """self.cmd1, self.cmd2 = self.pump_ever.pump_run(
+            self.slave_add + 1, 0, 0)
         self.newline(self.second)
         self.newline(self.cmd1)
         self.newline(self.cmd2)"""
@@ -585,62 +776,4 @@ class Stats:
         self.ui.display_text.append(newline)
 
 
-def pump_ui():
-    app = QApplication([])
-    stats = Stats()
-    stats.ui.show()
-    app.exec()
 
-def pump_automation(com_pump):
-    t1 = time.time()
-    global ser_pump
-    ser_pump = serial.Serial(com_pump, 9600, timeout=1)
-
-    # 数据位为8位
-    ser_pump.bytesize = serial.EIGHTBITS
-    # 停止位为1位
-    ser_pump.stopbits = serial.STOPBITS_ONE
-    # 无奇偶校验位
-    ser_pump.parity = serial.PARITY_NONE
-
-    c = Module()
-    speeds = []
-    speed = input("请输入速度值：").split(',')
-    for i in speed:
-        speeds.append(int(i))
-    volumes = []
-    volume = input("请输入体积值：").split(',')
-    for i in volume:
-        volumes.append(int(i))
-    c.reactor_unit(3, speeds, volumes)
-    # c.wash_unit(5, 12345, 6, 12345)
-
-    # 关闭串口
-    ser_pump.close()
-    t2 = time.time()
-    # print(f'{t2 - t1}s')
-
-def press_gain(com_press, file):
-    slave_press = p.PressUnit()
-    press_runtime = int(input("请输入压力程序运行的时间："))
-    slave_press.slave(com_press, 1, press_runtime, file)
-    # for i in range(4):
-    #     slave_press.slave(i + 2)  # slave_add从第二个开始使用，保留第一个的从机地址
-
-
-if __name__ == "__main__":
-    # print(dir(p), p.__name__, p.__doc__)
-    file_name_start = 'D:\\2 code\\Automation\\data\\230801\\'
-    filename = str(input("请输入文件名："))
-    file_name = file_name_start + filename + '.txt'
-    auto_thread = threading.Thread(target=pump_automation, kwargs={'com_pump':'com5'})
-    ui_pump_thread = threading.Thread(target=pump_ui)
-    press_thread = threading.Thread(target=press_gain, kwargs={'com_press':'com3', 'file':f'{file_name}'})
-
-    auto_thread.start()
-    ui_pump_thread.start()
-    press_thread.start()
-    auto_thread.join()
-    press_thread.join()
-    print('1')
-    analysis.plt_picture(file_name)
