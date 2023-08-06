@@ -377,12 +377,12 @@ class Stats:
         # 第一个泵的开启和命令展示
         self.pump_ever.pump_run(self.slave_add, 1, 1, self.speed)
         self.newline(self.first)
-            # self.newline(self.cmd1)
-            # self.newline(self.cmd2)
-            # self.newline(self.cmd1)
-            # self.newline(self.cmd2)
-            # self.newline(self.cmd3)
-            # self.newline(self.cmd4)
+        # self.newline(self.cmd1)
+        # self.newline(self.cmd2)
+        # self.newline(self.cmd1)
+        # self.newline(self.cmd2)
+        # self.newline(self.cmd3)
+        # self.newline(self.cmd4)
 
         """# 第二个泵的开启和命令展示
         if self.speed == 0:
@@ -392,7 +392,8 @@ class Stats:
             self.newline(self.cmd1)
             self.newline(self.cmd2)
         else:
-            self.cmd1, self.cmd2, self.cmd3, self.cmd4, = self.pump_ever.pump_run(
+            self.cmd1, self.cmd2,
+            self.cmd3, self.cmd4, = self.pump_ever.pump_run(
                 self.slave_add+1, 1, 1, self.speed)
             self.newline(self.second)
             self.newline(self.cmd1)
@@ -425,13 +426,6 @@ class Stats:
         self.cmd1, self.cmd2 = self.pump_ever.pump_run(self.slave_add, 0, 0)
         # self.newline(self.cmd1)
         # self.newline(self.cmd2)
-
-
-        """self.cmd1, self.cmd2 = self.pump_ever.pump_run(self.slave_add + 1, 0,
-                                                       0)
-        self.newline(self.second)
-        self.newline(self.cmd1)
-        self.newline(self.cmd2)"""
 
     # 清除文本框内容
     def clear_result_text(self):
