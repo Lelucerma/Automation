@@ -1,5 +1,5 @@
 import os.path
-
+import threading
 import serial
 import time
 
@@ -94,6 +94,7 @@ class PressCom():
 
 
 class PressGet():
+
     def __init__(self):
         self.cm = PressCom()
 
@@ -143,7 +144,8 @@ class PressGet():
 
 
 class DataSave():
-    def save(self, data, file_name, unit, slave_add):
+
+    def save(self, data, file_name):
         """
         通过将获得的数据值存入具体的文件内
         :param data: 需要写入的具体的数值
@@ -152,8 +154,25 @@ class DataSave():
         :return:
         """
         self.data = data
-        file_a = open(file_name, 'w+')
+        file_a = open(file_name, 'a+')
         self.num = 1
+        # file_a.write(f'第{slave_add - 1}个压力表的压力数据\n')  # 写入第几个从机地址的数据，进行数据间的区分
+        for key in self.data:
+            file_a.write(f'{self.num}: {key}th pump {self.data[key]}\n')
+            self.num += 1
+        file_a.close()
+
+
+class PressUnit():
+
+    def __init__(self) -> None:
+
+        self.time2 = 0
+        self.save1 = DataSave()
+        self.c1 = PressGet()
+        self.slave_adds = []
+        self.data = {}
+        self.unit_data = {}
         self.units = {
             0: 'Mpa',
             1: 'Kpa',
@@ -165,20 +184,10 @@ class DataSave():
             7: 'mh2',
             8: 'mmh2'
         }
-        self.unit = self.units[unit]
-        # file_a.write(f'第{slave_add-1}个压力表的压力数据\n')  # 写入第几个从机地址的数据，进行数据间的区分
-        for j in self.data:
-            file_a.write(f'{self.num}: {j}{self.unit}\n')
-            self.num += 1
-        file_a.close()
 
-
-class PressUnit():
-
-    def __init__(self) -> None:
         pass
 
-    def slave(self, com_press, slave_add, run_time, floder_path, file_name_tran):
+    def slave(self, slave_add, run_time, floder_path, file_name_tran):
         """
         :param slave_add: 从机地址
         :param run_time: 运行时间
@@ -186,15 +195,6 @@ class PressUnit():
         :param file_name_tran: 转化后的数据文件
         :return: 目前无返回值
         """
-        global ser_press
-        ser_press = serial.Serial(com_press, 9600, timeout=1)
-
-        # 数据位为8位
-        ser_press.bytesize = serial.EIGHTBITS
-        # 停止位为1位
-        ser_press.stopbits = serial.STOPBITS_ONE
-        # 无奇偶校验位
-        ser_press.parity = serial.PARITY_NONE
 
         # 开始时间
         self.time_starts = time.time()
@@ -215,38 +215,82 @@ class PressUnit():
             self.data_tran.append(self.press_tran)
             if self.time1 > 10:
                 self.time_start = time.time()
-                # print(time1)
-                # file = input("请输入文件名：")
-                # self.file_name_origin = file_name_origin
-                # self.save1.save(self.data_origin, self.file_name_origin, self.unit)
                 floder = os.path.exists(floder_path)
                 if not floder:
                     os.mkdir(floder_path)
                 self.file_name_tran = floder_path + file_name_tran + '.txt'
-                self.save1.save(self.data_tran, self.file_name_tran, self.unit, slave_add)
+                self.save1.save(self.data_tran, self.file_name_tran, self.unit,
+                                slave_add)
                 self.data_origin = []
                 self.data_tran = []
                 if self.time2 > run_time:
                     break
             # time.sleep(0.05)
             self.time2 = time.time() - self.time_starts
-            # print(self.time2)
             continue
-        
-        # 关闭串口
-        ser_press.close()
+
+    def slaves(self, slave_adds, runtime, floder_path, file_name_tran):
+        # 开始时间
+        self.time_starts = time.time()
+        self.slave_adds = slave_adds
+        self.runtime = runtime
+        for ever_slave in self.slave_adds:
+            self.unit = self.c1.press_uint(int(ever_slave))
+            self.unit_data[ever_slave] = self.units[self.unit]
+        while True:
+            for ever_slave in slave_adds:
+                self.press_thread = threading.Thread(
+                    target=self.slaveWrite,
+                    kwargs={'slave_add': f'{ever_slave}'})
+
+                self.press_thread.start()
+                self.press_thread.join()
+            if self.time2 > self.runtime:
+                break
+            self.time2 = time.time() - self.time_starts
+        floder = os.path.exists(floder_path)
+        if not floder:
+            os.mkdir(floder_path)
+        self.file_name = floder_path + '\\' + file_name_tran + '.txt'
+        self.save1.save(self.data, self.file_name)
+
+    def slaveWrite(self, slave_add):
+        """"
+        就是数据写入与读取
+        """
+        self.slave_add = int(slave_add)
+        self.press_true = self.c1.read_pressure(self.slave_add)
+        self.press_tran = str(self.c1.trans(self.press_true))
+        self.press_tran += self.unit_data[self.slave_add]
+        self.data[self.slave_add] = self.press_tran
 
 
+def serOpen(compress):
+    global ser_press
+    ser_press = serial.Serial(compress, 9600, timeout=1)
+
+    # 数据位为8位
+    ser_press.bytesize = serial.EIGHTBITS
+    # 停止位为1位
+    ser_press.stopbits = serial.STOPBITS_ONE
+    # 无奇偶校验位
+    ser_press.parity = serial.PARITY_NONE
+
+
+def serClose():
+    # 关闭串口
+    ser_press.close()
 
 
 def main():
     slave_press = PressUnit()
     file_name = 'D:\\2 code\\Automation\\data\\230801\\1.txt'
-    slave_press.slave('com6',1,10,file_name)  # slave_add从第二个开始使用，保留第一个的从机地址
+    slave_press.slave('com6', 1, 10, file_name)  # slave_add从第二个开始使用，保留第一个的从机地址
     print(1)
+
 
 if __name__ == "__main__":
     t1 = time.time()
     main()
     t2 = time.time()
-    print((t2-t1)/60)
+    print((t2 - t1) / 60)

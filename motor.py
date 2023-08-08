@@ -1,13 +1,9 @@
 import math
 import time
 import serial
-from PySide6.QtWidgets import QApplication
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtCore import QFile
 from datetime import datetime
-import threading
-import pressure as p
-import analysis
 
 
 # 泵的命令行组成
@@ -223,8 +219,6 @@ class Pump:
     # 初始化操作
     def __init__(self) -> None:
 
-
-
         self.cm = PumpCom()
         self.begin = True
 
@@ -297,11 +291,10 @@ class Pump:
     # 关闭串口
 
 
-
 # 一个单元泵的运行
 class Module:
-    def __init__(self,com_pump) -> None:
 
+    def __init__(self, com_pump) -> None:
 
         self.slave_add1, self.slave_add2 = None, None
         self.slave_add3, self.slave_add4 = None, None
@@ -334,7 +327,12 @@ class Module:
 
         self.pump_ever = Pump()
 
-    def deprotection_unit(self, slave_add1=1, speed=None, volume=None, next_unit=None, speed_before=0):
+    def deprotection_unit(self,
+                          slave_add1=1,
+                          speed=None,
+                          volume=None,
+                          next_unit=None,
+                          speed_before=0):
         """"
         直接控制一个反应单元，整体的逻辑是先判断那个管路长，依托于设别的构建相应的管路，
         使用
@@ -364,13 +362,13 @@ class Module:
         if not volume:
             pass
         else:
-            self.volume1, self.volume2= volume[0], volume[1]
+            self.volume1, self.volume2 = volume[0], volume[1]
             self.volume3 = volume[2]
 
         if next_unit:
             self.speed_before = speed_before
-            self.pump_ever.pump_run(self.slave_add1-2, 1, 1, self.speed_before)
-
+            self.pump_ever.pump_run(self.slave_add1 - 2, 1, 1,
+                                    self.speed_before)
 
         # 计算各个泵需要的运行时间,不同的进料体积需要不同的进料速度
         self.volume_time()
@@ -412,7 +410,7 @@ class Module:
         # if (time.time() - self.time_start) > (self.pump1_runtime):
         #     print('3')
         if next_unit:
-            self.pump_ever.pump_run(self.slave_add1-2, 0, 0)
+            self.pump_ever.pump_run(self.slave_add1 - 2, 0, 0)
         self.pump_ever.pump_run(self.slave_add1, 0, 0)
         self.pump_ever.pump_run(self.slave_add2, 0, 0)
         time.sleep(self.pump3_runtime - 10)
@@ -423,7 +421,12 @@ class Module:
         self.pump_ever.pump_run(self.slave_add3, 0, 0)
 
     # 三个泵进行反应
-    def reaction_unit(self, slave_add1=1, speed=None, volume=None, next_unit=None, speed_before=0):
+    def reaction_unit(self,
+                      slave_add1=1,
+                      speed=None,
+                      volume=None,
+                      next_unit=None,
+                      speed_before=0):
         """"
         直接控制一个反应单元，整体的逻辑是先判断那个管路长，依托于设别的构建相应的管路，
         使用
@@ -457,7 +460,8 @@ class Module:
 
         if next_unit:
             self.speed_before = speed_before
-            self.pump_ever.pump_run(self.slave_add1 - 2, 1, 1, self.speed_before)
+            self.pump_ever.pump_run(self.slave_add1 - 2, 1, 1,
+                                    self.speed_before)
 
         # 计算各个泵需要的运行时间,不同的进料体积需要不同的进料速度
         self.volume_time()
@@ -475,18 +479,12 @@ class Module:
         # 判断哪一个运行时间长，先开启哪一个泵
         if self.time4 >= 0:
             self.pump_ever.pump_run(self.slave_add1, 1, 1, self.speed1)
-            # self.pump_ever.pump_run(self.slave_add2, 1, 1, self.speed2)
             time.sleep(self.time4)
-            # if (time.time() - self.time_start) >= self.time4:
-            # print('1')
             self.pump_ever.pump_run(self.slave_add2, 1, 1, self.speed3)
         else:
             self.pump_ever.pump_run(self.slave_add2, 1, 1, self.speed3)
             time.sleep(-self.time4)
-            # if (time.time() - self.time_start) > (-self.time4):
-            # print('2')
             self.pump_ever.pump_run(self.slave_add1, 1, 1, self.speed1)
-            # self.pump_ever.pump_run(self.slave_add2, 1, 1, self.speed2)
 
         # 当物料进入洗涤单元时，开启洗涤单元废料泵
         # time.sleep(self.time1-self.time4-8) # 3是冗余时间
@@ -509,9 +507,8 @@ class Module:
         # print('4')
         self.pump_ever.pump_run(self.slave_add3, 0, 0)
 
-
     # 溶胀
-    def swell(self, m, slave_add=3, speed=None):
+    def swell(self, m, slave_add=3, speed=0):
         self.slave_add = slave_add
         self.swell_speed = speed
         for i in range(m):
@@ -523,8 +520,6 @@ class Module:
         self.pump_ever.pump_run(self.slave_add, 1, 0, self.swell_speed)
         time.sleep(5)
         self.pump_ever.pump_run(self.slave_add, 1, 1, self.swell_speed)
-
-
 
     def tube_time(self, length, speed, diameter=0.5):
         """"
@@ -539,7 +534,7 @@ class Module:
         self.length = length  # 管道的长度
         self.diameter = diameter  # 管道的直径
         self.speed = speed
-        self.tube_area = math.pi * math.pow((self.diameter/2), 2)
+        self.tube_area = math.pi * math.pow((self.diameter / 2), 2)
         self.tube_volume = self.tube_area * self.length
         self.tube_time1 = self.tube_volume / self.speed / 0.8027 * 60
         return self.tube_time1
@@ -583,7 +578,9 @@ class Module:
     def close_serial():
         ser_pump.close()
 
+
 class Stats:
+
     def __init__(self):
 
         self.pump_ever = Pump()
@@ -774,6 +771,3 @@ class Stats:
     def newline(self, cmd):
         newline = f"{datetime.now().strftime('%H:%M:%S.%f')[:-3]}→{cmd}\n"
         self.ui.display_text.append(newline)
-
-
-
