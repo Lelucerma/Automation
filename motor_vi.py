@@ -307,7 +307,7 @@ class Stats:
     def __init__(self):
 
         global ser
-        ser = serial.Serial('com6', 9600, timeout=1)
+        ser = serial.Serial('com5', 9600, timeout=1)
 
         # 数据位为8位
         ser.bytesize = serial.EIGHTBITS

@@ -24,11 +24,11 @@ def pump_automation(com_pump):
     volume = input("请输入体积值：").split(',')
     for i in volume:
         volumes.append(int(i))
-    c.swell(5, 3, 160)
-    c.reaction_unit(3, speeds, volumes)
-    print('1')
-    c.reaction_unit(7, speeds, volumes, True)
-    print('2')
+    # c.swell(5, 3, 120)
+    c.reaction_unit(4, speeds, volumes)
+    # print('1')
+    # c.reaction_unit(7, speeds, volumes, True)
+    # print('2')
     c.close_serial()
 
 
@@ -47,9 +47,9 @@ def press_gain(com_press, path, file, slave_addb, slave_adde=0):
 
 if __name__ == "__main__":
     path = 'D:\\2 code\\Automation\\data\\230801\\'
-    file_name = str(input("请输入文件名："))
+    # file_name = str(input("请输入文件名："))
     auto_thread = threading.Thread(target=pump_automation,
-                                   kwargs={'com_pump': 'com6'})
+                                   kwargs={'com_pump': 'com5'})
     # ui_pump_thread = threading.Thread(target=pump_ui)
     # press_thread = threading.Thread(target=press_gain,
     #                                 kwargs={

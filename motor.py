@@ -246,7 +246,7 @@ class Pump:
             if self.motor_direction:
                 self.data = 3
             else:
-                self.data = 2
+                self.data = 1
         else:
             self.data = 0
         # print(self.data)
@@ -517,9 +517,12 @@ class Module:
 
     # 单个溶胀过程
     def swell_ever(self):
+        time.sleep(3)   # 添加溶液的时间
         self.pump_ever.pump_run(self.slave_add, 1, 0, self.swell_speed)
-        time.sleep(5)
+        time.sleep(10)  # 鼓动混合的时间
         self.pump_ever.pump_run(self.slave_add, 1, 1, self.swell_speed)
+        time.sleep(10)  # 抽干溶液的时间
+        self.pump_ever.pump_run(self.slave_add, 0, 0, self.swell_speed)
 
     def tube_time(self, length, speed, diameter=0.5):
         """"
@@ -771,3 +774,5 @@ class Stats:
     def newline(self, cmd):
         newline = f"{datetime.now().strftime('%H:%M:%S.%f')[:-3]}→{cmd}\n"
         self.ui.display_text.append(newline)
+
+
