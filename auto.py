@@ -25,7 +25,7 @@ def pump_automation(com_pump):
     for i in volume:
         volumes.append(int(i))
     # c.swell(5, 3, 120)
-    c.reaction_unit(4, speeds, volumes)
+    c.reaction_unit5(4, speeds, volumes)
     # print('1')
     # c.reaction_unit(7, speeds, volumes, True)
     # print('2')

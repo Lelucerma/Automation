@@ -327,7 +327,8 @@ class Module:
 
         self.pump_ever = Pump()
 
-    def deprotection_unit(self,
+    # 4 pump run
+    def reaction_unit4(self,
                           slave_add1=1,
                           speed=None,
                           volume=None,
@@ -421,7 +422,7 @@ class Module:
         self.pump_ever.pump_run(self.slave_add3, 0, 0)
 
     # 三个泵进行反应
-    def reaction_unit(self,
+    def reaction_unit3(self,
                       slave_add1=1,
                       speed=None,
                       volume=None,
@@ -507,6 +508,104 @@ class Module:
         # print('4')
         self.pump_ever.pump_run(self.slave_add3, 0, 0)
 
+
+
+        # 五个泵进行反应
+    def reaction_unit5(self,
+                      slave_add1=1,
+                      speed=None,
+                      volume=None,
+                      next_unit=None,
+                      speed_before=0):
+        """"
+        直接控制一个反应单元，整体的逻辑是先判断那个管路长，依托于设别的构建相应的管路，
+        使用
+
+        Args:
+
+            * slave_add1 第一个泵
+            * slave_add2 第二个泵
+            * speed 四个泵的运行速度
+            * volume 两个反应物的投料量
+
+        """
+        if speed is None:
+            speed = []
+        if volume is None:
+            volume = []
+        if slave_add1 == 0:
+            pass
+        else:
+            self.slave_add1, self.slave_add2 = slave_add1, slave_add1+1
+            self.slave_add3, self.slave_add4 = slave_add1+2, slave_add1+3
+            self.slave_add5 = slave_add1 + 4
+        if not speed:
+            pass
+        else:
+            self.speed1, self.speed2 = speed[0], speed[1]
+            self.speed3, self.speed4 = speed[2], speed[3]
+            self.speed5 = speed[4]
+        if not volume:
+            pass
+        else:
+            self.volume1, self.volume2 = volume[0], volume[1]
+            self.volume3, self.volume4 = volume[2], volume[3]
+
+        if next_unit:
+            self.speed_before = speed_before
+            self.pump_ever.pump_run(self.slave_add1 - 2, 1, 1,
+                                    self.speed_before)
+
+        # 计算各个泵需要的运行时间,不同的进料体积需要不同的进料速度
+        self.volume5_time()
+
+        # 进行各个时间的计算程序
+        self.run_time()
+
+        # 开始计时
+        self.time_starts = time.time()  # 这个是总计时，不能更改
+        self.time_start = time.time()  # 这个是可以作为部分计时，可以更改
+
+        # 因为要循环，因此肯定是前两个泵进行循环操作，而后洗涤的泵就开启时间较晚
+        self.pump_ever.pump_run(self.slave_add1, 1, 1, self.speed1)
+        self.pump_ever.pump_run(self.slave_add2, 1, 1, self.speed1)
+
+        time.sleep(self.time3-2)
+
+        # 开启阀门
+        # 开启第三个泵
+        self.pump_ever.pump_run(self.slave_add3, 1, 1, self.speed3)
+
+        # 计算物料输送结束的时间t3
+        time.sleep(self.pump1_runtime)
+        self.pump_ever.pump_run(self.slave_add1, 0, 0, self.speed1)
+        self.pump_ever.pump_run(self.slave_add2, 0, 0, self.speed1)
+        if next_unit:
+            self.pump_ever.pump_run(self.slave_add1 - 2, 0, 0)
+
+        time.sleep(self.pump3_runtime-self.pump1_runtime)
+
+        # 开启第四个泵
+        self.pump_ever.pump_run(self.slave_add4, 1, 1, self.speed1)
+
+        # 关闭阀门
+        time.sleep(self.time6)
+        # 开启第五个泵
+        self.pump_ever.pump_run(self.slave_add5, 1, 1, self.speed1)
+
+        # 关闭第三个泵
+        self.pump_ever.pump_run(self.slave_add3, 0, 0, self.speed1)
+
+        time.sleep(self.pump4_runtime)
+        # 关闭第四个泵
+        self.pump_ever.pump_run(self.slave_add4, 0, 0, self.speed1)
+
+        # 抽取完流下的液体
+        time.sleep(5)
+        # 关闭第五个泵
+        self.pump_ever.pump_run(self.slave_add5, 0, 0, self.speed1)
+
+
     # 溶胀
     def swell(self, m, slave_add=3, speed=0):
         self.slave_add = slave_add
@@ -549,21 +648,35 @@ class Module:
         """
         self.pump1_intime = self.tube_time(46, self.speed1)
         self.pump1_outtime = self.tube_time(23, self.speed1)
-        self.pump2_intime = self.tube_time(56, self.speed3)
-        self.pump2_outtime = self.tube_time(70, self.speed3)
-        self.pump3_intime = self.tube_time(67, self.speed4)
-        self.pump3_outtime = self.tube_time(40, self.speed4)
+        self.pump2_intime = self.tube_time(46, self.speed2)
+        self.pump2_outtime = self.tube_time(23, self.speed2)
+        self.pump3_intime = self.tube_time(40, self.speed3)
+        self.pump3_outtime = self.tube_time(60, self.speed3)
+        self.pump4_intime = self.tube_time(67, self.speed4)
+        self.pump4_outtime = self.tube_time(40, self.speed4)
         self.reactor_intime = self.tube_time(10, self.speed2)
         self.reactor_outtime = self.tube_time(56, self.speed2)
-        self.reactor_time = self.tube_time(30, self.speed2)
+        self.reactor_time = self.tube_time(30, self.speed3)
+        self.wash_intime = self.tube_time(5, self.speed3)
+        self.pump_3_intime = self.tube_time(5, self.speed3)
 
         # 这个时间是主物料开始到洗涤单元的时间（应该以数值的进度作为判断）
-        # 120为循环时间
-        self.time1 = self.pump1_intime + self.pump1_outtime + 120
-        +self.reactor_intime + self.reactor_outtime + self.reactor_time
+        self.time3 = self.pump1_intime + self.pump1_outtime + \
+                     self.reactor_intime + self.reactor_outtime + \
+                     self.reactor_time + self.wash_intime
+
+        # 这个时间是主物料开始到循环泵的时间（应该以数值的进度作为判断）
+        self.time4 = self.pump1_intime + self.pump1_outtime + \
+                     self.reactor_intime + self.reactor_outtime + \
+                     self.reactor_time + self.pump_3_intime
+
+        # 这个时间是主物料从循环泵到洗涤的时间（应该以数值的进度作为判断）
+        self.time6 = self.pump1_intime + self.pump1_outtime + \
+                     self.reactor_intime + self.reactor_outtime + \
+                     self.reactor_time + self.wash_intime
 
         # 这个应该是洗涤泵到洗涤单元的时间
-        self.time2 = self.pump2_intime + self.pump2_outtime
+        self.time7 = self.pump4_intime + self.pump4_outtime
 
     def volume_time(self):
         if self.volume1 < self.volume2:
@@ -576,6 +689,14 @@ class Module:
             self.pump1_runtime = self.pump2_runtime
         # print(f'体积为:{self.volume}, 速度为：{self.speed},时间为：{self.pump_runtime}')
         self.pump3_runtime = (self.volume3 / self.speed3) * 60 + 3
+
+
+    def volume5_time(self):
+        self.pump1_runtime = (self.volume1 / self.speed1) * 60 + 3
+        # self.speed2 = self.volume2 / (self.pump1_runtime / 60)
+        self.pump2_runtime = (self.volume1 / self.speed1) * 60 + 3
+        self.pump3_runtime = 120
+        self.pump4_runtime = (self.volume3 / self.speed1) * 60 + 3
 
     @staticmethod
     def close_serial():
