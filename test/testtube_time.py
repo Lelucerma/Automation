@@ -19,5 +19,10 @@ def tube_time(length, run_speed, diameter=0.5):
     return tube_time1
 
 
-a = tube_time(23, 60)
+a = tube_time(46, 60)
+a += tube_time(23,60)
+a += tube_time(10,60)
+a += tube_time(10,60)
+a += tube_time(10,60)
+a += tube_time(40,60)
 print(a)

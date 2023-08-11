@@ -242,7 +242,6 @@ class PressUnit():
                 self.press_thread = threading.Thread(
                     target=self.slaveWrite,
                     kwargs={'slave_add': f'{ever_slave}'})
-
                 self.press_thread.start()
                 self.press_thread.join()
             if self.time2 > self.runtime:
