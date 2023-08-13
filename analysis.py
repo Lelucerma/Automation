@@ -47,7 +47,7 @@ def plt_picture(file_name):
     #     plt.text(x1, y1, str(y1), ha='center', va='bottom', fontsize=10)
 
 
-def plt_pictures(file_name, m=8):
+def plt_pictures(path, file_name, m=8):
 
     col = ['r', 'b']
 
@@ -74,11 +74,14 @@ def plt_pictures(file_name, m=8):
     # 显示图例
     plt.legend(loc="upper right")
     # 保存图片
-    picture_path = "D:\\2 code\\automation\\data\\picture\\"
-    picture_name = file_name[0][5:m] + ".png"
+    picture_path = path + "picture\\"
+    floder = os.path.exists(picture_path)
+    if not floder:
+        os.mkdir(picture_path)
+    picture_name = file_name + ".png"
     picture_name = picture_path + picture_name
     # print(picture_name)
-    plt.savefig(picture_name)
+    # plt.savefig(picture_name)
     plt.show()
 
     # 调用 text()在图像上绘制注释文本

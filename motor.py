@@ -294,7 +294,7 @@ class Pump:
 # 一个单元泵的运行
 class Module:
 
-    def __init__(self, com_pump) -> None:
+    def __init__(self) -> None:
 
         self.slave_add1, self.slave_add2 = None, None
         self.slave_add3, self.slave_add4 = None, None
@@ -314,17 +314,7 @@ class Module:
 
         self.length, self.diameter = None, None
         self.tube_area, self.tube_volume = None, None
-
-        global ser_pump
-        ser_pump = serial.Serial(com_pump, 9600, timeout=1)
-
-        # 数据位为8位
-        ser_pump.bytesize = serial.EIGHTBITS
-        # 停止位为1位
-        ser_pump.stopbits = serial.STOPBITS_ONE
-        # 无奇偶校验位
-        ser_pump.parity = serial.PARITY_NONE
-
+        
         self.pump_ever = Pump()
 
     # 4 pump run
@@ -508,9 +498,7 @@ class Module:
         # print('4')
         self.pump_ever.pump_run(self.slave_add3, 0, 0)
 
-
-
-        # 五个泵进行反应
+    # 五个泵进行反应    
     def reaction_unit5(self,
                       slave_add1=1,
                       speed=None,
@@ -552,7 +540,9 @@ class Module:
 
         if next_unit:
             self.speed_before = speed_before
-            self.pump_ever.pump_run(self.slave_add1 - 2, 1, 1,
+            # self.pump_ever.pump_run(self.slave_add1 - 2, 1, 1,
+            #                         self.speed_before)
+            self.pump_ever.pump_run(self.slave_add1 + 3, 1, 1,
                                     self.speed_before)
 
         # 计算各个泵需要的运行时间,不同的进料体积需要不同的进料速度
@@ -565,6 +555,8 @@ class Module:
         self.time_starts = time.time()  # 这个是总计时，不能更改
         self.time_start = time.time()  # 这个是可以作为部分计时，可以更改
 
+        # 溶胀后进行鼓泡操作
+        self.pump_ever.pump_run(self.slave_add, 1, 0, self.swell_speed)
         # 因为要循环，因此肯定是前两个泵进行循环操作，而后洗涤的泵就开启时间较晚
         self.pump_ever.pump_run(self.slave_add1, 1, 1, self.speed1)
         self.pump_ever.pump_run(self.slave_add2, 1, 1, self.speed1)
@@ -580,10 +572,12 @@ class Module:
         # 计算物料输送结束的时间t3
         time.sleep(self.pump1_runtime)
         print(f"self.pump1_runtime：{self.pump1_runtime}")
-        self.pump_ever.pump_run(self.slave_add1, 0, 0, self.speed1)
-        self.pump_ever.pump_run(self.slave_add2, 0, 0, self.speed1)
+        # 关闭鼓泡的泵
+        self.pump_ever.pump_run(self.slave_add, 0, 0, self.swell_speed)
+        
         if next_unit:
-            self.pump_ever.pump_run(self.slave_add1 - 2, 0, 0)
+            # self.pump_ever.pump_run(self.slave_add1 - 2, 0, 0)
+            self.pump_ever.pump_run(self.slave_add1 + 3, 0, 0)
 
         self.time = self.pump3_runtime-self.pump1_runtime
         time.sleep(self.time)
@@ -596,11 +590,14 @@ class Module:
         # 开启第五个泵
         self.pump_ever.pump_run(self.slave_add5, 1, 1, self.speed5)
         
-        time.sleep(self.time6)
+        time.sleep(self.time6+10)
         print(f"self.time6：{self.time6}")        
         
-        # 关闭第三个泵
+        # 关闭前三个泵（因为如果前两个泵提前关闭，那么会有溶液在前两个泵的出口管道中进行堆积）
+        self.pump_ever.pump_run(self.slave_add1, 0, 0, self.speed1)
+        self.pump_ever.pump_run(self.slave_add2, 0, 0, self.speed1)
         self.pump_ever.pump_run(self.slave_add3, 0, 0, self.speed3)
+        
 
         time.sleep(self.pump4_runtime)
         print(f"self.pump4_runtime：{self.pump4_runtime}")
@@ -792,11 +789,7 @@ class Module:
         self.pump3_runtime = 120
         self.pump4_runtime = (self.volume4 / self.speed4) * 60 + 3
 
-    @staticmethod
-    def close_serial():
-        ser_pump.close()
-
-
+    
 class Stats:
 
     def __init__(self):
@@ -990,4 +983,19 @@ class Stats:
         newline = f"{datetime.now().strftime('%H:%M:%S.%f')[:-3]}→{cmd}\n"
         self.ui.display_text.append(newline)
 
+
+def ser_open(com_pump):
+    global ser_pump
+    ser_pump = serial.Serial(com_pump, 9600, timeout=1)
+
+    # 数据位为8位
+    ser_pump.bytesize = serial.EIGHTBITS
+    # 停止位为1位
+    ser_pump.stopbits = serial.STOPBITS_ONE
+    # 无奇偶校验位
+    ser_pump.parity = serial.PARITY_NONE
+
+
+def ser_close():
+    ser_pump.close()
 

@@ -3,19 +3,22 @@ from PySide6.QtWidgets import QApplication
 import threading
 import pressure as p
 import analysis
+import time
 
 
 def pump_ui():
+    
     app = QApplication([])
     stats = motor.Stats()
     stats.ui.show()
     app.exec()
 
 
-def pump_automation(com_pump):
+def pump_automation():
     # t1 = time.time()
+    # motor.ser_open()
 
-    c = motor.Module(com_pump)
+    c = motor.Module()
     # speeds = []
     # speed = input("请输入速度值：").split(',')
     # for i in speed:
@@ -24,15 +27,16 @@ def pump_automation(com_pump):
     # volume = input("请输入体积值：").split(',')
     # for i in volume:
     #     volumes.append(int(i))
-    # c.swell(5, 3, 120)
-    speeds = [60,60,60,120,200]
-    volumes = [20,100]
+    c.swell(5, 3, 120)
+    speeds = [60, 60, 60, 120, 200]
+    volumes = [20, 70]
+    time.sleep(3)
     c.reaction_unit5(4, speeds, volumes)
     # c.reaction_unit5_time(4, speeds, volumes)
-    # print('1')
+    print('1')
     # c.reaction_unit(7, speeds, volumes, True)
     # print('2')
-    c.close_serial()
+    # motor.ser_close()
 
 
 def press_gain(com_press, path, file, slave_addb, slave_adde=0):
@@ -54,10 +58,10 @@ def press_gain(com_press, path, file, slave_addb, slave_adde=0):
 
 
 if __name__ == "__main__":
+    motor.ser_open('com5')
     path = 'D:\\2 code\\Automation\\data\\230801\\'
     file_name = str(input("请输入文件名："))
-    auto_thread = threading.Thread(target=pump_automation,
-                                   kwargs={'com_pump': 'com5'})
+    auto_thread = threading.Thread(target=pump_automation)
     ui_pump_thread = threading.Thread(target=pump_ui)
     press_thread = threading.Thread(target=press_gain,
                                     kwargs={
@@ -73,5 +77,8 @@ if __name__ == "__main__":
     press_thread.start()
     # auto_thread.join()
     press_thread.join()
+    
     print('end')
-    # analysis.plt_picture(file_name)
+    ui_pump_thread.join()
+    motor.ser_close()
+    # analysis.plt_pictures(path, file_name)

@@ -158,7 +158,7 @@ class DataSave():
         self.num = 1
         # file_a.write(f'第{slave_add - 1}个压力表的压力数据\n')  # 写入第几个从机地址的数据，进行数据间的区分
         for key in self.data:
-            file_a.write(f'{self.num}: {key}th pump {self.data[key]}\n')
+            file_a.write(f'{self.num}: {key}\n')
             self.num += 1
         file_a.close()
 
@@ -234,6 +234,7 @@ class PressUnit():
         self.time_starts = time.time()
         self.slave_adds = slave_adds
         self.runtime = runtime
+        self.datas = []
         for ever_slave in self.slave_adds:
             self.unit = self.c1.press_uint(int(ever_slave))
             self.unit_data[ever_slave] = self.units[self.unit]
@@ -251,7 +252,8 @@ class PressUnit():
         if not floder:
             os.mkdir(floder_path)
         self.file_name = floder_path + '\\' + file_name_tran + '.txt'
-        self.save1.save(self.data, self.file_name)
+        self.save1.save(self.datas, self.file_name)
+        print(f"结束了，时间为：{time.time()-self.time_starts}")
 
     def slaveWrite(self, slave_add):
         """"
@@ -262,6 +264,7 @@ class PressUnit():
         self.press_tran = str(self.c1.trans(self.press_true))
         self.press_tran += self.unit_data[self.slave_add]
         self.data[self.slave_add] = self.press_tran
+        self.datas.append(self.data)
 
 
 def serOpen(compress):
