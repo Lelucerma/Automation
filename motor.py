@@ -588,7 +588,7 @@ class Module:
         # 关闭阀门
         print('关闭阀门')
         # 开启第五个泵
-        self.pump_ever.pump_run(self.slave_add5, 1, 1, self.speed5)
+        # self.pump_ever.pump_run(self.slave_add5, 1, 1, self.speed5)
         
         time.sleep(self.time6+10)
         print(f"self.time6：{self.time6}")        
@@ -599,15 +599,8 @@ class Module:
         self.pump_ever.pump_run(self.slave_add3, 0, 0, self.speed3)
         
 
-        time.sleep(self.pump4_runtime)
-        print(f"self.pump4_runtime：{self.pump4_runtime}")
-        # 关闭第四个泵
-        self.pump_ever.pump_run(self.slave_add4, 0, 0, self.speed4)
-
-        # 抽取完流下的液体
-        time.sleep(5)
-        # 关闭第五个泵
-        self.pump_ever.pump_run(self.slave_add5, 0, 0, self.speed5)
+        for i in range(5):
+            self.wash_ever(self.slave_add4)
 
     def reaction_unit5_time(self,
                       slave_add1=1,
@@ -703,7 +696,7 @@ class Module:
         self.swell_speed = speed
         for i in range(m):
             self.swell_ever()
-        self.pump_ever.pump_run(self.slave_add, 0, 0, self.swell_speed)
+        # self.pump_ever.pump_run(self.slave_add, 0, 0, self.swell_speed)
 
     # 单个溶胀过程
     def swell_ever(self):
@@ -713,6 +706,19 @@ class Module:
         self.pump_ever.pump_run(self.slave_add, 1, 1, self.swell_speed)
         time.sleep(10)  # 抽干溶液的时间
         self.pump_ever.pump_run(self.slave_add, 0, 0, self.swell_speed)
+
+
+    # 单个洗涤过程
+    def wash_ever(self, slave_add):
+        self.pump_ever.pump_run(slave_add, 1, 1, self.swell_speed)
+        time.sleep(3)   # 添加溶液的时间
+        self.pump_ever.pump_run(slave_add, 0, 0, self.swell_speed)
+        self.pump_ever.pump_run(slave_add+1, 1, 0, self.swell_speed)
+        time.sleep(10)  # 鼓动混合的时间
+        self.pump_ever.pump_run(slave_add+1, 1, 1, self.swell_speed)
+        time.sleep(10)  # 抽干溶液的时间
+        self.pump_ever.pump_run(slave_add, 0, 0, self.swell_speed)
+
 
     def tube_time(self, length, speed, diameter=0.5):
         """"
@@ -999,3 +1005,7 @@ def ser_open(com_pump):
 def ser_close():
     ser_pump.close()
 
+ser_open("com5")
+pump = Pump()
+pump.pump_run(8, 1, 0)
+ser_close()
