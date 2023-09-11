@@ -84,7 +84,7 @@
      <enum>QLayout::SetDefaultConstraint</enum>
     </property>
     <item>
-     <widget class="QFrame" name="frame">
+     <widget class="QFrame" name="frame1">
       <property name="minimumSize">
        <size>
         <width>277</width>
@@ -124,7 +124,7 @@
         </widget>
        </item>
        <item row="5" column="2">
-        <widget class="QPushButton" name="pressure_statrt">
+        <widget class="QPushButton" name="pressure_start">
          <property name="text">
           <string>开始压力测量</string>
          </property>
@@ -157,9 +157,6 @@
           <string>第二个单元:</string>
          </property>
         </widget>
-       </item>
-       <item row="8" column="1" colspan="2">
-        <widget class="QLineEdit" name="first_pressure"/>
        </item>
        <item row="4" column="0">
         <widget class="QLabel" name="wash_label">
@@ -196,53 +193,8 @@
          </property>
         </widget>
        </item>
-       <item row="9" column="1" colspan="2">
-        <widget class="QLineEdit" name="second_pressure"/>
-       </item>
-       <item row="0" column="2">
-        <widget class="QPushButton" name="connect_button">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="font">
-          <font>
-           <italic>false</italic>
-           <bold>false</bold>
-           <strikeout>false</strikeout>
-          </font>
-         </property>
-         <property name="layoutDirection">
-          <enum>Qt::LeftToRight</enum>
-         </property>
-         <property name="text">
-          <string>结束</string>
-         </property>
-         <property name="iconSize">
-          <size>
-           <width>16</width>
-           <height>16</height>
-          </size>
-         </property>
-         <property name="checkable">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
        <item row="4" column="2">
         <widget class="QPushButton" name="wash_start">
-         <property name="text">
-          <string>开始</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QPushButton" name="unit_start">
          <property name="text">
           <string>开始</string>
          </property>
@@ -282,11 +234,31 @@
          </property>
         </widget>
        </item>
+       <item row="0" column="2">
+        <widget class="QPushButton" name="swell_start">
+         <property name="text">
+          <string>开始</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QSpinBox" name="swell_frequence">
+         <property name="maximum">
+          <number>10</number>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="1" colspan="2">
+        <widget class="QTextBrowser" name="first_pressure"/>
+       </item>
+       <item row="9" column="1" colspan="2">
+        <widget class="QTextBrowser" name="second_pressure"/>
+       </item>
       </layout>
      </widget>
     </item>
     <item>
-     <widget class="QFrame" name="frame">
+     <widget class="QFrame" name="frame2">
       <property name="minimumSize">
        <size>
         <width>277</width>

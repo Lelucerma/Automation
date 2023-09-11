@@ -171,7 +171,7 @@ class PressUnit():
         self.save1 = DataSave()
         self.c1 = PressGet()
         self.slave_adds = []
-        self.data = {}
+        self.data = {3:"0", 4:'0'}
         self.unit_data = {}
         self.units = {
             0: 'Mpa',
