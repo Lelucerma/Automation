@@ -26,15 +26,15 @@ def pump_automation():
     # for i in volume:
     #     volumes.append(int(i))
     # c.swell(5, 3, 200)
-    speeds = [60, 60, 60, 120, 200]
-    volumes = [40, 70]
+    # speeds = [60, 60, 60, 120, 200]
+    # volumes = [40, 70]
     # c.deprotect_unit5(4, speeds, volumes)
     # for i in range(3):
     #     c.wash_ever(7, 200)
     # time.sleep(3)
-    c.deprotect_unit(4, speeds, volumes, True)
+    # c.deprotect_unit(4, speeds, volumes, True)
     # c.wash_reaction()
-    # c.couple_unit5(4, speeds, volumes, True)
+    # c.couple_unit(4, speeds, volumes, True)
     # c.wash_reaction()
     t2 = time.time() - t1
     print(f'all times:{t2}')

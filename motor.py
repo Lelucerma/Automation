@@ -5,6 +5,7 @@ from PySide6.QtUiTools import QUiLoader
 from PySide6.QtCore import QFile
 from datetime import datetime
 import winsound
+import pressure as p
 
 
 # 泵的命令行组成
@@ -318,186 +319,6 @@ class Module:
         
         self.pump_ever = Pump()
 
-    # 4 pump run
-    def reaction_unit4(self,
-                          slave_add1=1,
-                          speed=None,
-                          volume=None,
-                          next_unit=None,
-                          speed_before=0):
-        """"
-        直接控制一个反应单元，整体的逻辑是先判断那个管路长，依托于设别的构建相应的管路，
-        使用
-
-        Args:
-
-            * slave_add1 第一个泵
-            * slave_add2 第二个泵
-            * speed 四个泵的运行速度
-            * volume 两个反应物的投料量
-
-        """
-        if speed is None:
-            speed = []
-        if volume is None:
-            volume = []
-        if slave_add1 == 0:
-            pass
-        else:
-            self.slave_add1, self.slave_add2 = slave_add1, slave_add1 + 1
-            self.slave_add3, self.slave_add4 = slave_add1 + 2, slave_add1 + 3
-        if not speed:
-            pass
-        else:
-            self.speed1, self.speed2 = speed[0], speed[1]
-            self.speed3, self.speed4 = speed[2], speed[3]
-        if not volume:
-            pass
-        else:
-            self.volume1, self.volume2 = volume[0], volume[1]
-            self.volume3 = volume[2]
-
-        if next_unit:
-            self.speed_before = speed_before
-            self.pump_ever.pump_run(self.slave_add1 - 2, 1, 1,
-                                    self.speed_before)
-
-        # 计算各个泵需要的运行时间,不同的进料体积需要不同的进料速度
-        self.volume_time()
-
-        # 进行各个时间的计算程序
-        self.run_time()
-
-        # 第三个泵的开启时间为time1-time3
-        self.time4 = self.time1 - self.time3
-
-        # 开始计时
-        self.time_starts = time.time()  # 这个是总计时，不能更改
-        self.time_start = time.time()  # 这个是可以作为部分计时，可以更改
-
-        # 判断哪一个运行时间长，先开启哪一个泵
-        if self.time4 >= 0:
-            self.pump_ever.pump_run(self.slave_add1, 1, 1, self.speed1)
-            self.pump_ever.pump_run(self.slave_add2, 1, 1, self.speed2)
-            time.sleep(self.time4)
-            # if (time.time() - self.time_start) >= self.time4:
-            # print('1')
-            self.pump_ever.pump_run(self.slave_add3, 1, 1, self.speed3)
-        else:
-            self.pump_ever.pump_run(self.slave_add3, 1, 1, self.speed3)
-            time.sleep(-self.time4)
-            # if (time.time() - self.time_start) > (-self.time4):
-            # print('2')
-            self.pump_ever.pump_run(self.slave_add1, 1, 1, self.speed1)
-            self.pump_ever.pump_run(self.slave_add2, 1, 1, self.speed2)
-
-        # 当物料进入洗涤单元时，开启洗涤单元废料泵
-        # time.sleep(self.time1-self.time4-8) # 3是冗余时间
-        self.pump_ever.pump_run(self.slave_add4, 1, 1, self.speed4)
-
-        time.sleep(10)  # 3是冗余时间
-
-        # 等物料输入结束后，关闭各个泵
-        time.sleep(self.pump1_runtime)
-        # if (time.time() - self.time_start) > (self.pump1_runtime):
-        #     print('3')
-        if next_unit:
-            self.pump_ever.pump_run(self.slave_add1 - 2, 0, 0)
-        self.pump_ever.pump_run(self.slave_add1, 0, 0)
-        self.pump_ever.pump_run(self.slave_add2, 0, 0)
-        time.sleep(self.pump3_runtime - 10)
-        self.pump_ever.pump_run(self.slave_add4, 0, 0)
-        time.sleep(10)
-        # if (time.time() - self.time_start) > (self.pump3_runtime):
-        # print('4')
-        self.pump_ever.pump_run(self.slave_add3, 0, 0)
-
-    # 三个泵进行反应
-    def reaction_unit3(self,
-                      slave_add1=1,
-                      speed=None,
-                      volume=None,
-                      next_unit=None,
-                      speed_before=0):
-        """"
-        直接控制一个反应单元，整体的逻辑是先判断那个管路长，依托于设别的构建相应的管路，
-        使用
-
-        Args:
-
-            * slave_add1 第一个泵
-            * slave_add2 第二个泵
-            * speed 四个泵的运行速度
-            * volume 两个反应物的投料量
-
-        """
-        if speed is None:
-            speed = []
-        if volume is None:
-            volume = []
-        if slave_add1 == 0:
-            pass
-        else:
-            self.slave_add1, self.slave_add2 = slave_add1, slave_add1 + 1
-            self.slave_add3 = slave_add1 + 2
-        if not speed:
-            pass
-        else:
-            self.speed1, self.speed2 = speed[0], speed[1]
-            self.speed3 = speed[2]
-        if not volume:
-            pass
-        else:
-            self.volume1, self.volume2 = volume[0], volume[1]
-
-        if next_unit:
-            self.speed_before = speed_before
-            self.pump_ever.pump_run(self.slave_add1 - 2, 1, 1,
-                                    self.speed_before)
-
-        # 计算各个泵需要的运行时间,不同的进料体积需要不同的进料速度
-        self.volume_time()
-
-        # 进行各个时间的计算程序
-        self.run_time()
-
-        # 第三个泵的开启时间为time1-time2
-        self.time4 = self.time1 - self.time2
-
-        # 开始计时
-        self.time_starts = time.time()  # 这个是总计时，不能更改
-        self.time_start = time.time()  # 这个是可以作为部分计时，可以更改
-
-        # 判断哪一个运行时间长，先开启哪一个泵
-        if self.time4 >= 0:
-            self.pump_ever.pump_run(self.slave_add1, 1, 1, self.speed1)
-            time.sleep(self.time4)
-            self.pump_ever.pump_run(self.slave_add2, 1, 1, self.speed3)
-        else:
-            self.pump_ever.pump_run(self.slave_add2, 1, 1, self.speed3)
-            time.sleep(-self.time4)
-            self.pump_ever.pump_run(self.slave_add1, 1, 1, self.speed1)
-
-        # 当物料进入洗涤单元时，开启洗涤单元废料泵
-        # time.sleep(self.time1-self.time4-8) # 3是冗余时间
-        self.pump_ever.pump_run(self.slave_add3, 1, 1, self.speed4)
-
-        time.sleep(10)  # 3是冗余时间
-
-        # 等物料输入结束后，关闭各个泵
-        time.sleep(self.pump1_runtime)
-        # if (time.time() - self.time_start) > (self.pump1_runtime):
-        #     print('3')
-        if next_unit:
-            self.pump_ever.pump_run(self.slave_add1 - 2, 0, 0)
-        self.pump_ever.pump_run(self.slave_add1, 0, 0)
-        # self.pump_ever.pump_run(self.slave_add2, 0, 0)
-        time.sleep(self.pump3_runtime - 10)
-        self.pump_ever.pump_run(self.slave_add2, 0, 0)
-        time.sleep(3)
-        # if (time.time() - self.time_start) > (self.pump3_runtime):
-        # print('4')
-        self.pump_ever.pump_run(self.slave_add3, 0, 0)
 
     # 五个泵进行反应    
     def deprotect_unit5(self,
@@ -724,7 +545,7 @@ class Module:
         # for i in range(3):
         #     self.wash_ever(self.slave_add4, self.speed5)
 
-    def couple_unit5(self,
+    def couple_unit(self,
                       slave_add1=1,
                       speed=None,
                       volume=None,
@@ -838,94 +659,11 @@ class Module:
         # for i in range(3):
         #     self.wash_ever(self.slave_add4, self.speed5)
 
-    def reaction_unit5_time(self,
-                      slave_add1=1,
-                      speed=None,
-                      volume=None,
-                      next_unit=None,
-                      speed_before=0):
-        """"
-        计算各个听写的时间
 
-        Args:
-
-            * slave_add1 第一个泵
-            * slave_add2 第二个泵
-            * speed 四个泵的运行速度
-            * volume 两个反应物的投料量
-
-        """
-        if speed is None:
-            speed = []
-        if volume is None:
-            volume = []
-        if slave_add1 == 0:
-            pass
-        else:
-            self.slave_add1, self.slave_add2 = slave_add1, slave_add1+1
-            self.slave_add3, self.slave_add4 = slave_add1+2, slave_add1+3
-            self.slave_add5 = slave_add1 + 4
-        if not speed:
-            pass
-        else:
-            self.speed1, self.speed2 = speed[0], speed[1]
-            self.speed3, self.speed4 = speed[2], speed[3]
-            self.speed5 = speed[4]
-        if not volume:
-            pass
-        else:
-            self.volume1, self.volume4 = volume[0], volume[1]
-
-        # 计算各个泵需要的运行时间,不同的进料体积需要不同的进料速度
-        self.volume5_time()
-
-        # 进行各个时间的计算程序
-        self.run_time()
-
-        # 开始计时
-        self.time_starts = time.time()  # 这个是总计时，不能更改
-        self.time_start = time.time()  # 这个是可以作为部分计时，可以更改
-
-        # 因为要循环，因此肯定是前两个泵进行循环操作，而后洗涤的泵就开启时间较晚
-        print("开启第一二个泵")
-
-        print(f"self.time3：{self.time3-2}")
-
-        # 开启阀门
-        print('开启阀门')
-        # 开启第三个泵
-        print("开启第三个泵")
-
-        # 计算物料输送结束的时间t3
-        print(f"self.pump1_runtime：{self.pump1_runtime}")
-        print("关闭第一二个泵")
-        if next_unit:
-            print("关闭第前泵")
-
-        self.time = self.pump3_runtime-self.pump1_runtime
-        print(f"self.time：{self.time}")
-
-        # 开启第四个泵
-        print("开启第四个泵")
-        # 关闭阀门
-        print('关闭阀门')
-        # 开启第五个泵
-        print("开启第五个泵")
-        
-        print(f"self.time6：{self.time6}")        
-        
-        # 关闭第三个泵
-        print("关闭第三个泵")
-
-        print(f"self.pump4_runtime：{self.pump4_runtime}")
-        # 关闭第四个泵
-        print("关闭第四个泵")
-
-        # 抽取完流下的液体
-        time.sleep(5)
-        # 关闭第五个泵
-        print("关闭第五个泵")
-
+    def wash(self, m):
+        for i in range(m):
+            self.swell_ever()
+    
     # 溶胀
     def swell(self, m, slave_add=3, speed=0):
         self.slave_add = slave_add
@@ -1021,7 +759,6 @@ class Module:
         # print(f'体积为:{self.volume}, 速度为：{self.speed},时间为：{self.pump_runtime}')
         self.pump4_runtime = (self.volume4 / self.speed3) * 60 + 3
 
-
     def volume5_time(self):
         self.pump1_runtime = (self.volume1 / self.speed1) * 60 + 3
         # self.speed2 = self.volume2 / (self.pump1_runtime / 60)
@@ -1051,6 +788,7 @@ class Stats:
         qfile_stats.close()
 
         self.ui = QUiLoader().load(qfile_stats)
+        self.motor = Module()
 
         # 6、第三个泵的控制
         self.ui.pump3_open_button.clicked.connect(
@@ -1097,8 +835,75 @@ class Stats:
             lambda: self.pump_open_button(11))
         self.ui.pump11_stop_button.clicked.connect(
             lambda: self.pump_stop_button(11))
+        # 开始溶胀
+        self.ui.unit1_start.clicked.connect(self.swell_start)
+        # 开始第一个单元控制
+        self.ui.unit1_start.clicked.connect(self.unit1_start)
+        # 开始第二个单元控制
+        self.ui.unit1_start.clicked.connect(self.unit2_start)
+        # 开始第二个单元控制
+        self.ui.wash_start.clicked.connect(self.wash_start)
+        # 压力传感器的控制
+        self.ui.pressure_start.clicked.connect(self.pressure_start)
+        # 压力数值的显示
+        self.ui.pressure_display.clicked.connect(self.pressure_display)
         # 文本框清除按钮
         self.ui.clear_button.clicked.connect(self.clear_result_text)
+
+    # 点击开始溶胀操作
+    def swell_start(self):
+        self.motor.swell(5, 3, 200)
+
+    # 点击开始第一个单元脱保护
+    def unit1_start(self):
+        speeds = [60, 60, 60, 120, 200]
+        volumes = [40, 70]
+        self.motor.deprotect_unit(4, speeds, volumes, True)
+
+    # 点击开始第二个单元耦合
+    def unit2_start(self):
+        speeds = [60, 60, 60, 120, 200]
+        volumes = [40, 70]
+        self.motor.couple_unit(4, speeds, volumes, True)
+    
+    # 点击开始清洗
+    def wash_start(self):
+        self.wash_frequence = int(self.ui.wash_frequence.text())
+        if self.wash_frequence == 0:
+            self.wash_frequence = 3
+        for i in range(self.wash_frequence):
+            self.motor.wash_ever(7, 200)
+        
+    # 点击开始压力传感器获得相应的数值
+    def pressure_start(self):
+        self.path = 'D:\\2 code\\Automation\\data\\230830\\'
+        self.file = str(self.ui.file_name.text())
+        p.serOpen('com3')
+        self.slave_press = p.PressUnit()
+        self.press_runtime = int(self.ui.pressure_time.text())
+        self.slave_addb, self.slave_adde = 3, 4
+        self.slave_adds = []
+        if self.slave_adde != 0:
+            for i in range(self.slave_addb, self.slave_adde+1):
+                self.slave_adds.append(i)
+        else:
+            self.slave_adds = [self.slave_addb]
+        self.slave_press.slaves(self.slave_adds, self.press_runtime, self.path, self.file)
+        
+        p.serClose()
+
+    def pressure_display(self):
+        time = 0
+        while True:
+            first_pressure = f"{p.PressUnit.data[3]}kpa"
+            second_pressure = f"{p.PressUnit.data[4]}kpa"
+            self.ui.first_pressure.append(first_pressure)
+            self.ui.second_pressure.append(second_pressure)            
+            self.ui.first_pressure.repaint()
+            self.ui.second_pressure.repaint()
+            if time >= self.press_runtime:
+                break
+            time += 1
 
     # 点击开始第一种泵的运转
     def pump_open_button(self, add):
