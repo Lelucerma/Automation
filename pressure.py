@@ -156,7 +156,6 @@ class DataSave():
         self.data = data
         file_a = open(file_name, 'a+')
         self.num = 1
-        # file_a.write(f'第{slave_add - 1}个压力表的压力数据\n')  # 写入第几个从机地址的数据，进行数据间的区分
         for key in self.data:
             file_a.write(f'{self.num}: {key}\n')
             self.num += 1
@@ -171,7 +170,7 @@ class PressUnit():
         self.save1 = DataSave()
         self.c1 = PressGet()
         self.slave_adds = []
-        self.data = {3:"0", 4:'0'}
+        self.data = {}
         self.unit_data = {}
         self.units = {
             0: 'Mpa',
@@ -186,48 +185,6 @@ class PressUnit():
         }
 
         pass
-
-    def slave(self, slave_add, run_time, floder_path, file_name_tran):
-        """
-        :param slave_add: 从机地址
-        :param run_time: 运行时间
-        :param file_name_origin: 原始数据文件
-        :param file_name_tran: 转化后的数据文件
-        :return: 目前无返回值
-        """
-
-        # 开始时间
-        self.time_starts = time.time()
-        # 空白数据组，用来放入内存中存入压数值
-        # func = '000'
-        self.time_start = time.time()
-        self.data_origin = []
-        self.data_tran = []
-        self.time2 = 0
-        self.save1 = DataSave()
-        self.c1 = PressGet()
-        self.unit = self.c1.press_uint(slave_add)
-        while True:
-            self.time1 = time.time() - self.time_start
-            self.press_true = self.c1.read_pressure(slave_add)
-            self.data_origin.append(self.press_true)
-            self.press_tran = self.c1.trans(self.press_true)
-            self.data_tran.append(self.press_tran)
-            if self.time1 > 10:
-                self.time_start = time.time()
-                floder = os.path.exists(floder_path)
-                if not floder:
-                    os.mkdir(floder_path)
-                self.file_name_tran = floder_path + file_name_tran + '.txt'
-                self.save1.save(self.data_tran, self.file_name_tran, self.unit,
-                                slave_add)
-                self.data_origin = []
-                self.data_tran = []
-                if self.time2 > run_time:
-                    break
-            # time.sleep(0.05)
-            self.time2 = time.time() - self.time_starts
-            continue
 
     def slaves(self, slave_adds, runtime, floder_path, file_name_tran):
         # 开始时间
@@ -253,7 +210,7 @@ class PressUnit():
             os.mkdir(floder_path)
         self.file_name = floder_path + '\\' + file_name_tran + '.txt'
         self.save1.save(self.datas, self.file_name)
-        print(f"结束了，时间为：{time.time()-self.time_starts}")
+        # print(f"结束了，时间为：{time.time()-self.time_starts}")
 
     def slaveWrite(self, slave_add):
         """"
@@ -265,6 +222,7 @@ class PressUnit():
         self.press_tran += self.unit_data[self.slave_add]
         self.data[self.slave_add] = self.press_tran
         self.datas.append(self.data)
+        return self.data
 
 
 def serOpen(compress):
@@ -291,8 +249,8 @@ def main():
     print(1)
 
 
-if __name__ == "__main__":
-    t1 = time.time()
-    main()
-    t2 = time.time()
-    print((t2 - t1) / 60)
+# if __name__ == "__main__":
+#     t1 = time.time()
+#     main()
+#     t2 = time.time()
+#     print((t2 - t1) / 60)

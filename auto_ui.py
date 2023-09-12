@@ -146,13 +146,22 @@ class Stats:
         else:
             self.slave_adds = [self.slave_addb]
         self.slave_press.slaves(self.slave_adds, self.press_runtime, self.path, self.file)
+        
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.update_data)
+        self.timer.start(1000)  # 1秒钟更新一次图表
         p.serClose()
 
     # 显示压力
     def pressure_display(self):
-        self.window = pressureupdate()
+        self.window = Pressureupdate()
         self.window.show()
-
+    
+    def update_data(self):        
+        a = self.slave_press.data[3]
+        b = self.slave_press.data[4]
+        return a, b
+    
     # 点击开始第一种泵的运转
     def pump_open_button(self, add):
         self.slave_add = add
@@ -227,9 +236,11 @@ class Stats:
         self.ui.display_text.append(newline)
 
 
-class pressureupdate(QMainWindow):
+class Pressureupdate(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.a = Stats()
+
         self.setWindowTitle('压力变化')
         self.setGeometry(100, 100, 800, 400)
 
@@ -246,10 +257,6 @@ class pressureupdate(QMainWindow):
         self.canvas = FigureCanvas(self.fig)
         layout.addWidget(self.canvas)
 
-        self.timer = QTimer()
-        # self.timer.timeout.connect(self.update_text)
-        # self.timer.start(1000)  # 1秒钟更新一次文本
-
         self.ax = self.fig.add_subplot(111)
         self.ax.set_xlim(0, 10)
         self.ax.set_ylim(0, 100)
@@ -260,17 +267,20 @@ class pressureupdate(QMainWindow):
         self.data_y1 = [0,0,0,0,0,0,0,0,0,0]
         self.data_y2 = [0,0,0,0,0,0,0,0,0,0]
 
-        # self.timer = QTimer(self)
+        self.timer = QTimer()
         self.timer.timeout.connect(self.update_plot)
         self.timer.start(1000)  # 1秒钟更新一次图表
 
 
     def update_plot(self):
         # 这里可以替换为你自己的文本数据生成逻辑
-        a = random.randint(0, 100)
-        b = random.randint(0, 100)
-        text1 = f"压力1: {a} kpa"
-        text2 = f"压力2: {b} kpa"
+        # print(self.slaves.data)
+        p1 = random.randint(1,100)
+        p2 = random.randint(1,100)
+        p3, p4 = self.a.update_data()
+        # print(p3,p4)
+        text1 = f"压力1: {p1} kpa"
+        text2 = f"压力2: {p2} kpa"
 
         self.text1_label.setText(text1)
         self.text2_label.setText(text2)
@@ -280,8 +290,8 @@ class pressureupdate(QMainWindow):
         # 模拟实时数据，这里使用随机数
         # self.data_x.append(len(self.data_x))
         # print(self.data_x,self.data_y)
-        self.data_y1.append(a)
-        self.data_y2.append(b)
+        self.data_y1.append(p1)
+        self.data_y2.append(p2)
         self.line1.set_data(self.data_x, self.data_y1)
         self.line2.set_data(self.data_x, self.data_y2)
         self.ax.relim()
