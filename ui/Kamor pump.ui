@@ -116,59 +116,10 @@
        <property name="sizeConstraint">
         <enum>QLayout::SetDefaultConstraint</enum>
        </property>
-       <item row="4" column="1">
-        <widget class="QSpinBox" name="wash_frequence">
-         <property name="maximum">
-          <number>10</number>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="2">
-        <widget class="QPushButton" name="pressure_start">
-         <property name="text">
-          <string>开始压力测量</string>
-         </property>
-        </widget>
-       </item>
        <item row="3" column="2">
         <widget class="QPushButton" name="unit2_stop">
          <property name="text">
           <string>暂停</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="1">
-        <widget class="QPushButton" name="unit2_start">
-         <property name="text">
-          <string>开始</string>
-         </property>
-        </widget>
-       </item>
-       <item row="8" column="0">
-        <widget class="QLabel" name="first_pressure_label">
-         <property name="text">
-          <string>第一个压力数值:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0">
-        <widget class="QLabel" name="unit2_label">
-         <property name="text">
-          <string>第二个单元:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="0">
-        <widget class="QLabel" name="wash_label">
-         <property name="text">
-          <string>清洗：</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="unit1_label">
-         <property name="text">
-          <string>第一个单元：</string>
          </property>
         </widget>
        </item>
@@ -179,6 +130,9 @@
          </property>
         </widget>
        </item>
+       <item row="5" column="1">
+        <widget class="QLineEdit" name="pressure_time"/>
+       </item>
        <item row="2" column="2">
         <widget class="QPushButton" name="unit1_stop">
          <property name="text">
@@ -186,24 +140,24 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="1">
-        <widget class="QPushButton" name="unit1_start">
+       <item row="0" column="1">
+        <widget class="QSpinBox" name="swell_frequence">
+         <property name="maximum">
+          <number>10</number>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QPushButton" name="swell_start">
          <property name="text">
           <string>开始</string>
          </property>
         </widget>
        </item>
-       <item row="4" column="2">
-        <widget class="QPushButton" name="wash_start">
+       <item row="5" column="0">
+        <widget class="QLabel" name="pressure_time_label">
          <property name="text">
-          <string>开始</string>
-         </property>
-        </widget>
-       </item>
-       <item row="9" column="0">
-        <widget class="QLabel" name="second_pressure_label">
-         <property name="text">
-          <string>第二个压力数值:</string>
+          <string>压力测量时间：</string>
          </property>
         </widget>
        </item>
@@ -217,13 +171,10 @@
          </property>
         </widget>
        </item>
-       <item row="5" column="1">
-        <widget class="QLineEdit" name="pressure_time"/>
-       </item>
-       <item row="5" column="0">
-        <widget class="QLabel" name="pressure_time_label">
+       <item row="4" column="2">
+        <widget class="QPushButton" name="wash_start">
          <property name="text">
-          <string>压力测量时间：</string>
+          <string>开始</string>
          </property>
         </widget>
        </item>
@@ -234,25 +185,54 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="2">
-        <widget class="QPushButton" name="swell_start">
+       <item row="4" column="0">
+        <widget class="QLabel" name="wash_label">
+         <property name="text">
+          <string>清洗：</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="2">
+        <widget class="QPushButton" name="pressure_start">
+         <property name="text">
+          <string>开始压力测量</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QPushButton" name="unit1_start">
          <property name="text">
           <string>开始</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="1">
-        <widget class="QSpinBox" name="swell_frequence">
+       <item row="3" column="0">
+        <widget class="QLabel" name="unit2_label">
+         <property name="text">
+          <string>第二个单元:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="unit1_label">
+         <property name="text">
+          <string>第一个单元：</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QPushButton" name="unit2_start">
+         <property name="text">
+          <string>开始</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QSpinBox" name="wash_frequence">
          <property name="maximum">
           <number>10</number>
          </property>
         </widget>
-       </item>
-       <item row="8" column="1" colspan="2">
-        <widget class="QTextBrowser" name="first_pressure"/>
-       </item>
-       <item row="9" column="1" colspan="2">
-        <widget class="QTextBrowser" name="second_pressure"/>
        </item>
       </layout>
      </widget>

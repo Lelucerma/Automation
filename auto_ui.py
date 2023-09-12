@@ -7,6 +7,16 @@ import motor
 import threading
 import random
 
+import sys
+from PySide6.QtWidgets import QApplication,QMainWindow, QVBoxLayout, QWidget, QLabel
+from PySide6.QtUiTools import QUiLoader
+from PySide6.QtCore import QFile, QTimer
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
+import random
+import threading
+import numpy as np
+
 
 class Stats:
 
@@ -138,27 +148,10 @@ class Stats:
         self.slave_press.slaves(self.slave_adds, self.press_runtime, self.path, self.file)
         p.serClose()
 
+    # 显示压力
     def pressure_display(self):
-        press_display = threading.Thread(target=self.pressure_display_thread)
-        press_display.start()
-    def pressure_display_thread(self):
-        time = 0
-        first_pressure = f"{self.slave_press.data[3]}kpa"
-        second_pressure = f"{self.slave_press.data[4]}kpa"
-        self.ui.first_pressure.append(first_pressure)
-        self.ui.second_pressure.append(second_pressure)
-        while True:                        
-            self.timer.timeout.connect(self.update_text)
-            if time > 10:
-                break
-            time += 1
-    def update_text(self):
-        first_pressure = f"{random.randint(1,10)}kpa"
-        second_pressure = f"{random.randint(1,10)}kpa"
-        self.ui.first_pressure.append(first_pressure)
-        self.ui.second_pressure.append(second_pressure) 
-
-            
+        self.window = pressureupdate()
+        self.window.show()
 
     # 点击开始第一种泵的运转
     def pump_open_button(self, add):
@@ -232,3 +225,65 @@ class Stats:
     def newline(self, cmd):
         newline = f"{datetime.now().strftime('%H:%M:%S.%f')[:-3]}→{cmd}\n"
         self.ui.display_text.append(newline)
+
+
+class pressureupdate(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle('压力变化')
+        self.setGeometry(100, 100, 800, 400)
+
+        self.central_widget = QWidget(self)
+        self.setCentralWidget(self.central_widget)
+        layout = QVBoxLayout(self.central_widget)
+
+        self.text1_label = QLabel('压力1:')
+        self.text2_label = QLabel('压力2:')
+        layout.addWidget(self.text1_label)
+        layout.addWidget(self.text2_label)
+
+        self.fig = Figure(figsize=(6, 4), dpi=100)
+        self.canvas = FigureCanvas(self.fig)
+        layout.addWidget(self.canvas)
+
+        self.timer = QTimer()
+        # self.timer.timeout.connect(self.update_text)
+        # self.timer.start(1000)  # 1秒钟更新一次文本
+
+        self.ax = self.fig.add_subplot(111)
+        self.ax.set_xlim(0, 10)
+        self.ax.set_ylim(0, 100)
+        self.line1, = self.ax.plot([], [])
+        self.line2, = self.ax.plot([], [])
+
+        self.data_x = np.arange(10)
+        self.data_y1 = [0,0,0,0,0,0,0,0,0,0]
+        self.data_y2 = [0,0,0,0,0,0,0,0,0,0]
+
+        # self.timer = QTimer(self)
+        self.timer.timeout.connect(self.update_plot)
+        self.timer.start(1000)  # 1秒钟更新一次图表
+
+
+    def update_plot(self):
+        # 这里可以替换为你自己的文本数据生成逻辑
+        a = random.randint(0, 100)
+        b = random.randint(0, 100)
+        text1 = f"压力1: {a} kpa"
+        text2 = f"压力2: {b} kpa"
+
+        self.text1_label.setText(text1)
+        self.text2_label.setText(text2)
+        # self.data_x.pop(0)
+        self.data_y1.pop(0)
+        self.data_y2.pop(0)
+        # 模拟实时数据，这里使用随机数
+        # self.data_x.append(len(self.data_x))
+        # print(self.data_x,self.data_y)
+        self.data_y1.append(a)
+        self.data_y2.append(b)
+        self.line1.set_data(self.data_x, self.data_y1)
+        self.line2.set_data(self.data_x, self.data_y2)
+        self.ax.relim()
+        self.ax.autoscale_view()
+        self.canvas.draw()

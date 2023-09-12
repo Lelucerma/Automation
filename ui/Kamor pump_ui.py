@@ -68,71 +68,41 @@ class Ui_Form(object):
         self.gridLayout = QGridLayout(self.frame1)
         self.gridLayout.setObjectName(u"gridLayout")
         self.gridLayout.setSizeConstraint(QLayout.SetDefaultConstraint)
-        self.wash_frequence = QSpinBox(self.frame1)
-        self.wash_frequence.setObjectName(u"wash_frequence")
-        self.wash_frequence.setMaximum(10)
-
-        self.gridLayout.addWidget(self.wash_frequence, 4, 1, 1, 1)
-
-        self.pressure_start = QPushButton(self.frame1)
-        self.pressure_start.setObjectName(u"pressure_start")
-
-        self.gridLayout.addWidget(self.pressure_start, 5, 2, 1, 1)
-
         self.unit2_stop = QPushButton(self.frame1)
         self.unit2_stop.setObjectName(u"unit2_stop")
 
         self.gridLayout.addWidget(self.unit2_stop, 3, 2, 1, 1)
-
-        self.unit2_start = QPushButton(self.frame1)
-        self.unit2_start.setObjectName(u"unit2_start")
-
-        self.gridLayout.addWidget(self.unit2_start, 3, 1, 1, 1)
-
-        self.first_pressure_label = QLabel(self.frame1)
-        self.first_pressure_label.setObjectName(u"first_pressure_label")
-
-        self.gridLayout.addWidget(self.first_pressure_label, 8, 0, 1, 1)
-
-        self.unit2_label = QLabel(self.frame1)
-        self.unit2_label.setObjectName(u"unit2_label")
-
-        self.gridLayout.addWidget(self.unit2_label, 3, 0, 1, 1)
-
-        self.wash_label = QLabel(self.frame1)
-        self.wash_label.setObjectName(u"wash_label")
-
-        self.gridLayout.addWidget(self.wash_label, 4, 0, 1, 1)
-
-        self.unit1_label = QLabel(self.frame1)
-        self.unit1_label.setObjectName(u"unit1_label")
-
-        self.gridLayout.addWidget(self.unit1_label, 2, 0, 1, 1)
 
         self.swell_label = QLabel(self.frame1)
         self.swell_label.setObjectName(u"swell_label")
 
         self.gridLayout.addWidget(self.swell_label, 0, 0, 1, 1)
 
+        self.pressure_time = QLineEdit(self.frame1)
+        self.pressure_time.setObjectName(u"pressure_time")
+
+        self.gridLayout.addWidget(self.pressure_time, 5, 1, 1, 1)
+
         self.unit1_stop = QPushButton(self.frame1)
         self.unit1_stop.setObjectName(u"unit1_stop")
 
         self.gridLayout.addWidget(self.unit1_stop, 2, 2, 1, 1)
 
-        self.unit1_start = QPushButton(self.frame1)
-        self.unit1_start.setObjectName(u"unit1_start")
+        self.swell_frequence = QSpinBox(self.frame1)
+        self.swell_frequence.setObjectName(u"swell_frequence")
+        self.swell_frequence.setMaximum(10)
 
-        self.gridLayout.addWidget(self.unit1_start, 2, 1, 1, 1)
+        self.gridLayout.addWidget(self.swell_frequence, 0, 1, 1, 1)
 
-        self.wash_start = QPushButton(self.frame1)
-        self.wash_start.setObjectName(u"wash_start")
+        self.swell_start = QPushButton(self.frame1)
+        self.swell_start.setObjectName(u"swell_start")
 
-        self.gridLayout.addWidget(self.wash_start, 4, 2, 1, 1)
+        self.gridLayout.addWidget(self.swell_start, 0, 2, 1, 1)
 
-        self.second_pressure_label = QLabel(self.frame1)
-        self.second_pressure_label.setObjectName(u"second_pressure_label")
+        self.pressure_time_label = QLabel(self.frame1)
+        self.pressure_time_label.setObjectName(u"pressure_time_label")
 
-        self.gridLayout.addWidget(self.second_pressure_label, 9, 0, 1, 1)
+        self.gridLayout.addWidget(self.pressure_time_label, 5, 0, 1, 1)
 
         self.file_name = QLineEdit(self.frame1)
         self.file_name.setObjectName(u"file_name")
@@ -144,41 +114,51 @@ class Ui_Form(object):
 
         self.gridLayout.addWidget(self.file_name_label, 6, 0, 1, 1)
 
-        self.pressure_time = QLineEdit(self.frame1)
-        self.pressure_time.setObjectName(u"pressure_time")
+        self.wash_start = QPushButton(self.frame1)
+        self.wash_start.setObjectName(u"wash_start")
 
-        self.gridLayout.addWidget(self.pressure_time, 5, 1, 1, 1)
-
-        self.pressure_time_label = QLabel(self.frame1)
-        self.pressure_time_label.setObjectName(u"pressure_time_label")
-
-        self.gridLayout.addWidget(self.pressure_time_label, 5, 0, 1, 1)
+        self.gridLayout.addWidget(self.wash_start, 4, 2, 1, 1)
 
         self.pressure_display = QPushButton(self.frame1)
         self.pressure_display.setObjectName(u"pressure_display")
 
         self.gridLayout.addWidget(self.pressure_display, 6, 2, 1, 1)
 
-        self.swell_start = QPushButton(self.frame1)
-        self.swell_start.setObjectName(u"swell_start")
+        self.wash_label = QLabel(self.frame1)
+        self.wash_label.setObjectName(u"wash_label")
 
-        self.gridLayout.addWidget(self.swell_start, 0, 2, 1, 1)
+        self.gridLayout.addWidget(self.wash_label, 4, 0, 1, 1)
 
-        self.swell_frequence = QSpinBox(self.frame1)
-        self.swell_frequence.setObjectName(u"swell_frequence")
-        self.swell_frequence.setMaximum(10)
+        self.pressure_start = QPushButton(self.frame1)
+        self.pressure_start.setObjectName(u"pressure_start")
 
-        self.gridLayout.addWidget(self.swell_frequence, 0, 1, 1, 1)
+        self.gridLayout.addWidget(self.pressure_start, 5, 2, 1, 1)
 
-        self.first_pressure = QTextBrowser(self.frame1)
-        self.first_pressure.setObjectName(u"first_pressure")
+        self.unit1_start = QPushButton(self.frame1)
+        self.unit1_start.setObjectName(u"unit1_start")
 
-        self.gridLayout.addWidget(self.first_pressure, 8, 1, 1, 2)
+        self.gridLayout.addWidget(self.unit1_start, 2, 1, 1, 1)
 
-        self.second_pressure = QTextBrowser(self.frame1)
-        self.second_pressure.setObjectName(u"second_pressure")
+        self.unit2_label = QLabel(self.frame1)
+        self.unit2_label.setObjectName(u"unit2_label")
 
-        self.gridLayout.addWidget(self.second_pressure, 9, 1, 1, 2)
+        self.gridLayout.addWidget(self.unit2_label, 3, 0, 1, 1)
+
+        self.unit1_label = QLabel(self.frame1)
+        self.unit1_label.setObjectName(u"unit1_label")
+
+        self.gridLayout.addWidget(self.unit1_label, 2, 0, 1, 1)
+
+        self.unit2_start = QPushButton(self.frame1)
+        self.unit2_start.setObjectName(u"unit2_start")
+
+        self.gridLayout.addWidget(self.unit2_start, 3, 1, 1, 1)
+
+        self.wash_frequence = QSpinBox(self.frame1)
+        self.wash_frequence.setObjectName(u"wash_frequence")
+        self.wash_frequence.setMaximum(10)
+
+        self.gridLayout.addWidget(self.wash_frequence, 4, 1, 1, 1)
 
 
         self.verticalLayout.addWidget(self.frame1)
@@ -444,22 +424,20 @@ class Ui_Form(object):
         Form.setWindowTitle(QCoreApplication.translate("Form", u"Kamor\u6cf5\u7684\u63a7\u5236", None))
         self.clear_button.setText(QCoreApplication.translate("Form", u"Clear", None))
         self.output_label.setText(QCoreApplication.translate("Form", u"Output & Result", None))
-        self.pressure_start.setText(QCoreApplication.translate("Form", u"\u5f00\u59cb\u538b\u529b\u6d4b\u91cf", None))
         self.unit2_stop.setText(QCoreApplication.translate("Form", u"\u6682\u505c", None))
-        self.unit2_start.setText(QCoreApplication.translate("Form", u"\u5f00\u59cb", None))
-        self.first_pressure_label.setText(QCoreApplication.translate("Form", u"\u7b2c\u4e00\u4e2a\u538b\u529b\u6570\u503c:", None))
-        self.unit2_label.setText(QCoreApplication.translate("Form", u"\u7b2c\u4e8c\u4e2a\u5355\u5143:", None))
-        self.wash_label.setText(QCoreApplication.translate("Form", u"\u6e05\u6d17\uff1a", None))
-        self.unit1_label.setText(QCoreApplication.translate("Form", u"\u7b2c\u4e00\u4e2a\u5355\u5143\uff1a", None))
         self.swell_label.setText(QCoreApplication.translate("Form", u"\u6eb6\u80c0\uff1a", None))
         self.unit1_stop.setText(QCoreApplication.translate("Form", u"\u6682\u505c", None))
-        self.unit1_start.setText(QCoreApplication.translate("Form", u"\u5f00\u59cb", None))
-        self.wash_start.setText(QCoreApplication.translate("Form", u"\u5f00\u59cb", None))
-        self.second_pressure_label.setText(QCoreApplication.translate("Form", u"\u7b2c\u4e8c\u4e2a\u538b\u529b\u6570\u503c:", None))
-        self.file_name_label.setText(QCoreApplication.translate("Form", u"\u6587\u4ef6\u540d\uff1a", None))
-        self.pressure_time_label.setText(QCoreApplication.translate("Form", u"\u538b\u529b\u6d4b\u91cf\u65f6\u95f4\uff1a", None))
-        self.pressure_display.setText(QCoreApplication.translate("Form", u"\u538b\u529b\u663e\u793a", None))
         self.swell_start.setText(QCoreApplication.translate("Form", u"\u5f00\u59cb", None))
+        self.pressure_time_label.setText(QCoreApplication.translate("Form", u"\u538b\u529b\u6d4b\u91cf\u65f6\u95f4\uff1a", None))
+        self.file_name_label.setText(QCoreApplication.translate("Form", u"\u6587\u4ef6\u540d\uff1a", None))
+        self.wash_start.setText(QCoreApplication.translate("Form", u"\u5f00\u59cb", None))
+        self.pressure_display.setText(QCoreApplication.translate("Form", u"\u538b\u529b\u663e\u793a", None))
+        self.wash_label.setText(QCoreApplication.translate("Form", u"\u6e05\u6d17\uff1a", None))
+        self.pressure_start.setText(QCoreApplication.translate("Form", u"\u5f00\u59cb\u538b\u529b\u6d4b\u91cf", None))
+        self.unit1_start.setText(QCoreApplication.translate("Form", u"\u5f00\u59cb", None))
+        self.unit2_label.setText(QCoreApplication.translate("Form", u"\u7b2c\u4e8c\u4e2a\u5355\u5143:", None))
+        self.unit1_label.setText(QCoreApplication.translate("Form", u"\u7b2c\u4e00\u4e2a\u5355\u5143\uff1a", None))
+        self.unit2_start.setText(QCoreApplication.translate("Form", u"\u5f00\u59cb", None))
         self.pump6_stop_button.setText(QCoreApplication.translate("Form", u"Stop", None))
         self.pump3_label.setText(QCoreApplication.translate("Form", u"pump3:", None))
         self.toolButton_6.setText(QCoreApplication.translate("Form", u"...", None))
