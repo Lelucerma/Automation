@@ -29,7 +29,6 @@ def tran_num(ever_line):
     return float(ever_data1[0]), float(ever_data2[0])
 
 
-
 # 准备绘制数据
 def plt_picture(file_path, file_name):
 
