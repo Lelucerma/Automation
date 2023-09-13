@@ -8,7 +8,10 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 import random
 import numpy as np
+import auto_ui as au
 
+global b
+b = {}
 
 # 生成命令
 class PressCom():
@@ -206,7 +209,7 @@ class PressUnit():
                 self.press_thread = threading.Thread(
                     target=self.slaveWrite,
                     kwargs={'slave_add': f'{ever_slave}'})
-                self.press_thread.start()
+                self.press_thread.start()                
                 self.press_thread.join()
                 # self.data
             if self.time2 > self.runtime:
@@ -229,14 +232,23 @@ class PressUnit():
         self.press_tran += self.unit_data[self.slave_add]
         self.data[self.slave_add] = self.press_tran
         self.datas.append(self.data)
+        # print(self.data)
+        try:
+            b = self.data
+        except (TypeError):
+            pass
 
-    def pre(self):
-        self.window = QWidget()
-        self.window.setWindowTitle('压力变化')
-        self.window.setGeometry(100, 100, 800, 400)
+def data_tran(a):
+    b = a
 
-        self.window.central_widget = QWidget()
-        layout = QVBoxLayout(self.window.central_widget)
+class Pre_ui(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle('压力变化')
+        self.setGeometry(100, 100, 640, 500)
+
+        self.central_widget = QWidget(self)
+        layout = QVBoxLayout(self.central_widget)
 
         self.text1_label = QLabel('压力1:')
         self.text2_label = QLabel('压力2:')
@@ -267,8 +279,7 @@ class PressUnit():
         # print(self.slaves.data)
         p1 = random.randint(1,100)
         p2 = random.randint(1,100)
-        p3, p4 = self.data[3], self.data[4]
-        print(p3,p4)
+        print(b)
         text1 = f"压力1: {p1} kpa"
         text2 = f"压力2: {p2} kpa"
 
@@ -287,8 +298,8 @@ class PressUnit():
         self.ax.relim()
         self.ax.autoscale_view()
         self.canvas.draw()
-
-
+    def data(self,a):
+        print(a)
 
 def serOpen(compress):
     global ser_press

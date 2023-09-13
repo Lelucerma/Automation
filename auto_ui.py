@@ -22,8 +22,7 @@ class Stats:
 
     def __init__(self):
 
-        self.pump_ever = motor.Pump()
-        self.slave_press = p.PressUnit()
+        self.pump_ever = motor.Pump()        
 
         # 从文件中加载UI定义
         qfile_stats = QFile("D:\\2 code\\Automation\\ui\\Kamor pump.ui")
@@ -129,35 +128,15 @@ class Stats:
         
     # 点击开始压力传感器获得相应的数值
     def pressure_start(self):
-        press = threading.Thread(target=self.pressure_start_thread)
-        press.start()
-    def pressure_start_thread(self):
-        self.path = 'D:\\2 code\\Automation\\data\\230830\\'
         self.file = str(self.ui.file_name.text())
-        if self.file is None:
-            self.file = 'test'
-        p.serOpen('com6')
         self.press_runtime = int(self.ui.pressure_time.text())
-        self.slave_addb, self.slave_adde = 3, 4
-        self.slave_adds = []
-        if self.slave_adde != 0:
-            for i in range(self.slave_addb, self.slave_adde+1):
-                self.slave_adds.append(i)
-        else:
-            self.slave_adds = [self.slave_addb]
-        self.slave_press.slaves(self.slave_adds, self.press_runtime, self.path, self.file)
-        p.serClose()
-
+        self.press_window = Great()
+        self.press_window.show()
+        self.press_window.presss_start(self.file, self.press_runtime)
     # 显示压力
     def pressure_display(self):
-        self.windows = self.slave_press.pre()
-        self.windows.show()
-        print('1')
-    
-    def update_data(self):        
-        a = self.slave_press.data[3]
-        b = self.slave_press.data[4]
-        return a, b
+        self.press_window = p.Pre_ui()
+        self.press_window.show()
     
     # 点击开始第一种泵的运转
     def pump_open_button(self, add):
@@ -232,10 +211,7 @@ class Stats:
         newline = f"{datetime.now().strftime('%H:%M:%S.%f')[:-3]}→{cmd}\n"
         self.ui.display_text.append(newline)
 
-
-class Great(QWidget):
-    def __init__(self):
-        super().__init__()
+    def great(self):
         self.window = QWidget()
 
         self.window.setWindowTitle('压力变化')
@@ -267,13 +243,12 @@ class Great(QWidget):
         self.timer.timeout.connect(self.update_plot)
         self.timer.start(1000)  # 1秒钟更新一次图表
 
-
     def update_plot(self):
         # 这里可以替换为你自己的文本数据生成逻辑
         # print(self.slaves.data)
         p1 = random.randint(1,100)
         p2 = random.randint(1,100)
-        p3, p4 = self.a.update_data()
+        # p3, p4 = self.a.update_data()
         # print(p3,p4)
         text1 = f"压力1: {p1} kpa"
         text2 = f"压力2: {p2} kpa"
@@ -294,7 +269,84 @@ class Great(QWidget):
         self.ax.autoscale_view()
         self.canvas.draw()
 
+
+class Great(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.slave_press = p.PressUnit()
+        self.setWindowTitle('压力变化')
+        self.setGeometry(100, 100, 640, 500)
+
+        self.central_widget = QWidget(self)
+        layout = QVBoxLayout(self.central_widget)
+
+
+        self.text1_label = QLabel('压力1:')
+        self.text2_label = QLabel('压力2:')
+        layout.addWidget(self.text1_label)
+        layout.addWidget(self.text2_label)
+
+        self.fig = Figure(figsize=(6, 4), dpi=100)
+        self.canvas = FigureCanvas(self.fig)
+        layout.addWidget(self.canvas)
+
+        self.ax = self.fig.add_subplot(111)
+        self.ax.set_xlim(0, 10)
+        self.ax.set_ylim(0, 10)
+        self.line1, = self.ax.plot([], [])
+        self.line2, = self.ax.plot([], [])
+
+        self.data_x = np.arange(10)
+        self.data_y1 = [0,0,0,0,0,0,0,0,0,0]
+        self.data_y2 = [0,0,0,0,0,0,0,0,0,0]
+
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.update_plot)
+        self.timer.start(1000)  # 1秒钟更新一次图表
+
+    def update_plot(self):
+        # 这里可以替换为你自己的文本数据生成逻辑
+        # print(self.slaves.data)
+        p1 = self.slave_press.data[3]
+        p2 = self.slave_press.data[4]
+        self.p1 = int(p1[:1])
+        self.p2 = int(p2[:1]) + 2
+        text1 = f"压力1: {self.p1} kpa"
+        text2 = f"压力2: {self.p2} kpa"
+        self.text1_label.setText(text1)
+        self.text2_label.setText(text2)
+        # self.data_x.pop(0)
+        self.data_y1.pop(0)
+        self.data_y2.pop(0)
+        # 模拟实时数据，这里使用随机数
+        self.data_y1.append(self.p1)
+        self.data_y2.append(self.p2)
+        self.line1.set_data(self.data_x, self.data_y1)
+        self.line2.set_data(self.data_x, self.data_y2)
+        self.ax.relim()
+        self.ax.autoscale_view()
+        self.canvas.draw()
+    def presss_start(self, file_name, runtime):
+        self.path = 'D:\\2 code\\Automation\\data\\230830\\'
+        self.file = file_name
+        if self.file is None:
+            self.file = 'test'
+        p.serOpen('com6')
+        self.press_runtime = runtime
+        self.slave_addb, self.slave_adde = 3, 4
+        self.slave_adds = []
+        if self.slave_adde != 0:
+            for i in range(self.slave_addb, self.slave_adde+1):
+                self.slave_adds.append(i)
+        else:
+            self.slave_adds = [self.slave_addb]
+        self.slave_press.slaves(self.slave_adds, self.press_runtime, self.path, self.file)
+        p.serClose()
+
+
+
 def main():
+    global b
     app = QApplication([])
     stats = Stats()
     stats.ui.show()
