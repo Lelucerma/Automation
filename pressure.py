@@ -2,6 +2,12 @@ import os.path
 import threading
 import serial
 import time
+from PySide6.QtWidgets import QVBoxLayout, QWidget, QLabel
+from PySide6.QtCore import QTimer
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
+import random
+import numpy as np
 
 
 # 生成命令
@@ -170,7 +176,7 @@ class PressUnit():
         self.save1 = DataSave()
         self.c1 = PressGet()
         self.slave_adds = []
-        self.data = {}
+        self.data = {3:'0kpa', 4:"0kpa"}
         self.unit_data = {}
         self.units = {
             0: 'Mpa',
@@ -202,6 +208,7 @@ class PressUnit():
                     kwargs={'slave_add': f'{ever_slave}'})
                 self.press_thread.start()
                 self.press_thread.join()
+                # self.data
             if self.time2 > self.runtime:
                 break
             self.time2 = time.time() - self.time_starts
@@ -222,7 +229,65 @@ class PressUnit():
         self.press_tran += self.unit_data[self.slave_add]
         self.data[self.slave_add] = self.press_tran
         self.datas.append(self.data)
-        return self.data
+
+    def pre(self):
+        self.window = QWidget()
+        self.window.setWindowTitle('压力变化')
+        self.window.setGeometry(100, 100, 800, 400)
+
+        self.window.central_widget = QWidget()
+        layout = QVBoxLayout(self.window.central_widget)
+
+        self.text1_label = QLabel('压力1:')
+        self.text2_label = QLabel('压力2:')
+        layout.addWidget(self.text1_label)
+        layout.addWidget(self.text2_label)
+
+        self.fig = Figure(figsize=(6, 4), dpi=100)
+        self.canvas = FigureCanvas(self.fig)
+        layout.addWidget(self.canvas)
+
+        self.ax = self.fig.add_subplot(111)
+        self.ax.set_xlim(0, 10)
+        self.ax.set_ylim(0, 100)
+        self.line1, = self.ax.plot([], [])
+        self.line2, = self.ax.plot([], [])
+
+        self.data_x = np.arange(10)
+        self.data_y1 = [0,0,0,0,0,0,0,0,0,0]
+        self.data_y2 = [0,0,0,0,0,0,0,0,0,0]
+
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.update_plot)
+        self.timer.start(1000)  # 1秒钟更新一次图表
+
+
+    def update_plot(self):
+        # 这里可以替换为你自己的文本数据生成逻辑
+        # print(self.slaves.data)
+        p1 = random.randint(1,100)
+        p2 = random.randint(1,100)
+        p3, p4 = self.data[3], self.data[4]
+        print(p3,p4)
+        text1 = f"压力1: {p1} kpa"
+        text2 = f"压力2: {p2} kpa"
+
+        self.text1_label.setText(text1)
+        self.text2_label.setText(text2)
+        # self.data_x.pop(0)
+        self.data_y1.pop(0)
+        self.data_y2.pop(0)
+        # 模拟实时数据，这里使用随机数
+        # self.data_x.append(len(self.data_x))
+        # print(self.data_x,self.data_y)
+        self.data_y1.append(p1)
+        self.data_y2.append(p2)
+        self.line1.set_data(self.data_x, self.data_y1)
+        self.line2.set_data(self.data_x, self.data_y2)
+        self.ax.relim()
+        self.ax.autoscale_view()
+        self.canvas.draw()
+
 
 
 def serOpen(compress):
@@ -245,7 +310,7 @@ def serClose():
 def main():
     slave_press = PressUnit()
     file_name = 'D:\\2 code\\Automation\\data\\230801\\1.txt'
-    slave_press.slave('com6', 1, 10, file_name)  # slave_add从第二个开始使用，保留第一个的从机地址
+    slave_press.slaves('com6', 1, 10, file_name)  # slave_add从第二个开始使用，保留第一个的从机地址
     print(1)
 
 

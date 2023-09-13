@@ -146,16 +146,13 @@ class Stats:
         else:
             self.slave_adds = [self.slave_addb]
         self.slave_press.slaves(self.slave_adds, self.press_runtime, self.path, self.file)
-        
-        self.timer = QTimer()
-        self.timer.timeout.connect(self.update_data)
-        self.timer.start(1000)  # 1秒钟更新一次图表
         p.serClose()
 
     # 显示压力
     def pressure_display(self):
-        self.window = Pressureupdate()
-        self.window.show()
+        self.windows = self.slave_press.pre()
+        self.windows.show()
+        print('1')
     
     def update_data(self):        
         a = self.slave_press.data[3]
@@ -236,17 +233,16 @@ class Stats:
         self.ui.display_text.append(newline)
 
 
-class Pressureupdate(QMainWindow):
+class Great(QWidget):
     def __init__(self):
         super().__init__()
-        self.a = Stats()
+        self.window = QWidget()
 
-        self.setWindowTitle('压力变化')
-        self.setGeometry(100, 100, 800, 400)
+        self.window.setWindowTitle('压力变化')
+        self.window.setGeometry(100, 100, 800, 400)
 
-        self.central_widget = QWidget(self)
-        self.setCentralWidget(self.central_widget)
-        layout = QVBoxLayout(self.central_widget)
+        self.window.central_widget = QWidget()
+        layout = QVBoxLayout(self.window.central_widget)
 
         self.text1_label = QLabel('压力1:')
         self.text2_label = QLabel('压力2:')
@@ -297,3 +293,14 @@ class Pressureupdate(QMainWindow):
         self.ax.relim()
         self.ax.autoscale_view()
         self.canvas.draw()
+
+def main():
+    app = QApplication([])
+    stats = Stats()
+    stats.ui.show()
+    app.exec()
+
+
+if __name__ == "__main__":
+
+    main()
