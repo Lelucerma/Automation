@@ -588,7 +588,7 @@ class Module:
             #                         self.speed_before)
             self.pump_ever.pump_run(self.slave_add1 + 3, 1, 1,
                                     200)
-            time.sleep(3)
+            time.sleep(1)
             self.pump_ever.pump_run(self.slave_add1 + 3, 0, 0,
                                     self.speed_before)
 
@@ -631,7 +631,7 @@ class Module:
             # self.pump_ever.pump_run(self.slave_add1 - 2, 0, 0)
             self.pump_ever.pump_run(self.slave_add1 + 3, 0, 0)
 
-        self.time = self.pump3_runtime-self.pump1_runtime + 180 + 300
+        self.time = self.pump3_runtime-self.pump1_runtime + 180
         time.sleep(self.time)
         print(f"self.time：{self.time}")
 
@@ -672,7 +672,7 @@ class Module:
 
     # 单个溶胀过程
     def swell_ever(self):
-        time.sleep(3)   # 添加溶液的时间
+        time.sleep(1)   # 添加溶液的时间
         self.pump_ever.pump_run(self.slave_add, 1, 0, self.swell_speed)
         time.sleep(10)  # 鼓动混合的时间
         self.pump_ever.pump_run(self.slave_add, 1, 1, self.swell_speed)
@@ -682,7 +682,7 @@ class Module:
     # 单个洗涤过程
     def wash_ever(self, slave_add, speed):
         self.pump_ever.pump_run(slave_add, 1, 1, speed)
-        time.sleep(5)   # 添加溶液的时间
+        time.sleep(2)   # 添加溶液的时间
         self.pump_ever.pump_run(slave_add, 0, 0, speed)
         self.pump_ever.pump_run(slave_add+1, 1, 0, speed)
         time.sleep(5)  # 鼓动混合的时间

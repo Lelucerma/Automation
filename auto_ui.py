@@ -78,11 +78,11 @@ class Stats:
         self.ui.pump11_stop_button.clicked.connect(
             lambda: self.pump_stop_button(11))
         # 开始溶胀
-        self.ui.unit1_start.clicked.connect(self.swell_start)
+        self.ui.swell_start.clicked.connect(self.swell_start)
         # 开始第一个单元控制
         self.ui.unit1_start.clicked.connect(self.unit1_start)
         # 开始第二个单元控制
-        self.ui.unit1_start.clicked.connect(self.unit2_start)
+        self.ui.unit2_start.clicked.connect(self.unit2_start)
         # 开始第二个单元控制
         self.ui.wash_start.clicked.connect(self.wash_start)
         # 压力传感器的控制
