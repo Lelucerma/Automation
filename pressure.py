@@ -8,10 +8,10 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 import random
 import numpy as np
-import auto_ui as au
 
 global b
 b = {}
+
 
 # 生成命令
 class PressCom():
@@ -103,7 +103,6 @@ class PressCom():
 
 
 class PressGet():
-
     def __init__(self):
         self.cm = PressCom()
 
@@ -153,7 +152,6 @@ class PressGet():
 
 
 class DataSave():
-
     def save(self, data, file_name):
         """
         通过将获得的数据值存入具体的文件内
@@ -172,14 +170,13 @@ class DataSave():
 
 
 class PressUnit():
-
     def __init__(self) -> None:
 
         self.time2 = 0
         self.save1 = DataSave()
         self.c1 = PressGet()
         self.slave_adds = []
-        self.data = {3:'0kpa', 4:"0kpa"}
+        self.data = {3: '0kpa', 4: "0kpa"}
         self.unit_data = {}
         self.units = {
             0: 'Mpa',
@@ -209,7 +206,7 @@ class PressUnit():
                 self.press_thread = threading.Thread(
                     target=self.slaveWrite,
                     kwargs={'slave_add': f'{ever_slave}'})
-                self.press_thread.start()                
+                self.press_thread.start()
                 self.press_thread.join()
                 # self.data
             if self.time2 > self.runtime:
@@ -230,7 +227,7 @@ class PressUnit():
         self.press_true = self.c1.read_pressure(self.slave_add)
         self.press_tran = str(self.c1.trans(self.press_true))
         self.press_tran += self.unit_data[self.slave_add]
-        self.data[self.slave_add] = self.press_tran
+        self.data[self.slave_add] = self.press_tranW
         self.datas.append(self.data)
         # print(self.data)
         try:
@@ -238,8 +235,10 @@ class PressUnit():
         except (TypeError):
             pass
 
+
 def data_tran(a):
     b = a
+
 
 class Pre_ui(QWidget):
     def __init__(self):
@@ -266,19 +265,18 @@ class Pre_ui(QWidget):
         self.line2, = self.ax.plot([], [])
 
         self.data_x = np.arange(10)
-        self.data_y1 = [0,0,0,0,0,0,0,0,0,0]
-        self.data_y2 = [0,0,0,0,0,0,0,0,0,0]
+        self.data_y1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        self.data_y2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.update_plot)
         self.timer.start(1000)  # 1秒钟更新一次图表
 
-
     def update_plot(self):
         # 这里可以替换为你自己的文本数据生成逻辑
         # print(self.slaves.data)
-        p1 = random.randint(1,100)
-        p2 = random.randint(1,100)
+        p1 = random.randint(1, 100)
+        p2 = random.randint(1, 100)
         print(b)
         text1 = f"压力1: {p1} kpa"
         text2 = f"压力2: {p2} kpa"
@@ -298,8 +296,10 @@ class Pre_ui(QWidget):
         self.ax.relim()
         self.ax.autoscale_view()
         self.canvas.draw()
-    def data(self,a):
+
+    def data(self, a):
         print(a)
+
 
 def serOpen(compress):
     global ser_press
@@ -321,7 +321,8 @@ def serClose():
 def main():
     slave_press = PressUnit()
     file_name = 'D:\\2 code\\Automation\\data\\230801\\1.txt'
-    slave_press.slaves('com6', 1, 10, file_name)  # slave_add从第二个开始使用，保留第一个的从机地址
+    slave_press.slaves('com6', 1, 10,
+                       file_name)  # slave_add从第二个开始使用，保留第一个的从机地址
     print(1)
 
 
