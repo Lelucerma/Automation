@@ -94,30 +94,40 @@ class Stats:
 
     # 点击开始溶胀操作
     def swell_start(self):
-        self.motor.swell(5, 3, 200)
+        swell = threading.Thread(target=self.swell_start_thread)
+        swell.start()
+    
+    def swell_start_thread(self): 
+        self.swell_frequence = int(self.ui.swell_frequence.text())
+        if self.swell_frequence == 0:
+            self.swell_frequence = 3
+        self.motor.swell(self.swell_frequence, 7, 200)
 
     # 点击开始第一个单元脱保护
     def unit1_start(self):
         unit1 = threading.Thread(target=self.unit1_start_thread)
         unit1.start()
+    
     def unit1_start_thread(self):
         speeds = [60, 60, 60, 120, 200]
         volumes = [40, 70]
-        self.motor.deprotect_unit(4, speeds, volumes, True)
+        self.motor.deprotect_unit4(3, speeds, volumes, True)
 
     # 点击开始第二个单元耦合
     def unit2_start(self):
         unit2 = threading.Thread(target=self.unit2_start_thread)
         unit2.start()
+    
     def unit2_start_thread(self):
         speeds = [60, 60, 60, 120, 200]
         volumes = [40, 70]
-        self.motor.couple_unit(4, speeds, volumes, True)
+        self.motor.couple_unit4(4, speeds, volumes, True)
     
     # 点击开始清洗
     def wash_start(self):
         wash = threading.Thread(target=self.wash_start_thread)
         wash.start()
+    
     def wash_start_thread(self): 
         self.wash_frequence = int(self.ui.wash_frequence.text())
         if self.wash_frequence == 0:
@@ -133,6 +143,7 @@ class Stats:
         self.press_window = Great()
         self.press_window.show()
         self.press_window.presss_start(self.file, self.press_runtime)
+    
     # 显示压力
     def pressure_display(self):
         self.press_window = p.Pre_ui()
@@ -327,7 +338,7 @@ class Great(QWidget):
         self.ax.autoscale_view()
         self.canvas.draw()
     def presss_start(self, file_name, runtime):
-        self.path = 'D:\\2 code\\Automation\\data\\230830\\'
+        self.path = 'D:\\2 code\\Automation\\data\\230926\\'
         self.file = file_name
         if self.file is None:
             self.file = 'test'
