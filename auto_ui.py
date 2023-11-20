@@ -1,13 +1,11 @@
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtCore import QFile, QTimer
 from datetime import datetime
-import time
 import pressure as p
 import motor
 import threading
 import random
 
-import sys
 from PySide6.QtWidgets import QApplication,QMainWindow, QVBoxLayout, QWidget, QLabel
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtCore import QFile, QTimer

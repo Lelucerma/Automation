@@ -1,4 +1,4 @@
-import RPi.GPIO as GPIO
+import numpy as GPIO
 """
 引脚与阀门对应的关系图
 {
