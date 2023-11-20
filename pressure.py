@@ -230,7 +230,7 @@ class PressUnit():
         self.press_true = self.c1.read_pressure(self.slave_add)
         self.press_tran = str(self.c1.trans(self.press_true))
         self.press_tran += self.unit_data[self.slave_add]
-        self.data[self.slave_add] = self.press_tran
+        self.data[self.slave_add] = self.press_tranW
         self.datas.append(self.data)
         # print(self.data)
         try:
