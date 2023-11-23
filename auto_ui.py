@@ -1,282 +1,183 @@
-from PySide6.QtUiTools import QUiLoader
-from PySide6.QtCore import QFile, QTimer
+from PySide6.QtWidgets import QApplication,QMainWindow, QVBoxLayout, QWidget, QLabel
+from PySide6.QtCore import QTimer, QThread
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
+import numpy as np
 from datetime import datetime
 import pressure as p
 import motor
-import threading
-import random
+from Kamor_pump_ui import Ui_Form
 
-from PySide6.QtWidgets import QApplication,QMainWindow, QVBoxLayout, QWidget, QLabel
-from PySide6.QtUiTools import QUiLoader
-from PySide6.QtCore import QFile, QTimer
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.figure import Figure
-import random
-import threading
-import numpy as np
+pump_ever = motor.Pump()
+motor_module = motor.Module()
 
+class Stats(QMainWindow, Ui_Form):
 
-class Stats:
+    def __init__(self, parent=None):
+        super(Stats, self).__init__(parent)
+        self.setupUi(self)
+        self.init_signal_and_slot()
 
-    def __init__(self):
+    def init_signal_and_slot(self):
 
-        self.pump_ever = motor.Pump()        
+        for pump_number in range(3, 10):
+            open_button = getattr(self, f"pump{pump_number}_open_button")
+            stop_button = getattr(self, f"pump{pump_number}_stop_button")
 
-        # 从文件中加载UI定义
-        qfile_stats = QFile("D:\\2 code\\Automation\\ui\\Kamor pump.ui")
-        qfile_stats.open(QFile.ReadOnly)
-        qfile_stats.close()
+            open_button.clicked.connect(lambda number=pump_number: self.pump_open_button(number))
+            stop_button.clicked.connect(lambda number=pump_number: self.pump_stop_button(number))
 
-        self.ui = QUiLoader().load(qfile_stats)
-        self.motor = motor.Module()
-
-        # 6、第三个泵的控制
-        self.ui.pump3_open_button.clicked.connect(
-            lambda: self.pump_open_button(3))
-        self.ui.pump3_stop_button.clicked.connect(
-            lambda: self.pump_stop_button(3))
-        # 7、第四个泵的控制
-        self.ui.pump4_open_button.clicked.connect(
-            lambda: self.pump_open_button(4))
-        self.ui.pump4_stop_button.clicked.connect(
-            lambda: self.pump_stop_button(4))
-        # 8、第五个泵的控制
-        self.ui.pump5_open_button.clicked.connect(
-            lambda: self.pump_open_button(5))
-        self.ui.pump5_stop_button.clicked.connect(
-            lambda: self.pump_stop_button(5))
-        # 9、第六个泵的控制
-        self.ui.pump6_open_button.clicked.connect(
-            lambda: self.pump_open_button(6))
-        self.ui.pump6_stop_button.clicked.connect(
-            lambda: self.pump_stop_button(6))
-        # 10、第七个泵的控制
-        self.ui.pump7_open_button.clicked.connect(
-            lambda: self.pump_open_button(7))
-        self.ui.pump7_stop_button.clicked.connect(
-            lambda: self.pump_stop_button(7))
-        # 11、第八个泵的控制
-        self.ui.pump8_open_button.clicked.connect(
-            lambda: self.pump_open_button(8))
-        self.ui.pump8_stop_button.clicked.connect(
-            lambda: self.pump_stop_button(8))
-        # 10、第九个泵的控制
-        self.ui.pump9_open_button.clicked.connect(
-            lambda: self.pump_open_button(9))
-        self.ui.pump9_stop_button.clicked.connect(
-            lambda: self.pump_stop_button(9))
-        # 10、第十个泵的控制
-        self.ui.pump10_open_button.clicked.connect(
-            lambda: self.pump_open_button(10))
-        self.ui.pump10_stop_button.clicked.connect(
-            lambda: self.pump_stop_button(10))
-        # 10、第十一个泵的控制
-        self.ui.pump11_open_button.clicked.connect(
-            lambda: self.pump_open_button(11))
-        self.ui.pump11_stop_button.clicked.connect(
-            lambda: self.pump_stop_button(11))
         # 开始溶胀
-        self.ui.swell_start.clicked.connect(self.swell_start)
+        self.swell_start.clicked.connect(self.swellstart)
         # 开始第一个单元控制
-        self.ui.unit1_start.clicked.connect(self.unit1_start)
+        self.unit1_start.clicked.connect(self.deprotect)
         # 开始第二个单元控制
-        self.ui.unit2_start.clicked.connect(self.unit2_start)
+        self.unit2_start.clicked.connect(self.couple_unit)
         # 开始第二个单元控制
-        self.ui.wash_start.clicked.connect(self.wash_start)
+        self.wash_start.clicked.connect(self.washstart)
         # 压力传感器的控制
-        self.ui.pressure_start.clicked.connect(self.pressure_start)
+        self.pressure_start.clicked.connect(self.pressurestart)
         # 压力数值的显示
-        self.ui.pressure_display.clicked.connect(self.pressure_display)
+        self.pressure_display.clicked.connect(self.pressuredisplay)
         # 文本框清除按钮
-        self.ui.clear_button.clicked.connect(self.clear_result_text)
+        self.clear_button.clicked.connect(self.clear_result_text)
 
     # 点击开始溶胀操作
-    def swell_start(self):
-        swell = threading.Thread(target=self.swell_start_thread)
-        swell.start()
+    def swellstart(self):
+        self.swell = Couple_unit()
+        self.swell.start()
     
-    def swell_start_thread(self): 
-        self.swell_frequence = int(self.ui.swell_frequence.text())
-        if self.swell_frequence == 0:
-            self.swell_frequence = 3
-        self.motor.swell(self.swell_frequence, 7, 200)
-
     # 点击开始第一个单元脱保护
-    def unit1_start(self):
-        unit1 = threading.Thread(target=self.unit1_start_thread)
-        unit1.start()
-    
-    def unit1_start_thread(self):
-        speeds = [60, 60, 60, 120, 200]
-        volumes = [40, 70]
-        self.motor.deprotect_unit4(3, speeds, volumes, True)
+    def deprotect(self):
+        self.depro = Couple_unit()
+        self.depro.start()
 
     # 点击开始第二个单元耦合
-    def unit2_start(self):
-        unit2 = threading.Thread(target=self.unit2_start_thread)
-        unit2.start()
-    
-    def unit2_start_thread(self):
-        speeds = [60, 60, 60, 120, 200]
-        volumes = [40, 70]
-        self.motor.couple_unit4(4, speeds, volumes, True)
-    
+    def couple_unit(self):
+        self.unit2 = Couple_unit()
+        self.unit2.start()
+
     # 点击开始清洗
-    def wash_start(self):
-        wash = threading.Thread(target=self.wash_start_thread)
-        wash.start()
-    
-    def wash_start_thread(self): 
-        self.wash_frequence = int(self.ui.wash_frequence.text())
-        if self.wash_frequence == 0:
-            self.wash_frequence = 3
-        for i in range(self.wash_frequence):
-            self.motor.wash_ever(7, 200)
-        
-        
+    def washstart(self):
+        self.wash = Couple_unit()
+        self.wash.start()
+
     # 点击开始压力传感器获得相应的数值
-    def pressure_start(self):
-        self.file = str(self.ui.file_name.text())
-        self.press_runtime = int(self.ui.pressure_time.text())
+    def pressurestart(self):
+        self.file = str(self.file_name.text())
+        self.press_runtime = int(self.pressure_time.text())
         self.press_window = Great()
         self.press_window.show()
         self.press_window.presss_start(self.file, self.press_runtime)
     
     # 显示压力
-    def pressure_display(self):
+    def pressuredisplay(self):
         self.press_window = p.Pre_ui()
         self.press_window.show()
     
     # 点击开始第一种泵的运转
     def pump_open_button(self, add):
         self.slave_add = add
-        if self.slave_add == 3:
-            self.speed = int(int(self.ui.pump3_spinbox.text()) * 140)
-            self.first = '3 pump open'
-        elif self.slave_add == 4:
-            self.speed = int(int(self.ui.pump4_spinbox.text()) * 140)
-            self.first = '4 pump open'
-        elif self.slave_add == 5:
-            self.speed = int(int(self.ui.pump5_spinbox.text()) * 140)
-            self.first = '5 pump open'
-        elif self.slave_add == 6:
-            self.speed = int(int(self.ui.pump6_spinbox.text()) * 140)
-            self.first = '6 pump open'
-            self.newline(self.speed)
-        elif self.slave_add == 7:
-            self.speed = int(int(self.ui.pump7_spinbox.text()) * 140)
-            self.first = '7 pump open'
-            self.newline(self.speed)
-        elif self.slave_add == 8:
-            self.speed = int(int(self.ui.pump8_spinbox.text()) * 140)
-            self.first = '8 pump open'
-            self.newline(self.speed)
-        elif self.slave_add == 9:
-            self.speed = int(int(self.ui.pump9_spinbox.text()) * 140)
-            self.first = '9 pump open'
-            self.newline(self.speed)
-        elif self.slave_add == 10:
-            self.speed = int(int(self.ui.pump10_spinbox.text()) * 140)
-            self.first = '10 pump open'
-            self.newline(self.speed)
-        elif self.slave_add == 11:
-            self.speed = int(int(self.ui.pump11_spinbox.text()) * 140)
-            self.first = '11 pump open'
-            self.newline(self.speed)
+        self.speed = 0
+        pump_info = {
+        3: {'spinbox': self.pump3_spinbox, 'suffix': '3 pump open'},
+        4: {'spinbox': self.pump4_spinbox, 'suffix': '4 pump open'},
+        3: {'spinbox': self.pump5_spinbox, 'suffix': '5 pump open'},
+        6: {'spinbox': self.pump6_spinbox, 'suffix': '6 pump open'},
+        7: {'spinbox': self.pump7_spinbox, 'suffix': '7 pump open'},
+        8: {'spinbox': self.pump8_spinbox, 'suffix': '8 pump open'},
+        9: {'spinbox': self.pump9_spinbox, 'suffix': '9 pump open'},
+        10: {'spinbox': self.pump10_spinbox, 'suffix': '10 pump open'},
+        }
+
+        if self.slave_add in pump_info:
+            pump_data = pump_info[self.slave_add]
+            self.speed = int(int(pump_data['spinbox'].text()) * 140)
+            self.first = pump_data['suffix']
+
 
         # 第一个泵的开启和命令展示
-        self.pump_ever.pump_run(self.slave_add, 1, 1, self.speed)
+        pump_ever.pump_run(self.slave_add, 1, 1, self.speed)
         self.newline(self.first)
 
     # 点击开始第二种泵的停止
     def pump_stop_button(self, add):
         self.slave_add = add
-        if self.slave_add == 3:
-            self.first = '3 pump stop'
-        elif self.slave_add == 4:
-            self.first = '4 pump stop'
-        elif self.slave_add == 5:
-            self.first = '5 pump stop'
-        elif self.slave_add == 6:
-            self.first = '6 pump stop'
-        elif self.slave_add == 7:
-            self.first = '7 pump stop'
-        elif self.slave_add == 8:
-            self.first = '8 pump stop'
-        elif self.slave_add == 9:
-            self.first = '9 pump stop'
-        elif self.slave_add == 10:
-            self.first = '10 pump stop'
-        elif self.slave_add == 11:
-            self.first = '11 pump stop'
-        self.newline(self.first)
-        self.pump_ever.pump_run(self.slave_add, 0, 0)
+        pump_info = {
+        3: '3 pump stop',
+        4: '4 pump stop',
+        3: '5 pump stop',
+        6: '6 pump stop',
+        7: '7 pump stop',
+        8: '8 pump stop',
+        9: '9 pump stop',
+        10: '10 pump stop',
+        }
+
+        if self.slave_add in pump_info:
+            pump_data = pump_info[self.slave_add]
+            self.pump_info = pump_data['suffix']
+
+
+        # 第一个泵的开启和命令展示
+        pump_ever.pump_run(self.slave_add, 1, 1, self.speed)
+        self.newline(self.fpump_info)
 
     # 清除文本框内容
     def clear_result_text(self):
-        self.ui.display_text.clear()
+        self.display_text.clear()
 
+    # 添加一行新的内容
     def newline(self, cmd):
         newline = f"{datetime.now().strftime('%H:%M:%S.%f')[:-3]}→{cmd}\n"
-        self.ui.display_text.append(newline)
+        self.display_text.append(newline)
 
-    def great(self):
-        self.window = QWidget()
 
-        self.window.setWindowTitle('压力变化')
-        self.window.setGeometry(100, 100, 800, 400)
+class Swell(QThread, Ui_Form):
 
-        self.window.central_widget = QWidget()
-        layout = QVBoxLayout(self.window.central_widget)
+    def __init__(self) -> None:
+        super().__init__()
 
-        self.text1_label = QLabel('压力1:')
-        self.text2_label = QLabel('压力2:')
-        layout.addWidget(self.text1_label)
-        layout.addWidget(self.text2_label)
+    def run(self): 
+        self.swell_frequence = int(self.swell_frequence.text())
+        if self.swell_frequence == 0:
+            self.swell_frequence = 3
+        motor_module.swell(self.swell_frequence, 7, 200)
 
-        self.fig = Figure(figsize=(6, 4), dpi=100)
-        self.canvas = FigureCanvas(self.fig)
-        layout.addWidget(self.canvas)
 
-        self.ax = self.fig.add_subplot(111)
-        self.ax.set_xlim(0, 10)
-        self.ax.set_ylim(0, 100)
-        self.line1, = self.ax.plot([], [])
-        self.line2, = self.ax.plot([], [])
+class Wash(QThread, Ui_Form):
 
-        self.data_x = np.arange(10)
-        self.data_y1 = [0,0,0,0,0,0,0,0,0,0]
-        self.data_y2 = [0,0,0,0,0,0,0,0,0,0]
+    def __init__(self) -> None:
+        super().__init__()
 
-        self.timer = QTimer()
-        self.timer.timeout.connect(self.update_plot)
-        self.timer.start(1000)  # 1秒钟更新一次图表
+    def run(self): 
+        self.wash_frequence = int(self.wash_frequence.text())
+        if self.wash_frequence == 0:
+            self.wash_frequence = 3
+        for i in range(self.wash_frequence):
+            motor_module.wash_ever(7, 200)     
 
-    def update_plot(self):
-        # 这里可以替换为你自己的文本数据生成逻辑
-        # print(self.slaves.data)
-        p1 = random.randint(1,100)
-        p2 = random.randint(1,100)
-        # p3, p4 = self.a.update_data()
-        # print(p3,p4)
-        text1 = f"压力1: {p1} kpa"
-        text2 = f"压力2: {p2} kpa"
 
-        self.text1_label.setText(text1)
-        self.text2_label.setText(text2)
-        # self.data_x.pop(0)
-        self.data_y1.pop(0)
-        self.data_y2.pop(0)
-        # 模拟实时数据，这里使用随机数
-        # self.data_x.append(len(self.data_x))
-        # print(self.data_x,self.data_y)
-        self.data_y1.append(p1)
-        self.data_y2.append(p2)
-        self.line1.set_data(self.data_x, self.data_y1)
-        self.line2.set_data(self.data_x, self.data_y2)
-        self.ax.relim()
-        self.ax.autoscale_view()
-        self.canvas.draw()
+class Depro_unit(QThread, Ui_Form):
+
+    def __init__(self) -> None:
+        super().__init__()
+
+    def run(self):
+        speeds = [60, 60, 60, 120, 200]
+        volumes = [40, 70]
+        motor_module.deprotect_unit4(3, speeds, volumes, True)
+
+
+class Couple_unit(QThread, Ui_Form):
+    
+    def __init__(self) -> None:
+        super().__init__()
+
+    def run(self):
+        speeds = [60, 60, 60, 120, 200]
+        volumes = [40, 70]
+        motor_module.couple_unit4(4, speeds, volumes, True)
 
 
 class Great(QWidget):
@@ -354,14 +255,14 @@ class Great(QWidget):
 
 
 
-def main():
-    global b
-    app = QApplication([])
-    stats = Stats()
-    stats.ui.show()
-    app.exec()
+# def main():
+#     global b
+#     app = QApplication([])
+#     stats = Stats()
+#     stats.show()
+#     app.exec()
 
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
-    main()
+#     main()

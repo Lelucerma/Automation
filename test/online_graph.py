@@ -1,4 +1,12 @@
-import sys
+'''
+Author: wang w1838978548@126.com
+Date: 2023-09-11 21:23:35
+LastEditors: wang w1838978548@126.com
+LastEditTime: 2023-11-23 16:42:45
+FilePath: \Automation\test\online_graph.py
+Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+'''
+"""import sys
 import random
 from PySide6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget
 from PySide6.QtCore import QTimer
@@ -49,3 +57,58 @@ if __name__ == '__main__':
     window = RealTimePlot()
     window.show()
     sys.exit(app.exec_())
+"""
+import sys
+import numpy as np
+from PySide6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QSizePolicy
+from PySide6.QtCore import QTimer  # 导入 QTimer
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+from matplotlib.figure import Figure
+import time
+
+class RealTimePlotApp(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        self.setWindowTitle("Real-Time Plot")
+        self.setGeometry(100, 100, 800, 600)
+
+        central_widget = QWidget(self)
+        self.setCentralWidget(central_widget)
+
+        layout = QVBoxLayout(central_widget)
+
+        self.figure = Figure()
+        self.ax = self.figure.add_subplot(111)  # 1行1列的子图
+        self.canvas = FigureCanvas(self.figure)
+        layout.addWidget(NavigationToolbar(self.canvas, self))  # 添加工具栏
+        layout.addWidget(self.canvas)
+
+        self.x_data = np.linspace(0, 10, 1000)
+        self.y_data = np.zeros_like(self.x_data)
+
+        self.line, = self.ax.plot(self.x_data, self.y_data)
+
+        self.start_time = time.time()
+        self.animation_timer = QTimer(self)
+        self.animation_timer.timeout.connect(self.update_plot)
+        self.animation_timer.start(100)  # 更新频率为每100毫秒
+
+    def update_plot(self):
+        # 模拟实时数据更新
+        elapsed_time = time.time() - self.start_time
+        self.y_data = np.sin(self.x_data + elapsed_time)
+        self.line.set_ydata(self.y_data)
+        self.ax.relim()
+        self.ax.autoscale_view()
+        self.canvas.draw()
+
+def main():
+    app = QApplication(sys.argv)
+    window = RealTimePlotApp()
+    window.show()
+    sys.exit(app.exec_())
+
+if __name__ == "__main__":
+    main()
