@@ -255,14 +255,14 @@ class Great(QWidget):
 
 
 
-# def main():
-#     global b
-#     app = QApplication([])
-#     stats = Stats()
-#     stats.show()
-#     app.exec()
+def main():
+    global b
+    app = QApplication([])
+    stats = Stats()
+    stats.show()
+    app.exec()
 
 
-# if __name__ == "__main__":
+if __name__ == "__main__":
 
-#     main()
+    main()

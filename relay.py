@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import numpy as GPIO
 """
 引脚与阀门对应的关系图

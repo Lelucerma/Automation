@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 '''
 Author: wang w1838978548@126.com
 Date: 2023-09-25 20:54:24
