@@ -6,10 +6,12 @@ import numpy as np
 from datetime import datetime
 import pressure as p
 import motor
+import relay
 from Kamor_pump_ui import Ui_Form
 
 pump_ever = motor.Pump()
 motor_module = motor.Module()
+
 
 class Stats(QMainWindow, Ui_Form):
 
@@ -17,15 +19,56 @@ class Stats(QMainWindow, Ui_Form):
         super(Stats, self).__init__(parent)
         self.setupUi(self)
         self.init_signal_and_slot()
-
+        self.first = 'pump'
+   
     def init_signal_and_slot(self):
-
-        for pump_number in range(3, 10):
-            open_button = getattr(self, f"pump{pump_number}_open_button")
-            stop_button = getattr(self, f"pump{pump_number}_stop_button")
-
-            open_button.clicked.connect(lambda number=pump_number: self.pump_open_button(number))
-            stop_button.clicked.connect(lambda number=pump_number: self.pump_stop_button(number))
+        
+        # 泵的开启与停止控制按钮
+        # 6、第三个泵的控制
+        self.pump3_open_button.clicked.connect(
+            lambda: self.pump_open_button(3))
+        self.pump3_stop_button.clicked.connect(
+            lambda: self.pump_stop_button(3))
+        # 7、第四个泵的控制
+        self.pump4_open_button.clicked.connect(
+            lambda: self.pump_open_button(4))
+        self.pump4_stop_button.clicked.connect(
+            lambda: self.pump_stop_button(4))
+        # 8、第五个泵的控制
+        self.pump5_open_button.clicked.connect(
+            lambda: self.pump_open_button(5))
+        self.pump5_stop_button.clicked.connect(
+            lambda: self.pump_stop_button(5))
+        # 9、第六个泵的控制
+        self.pump6_open_button.clicked.connect(
+            lambda: self.pump_open_button(6))
+        self.pump6_stop_button.clicked.connect(
+            lambda: self.pump_stop_button(6))
+        # 10、第七个泵的控制
+        self.pump7_open_button.clicked.connect(
+            lambda: self.pump_open_button(7))
+        self.pump7_stop_button.clicked.connect(
+            lambda: self.pump_stop_button(7))
+        # 11、第八个泵的控制
+        self.pump8_open_button.clicked.connect(
+            lambda: self.pump_open_button(8))
+        self.pump8_stop_button.clicked.connect(
+            lambda: self.pump_stop_button(8))
+        # 10、第九个泵的控制
+        self.pump9_open_button.clicked.connect(
+            lambda: self.value_open_button(9))
+        self.pump9_stop_button.clicked.connect(
+            lambda: self.value_stop_button(9))
+        # 10、第十个泵的控制
+        self.pump10_open_button.clicked.connect(
+            lambda: self.value_open_button(10))
+        self.pump10_stop_button.clicked.connect(
+            lambda: self.value_stop_button(10))
+        # 10、第十一个泵的控制
+        self.pump11_open_button.clicked.connect(
+            lambda: self.pump_open_button(11))
+        self.pump11_stop_button.clicked.connect(
+            lambda: self.pump_stop_button(11))
 
         # 开始溶胀
         self.swell_start.clicked.connect(self.swellstart)
@@ -77,12 +120,14 @@ class Stats(QMainWindow, Ui_Form):
     
     # 点击开始第一种泵的运转
     def pump_open_button(self, add):
+        
         self.slave_add = add
+        print(self.slave_add)
         self.speed = 0
         pump_info = {
         3: {'spinbox': self.pump3_spinbox, 'suffix': '3 pump open'},
         4: {'spinbox': self.pump4_spinbox, 'suffix': '4 pump open'},
-        3: {'spinbox': self.pump5_spinbox, 'suffix': '5 pump open'},
+        5: {'spinbox': self.pump5_spinbox, 'suffix': '5 pump open'},
         6: {'spinbox': self.pump6_spinbox, 'suffix': '6 pump open'},
         7: {'spinbox': self.pump7_spinbox, 'suffix': '7 pump open'},
         8: {'spinbox': self.pump8_spinbox, 'suffix': '8 pump open'},
@@ -95,10 +140,10 @@ class Stats(QMainWindow, Ui_Form):
             self.speed = int(int(pump_data['spinbox'].text()) * 140)
             self.first = pump_data['suffix']
 
-
+        self.newline(self.first)
         # 第一个泵的开启和命令展示
         pump_ever.pump_run(self.slave_add, 1, 1, self.speed)
-        self.newline(self.first)
+        
 
     # 点击开始第二种泵的停止
     def pump_stop_button(self, add):
@@ -118,10 +163,29 @@ class Stats(QMainWindow, Ui_Form):
             pump_data = pump_info[self.slave_add]
             self.pump_info = pump_data['suffix']
 
-
         # 第一个泵的开启和命令展示
         pump_ever.pump_run(self.slave_add, 1, 1, self.speed)
         self.newline(self.fpump_info)
+
+    # 点击开始阀门的开启
+    def value_open_button(self, add):
+        self.value_add = add
+        self.value_tranlation()
+        self.value_con = relay.Value(self.value_add)
+        self.value_con.value_start()
+
+    # 点击开始阀门的关闭
+    def value_stop_button(self, add):
+        self.value_add = add
+        self.value_tranlation()
+        self.value_con = relay.Value(self.value_add)
+        self.value_con.value_stop()
+
+    # 将阀门的值转化为树莓派对应的引脚
+    def value_tranlation(self):
+        self.values = {9: "11", 10: "12"}  # 第9个按钮，对应的是第一个阀门，对应的树莓上面第17个引脚
+        if self.value_add in self.values:
+            self.value_add = int(self.values[self.value_add])
 
     # 清除文本框内容
     def clear_result_text(self):
@@ -133,6 +197,7 @@ class Stats(QMainWindow, Ui_Form):
         self.display_text.append(newline)
 
 
+# 溶胀单元对应的数值，对应相应的操作
 class Swell(QThread, Ui_Form):
 
     def __init__(self) -> None:
@@ -145,6 +210,7 @@ class Swell(QThread, Ui_Form):
         motor_module.swell(self.swell_frequence, 7, 200)
 
 
+# 清洗单元对应的数值，对应相应的操作
 class Wash(QThread, Ui_Form):
 
     def __init__(self) -> None:
@@ -158,6 +224,7 @@ class Wash(QThread, Ui_Form):
             motor_module.wash_ever(7, 200)     
 
 
+# 脱保护单元对应的数值，对应相应的操作
 class Depro_unit(QThread, Ui_Form):
 
     def __init__(self) -> None:
@@ -169,6 +236,7 @@ class Depro_unit(QThread, Ui_Form):
         motor_module.deprotect_unit4(3, speeds, volumes, True)
 
 
+# 耦合单元对应的数值，对应相应的操作
 class Couple_unit(QThread, Ui_Form):
     
     def __init__(self) -> None:
