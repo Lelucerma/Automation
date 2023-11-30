@@ -29,6 +29,7 @@ def ser_list():
             return port.device
 
 if __name__ == "__main__":
-    motor.ser_open(ser_list())
+    port = ser_list()
+    motor.ser_open(port)
     pump_ui()
     motor.ser_close()

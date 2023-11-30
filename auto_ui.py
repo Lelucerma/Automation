@@ -1,3 +1,4 @@
+
 from PySide6.QtWidgets import QApplication,QMainWindow, QVBoxLayout, QWidget, QLabel
 from PySide6.QtCore import QTimer, QThread
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -87,12 +88,13 @@ class Stats(QMainWindow, Ui_Form):
 
     # 点击开始溶胀操作
     def swellstart(self):
-        self.swell = Couple_unit()
+        self.swell_frequence = int(self.swell_frequence.text())
+        self.swell = Swell(self.swell_frequence)
         self.swell.start()
     
     # 点击开始第一个单元脱保护
     def deprotect(self):
-        self.depro = Couple_unit()
+        self.depro = Depro_unit()
         self.depro.start()
 
     # 点击开始第二个单元耦合
@@ -102,7 +104,8 @@ class Stats(QMainWindow, Ui_Form):
 
     # 点击开始清洗
     def washstart(self):
-        self.wash = Couple_unit()
+        self.wash_frequence = int(self.wash_frequence.text())
+        self.wash = Wash(self.wash_frequence)
         self.wash.start()
 
     # 点击开始压力传感器获得相应的数值
@@ -122,7 +125,7 @@ class Stats(QMainWindow, Ui_Form):
     def pump_open_button(self, add):
         
         self.slave_add = add
-        print(self.slave_add)
+        # print(self.slave_add)
         self.speed = 0
         pump_info = {
         3: {'spinbox': self.pump3_spinbox, 'suffix': '3 pump open'},
@@ -151,21 +154,18 @@ class Stats(QMainWindow, Ui_Form):
         pump_info = {
         3: '3 pump stop',
         4: '4 pump stop',
-        3: '5 pump stop',
+        5: '5 pump stop',
         6: '6 pump stop',
         7: '7 pump stop',
         8: '8 pump stop',
         9: '9 pump stop',
         10: '10 pump stop',
         }
-
-        if self.slave_add in pump_info:
-            pump_data = pump_info[self.slave_add]
-            self.pump_info = pump_data['suffix']
+        self.pump_data = pump_info[self.slave_add]
 
         # 第一个泵的开启和命令展示
-        pump_ever.pump_run(self.slave_add, 1, 1, self.speed)
-        self.newline(self.fpump_info)
+        pump_ever.pump_run(self.slave_add, 0, 0, 0)
+        self.newline(self.pump_data)
 
     # 点击开始阀门的开启
     def value_open_button(self, add):
@@ -179,7 +179,7 @@ class Stats(QMainWindow, Ui_Form):
         self.value_add = add
         self.value_tranlation()
         self.value_con = relay.Value(self.value_add)
-        self.value_con.value_stop()
+        self.value_con.value_end()
 
     # 将阀门的值转化为树莓派对应的引脚
     def value_tranlation(self):
@@ -200,24 +200,26 @@ class Stats(QMainWindow, Ui_Form):
 # 溶胀单元对应的数值，对应相应的操作
 class Swell(QThread, Ui_Form):
 
-    def __init__(self) -> None:
+    def __init__(self, swell_frequence) -> None:
         super().__init__()
+        self.swell_frequence = swell_frequence
 
     def run(self): 
-        self.swell_frequence = int(self.swell_frequence.text())
         if self.swell_frequence == 0:
             self.swell_frequence = 3
-        motor_module.swell(self.swell_frequence, 7, 200)
+        for i in range(self.swell_frequence):
+            motor_module.swell_ever(7, 200)
 
 
 # 清洗单元对应的数值，对应相应的操作
 class Wash(QThread, Ui_Form):
 
-    def __init__(self) -> None:
+    def __init__(self, wash_frequence) -> None:
         super().__init__()
+        self.wash_frequence = wash_frequence
+
 
     def run(self): 
-        self.wash_frequence = int(self.wash_frequence.text())
         if self.wash_frequence == 0:
             self.wash_frequence = 3
         for i in range(self.wash_frequence):
@@ -323,14 +325,14 @@ class Great(QWidget):
 
 
 
-def main():
-    global b
-    app = QApplication([])
-    stats = Stats()
-    stats.show()
-    app.exec()
+# def main():
+#     global b
+#     app = QApplication([])
+#     stats = Stats()
+#     stats.show()
+#     app.exec()
 
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
-    main()
+#     main()

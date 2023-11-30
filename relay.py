@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
-import numpy as GPIO
+import RPi.GPIO as GPIO
+import time
 """
 引脚与阀门对应的关系图
 {
@@ -16,6 +17,7 @@ class Value():
     def __init__(self, pin) -> None:
         # 定义继电器引脚为pin
         self.markerobo_RelayPin = pin
+        self.makerobo_setup()
 
     # 初始化工作
     def makerobo_setup(self):
@@ -27,17 +29,29 @@ class Value():
     def value_start(self):
         # 继电器断开
         GPIO.output(self.markerobo_RelayPin, GPIO.HIGH)
+        
+    def value_stop(self):
+        GPIO.output(self.markerobo_RelayPin, GPIO.LOW)
+    
+    # test
+    def test_realy(self):
+        while True:
+            GPIO.output(self.markerobo_RelayPin, GPIO.HIGH)
+            time.sleep(0.5)
+            GPIO.output(self.markerobo_RelayPin, GPIO.LOW)
+            time.sleep(0.5)
 
     # 释放资源
-    def value_stop(self):
+    def value_end(self):
         GPIO.output(self.markerobo_RelayPin, GPIO.LOW)
         GPIO.cleanup()
 
 
 # # 主程序
 # if __name__ == "__main__":
-#     makerobo_setup()
+#     test = Value(12)
 #     try:
-#         makerobo_loop()
+#         # test.value_start()
+#         test.test_realy()
 #     except:
-#         makerobo_destroy()
+#         test.value_end()
