@@ -9,6 +9,7 @@ import pressure as p
 import motor
 import relay
 from Kamor_pump_ui import Ui_Form
+import threading
 
 pump_ever = motor.Pump()
 motor_module = motor.Module()
@@ -87,26 +88,50 @@ class Stats(QMainWindow, Ui_Form):
         self.clear_button.clicked.connect(self.clear_result_text)
 
     # 点击开始溶胀操作
-    def swellstart(self):
-        self.swell_frequence = int(self.swell_frequence.text())
-        self.swell = Swell(self.swell_frequence)
-        self.swell.start()
-    
+    def swell_start(self):
+        self.motor.swell(5, 3, 200)
+
     # 点击开始第一个单元脱保护
-    def deprotect(self):
-        self.depro = Depro_unit()
-        self.depro.start()
+    def unit1_start(self):
+        unit1 = threading.Thread(target=self.unit1_start_thread)
+        unit1.start()
+    def unit1_start_thread(self):
+        speeds = [60, 60, 60, 120, 200]
+        volumes = [40, 70]
+        self.motor.deprotect_unit(4, speeds, volumes, True)
 
     # 点击开始第二个单元耦合
-    def couple_unit(self):
-        self.unit2 = Couple_unit()
-        self.unit2.start()
-
+    def unit2_start(self):
+        unit2 = threading.Thread(target=self.unit2_start_thread)
+        unit2.start()
+    def unit2_start_thread(self):
+        speeds = [60, 60, 60, 120, 200]
+        volumes = [40, 70]
+        self.motor.couple_unit(4, speeds, volumes, True)
+    
     # 点击开始清洗
-    def washstart(self):
-        self.wash_frequence = int(self.wash_frequence.text())
-        self.wash = Wash(self.wash_frequence)
-        self.wash.start()
+    def wash_start(self):
+        wash = threading.Thread(target=self.wash_start_thread)
+        wash.start()
+    def wash_start_thread(self): 
+        self.wash_frequence = int(self.ui.wash_frequence.text())
+        if self.wash_frequence == 0:
+            self.wash_frequence = 3
+        for i in range(self.wash_frequence):
+            self.motor.wash_ever(7, 200)
+        
+        
+    # 点击开始压力传感器获得相应的数值
+    def pressure_start(self):
+        self.file = str(self.ui.file_name.text())
+        self.press_runtime = int(self.ui.pressure_time.text())
+        self.press_window = Great()
+        self.press_window.show()
+        self.press_window.presss_start(self.file, self.press_runtime)
+    # 显示压力
+    def pressure_display(self):
+        self.press_window = p.Pre_ui()
+        self.press_window.show()
 
     # 点击开始压力传感器获得相应的数值
     def pressurestart(self):
@@ -197,59 +222,6 @@ class Stats(QMainWindow, Ui_Form):
         self.display_text.append(newline)
 
 
-# 溶胀单元对应的数值，对应相应的操作
-class Swell(QThread, Ui_Form):
-
-    def __init__(self, swell_frequence) -> None:
-        super().__init__()
-        self.swell_frequence = swell_frequence
-
-    def run(self): 
-        if self.swell_frequence == 0:
-            self.swell_frequence = 3
-        for i in range(self.swell_frequence):
-            motor_module.swell_ever(7, 200)
-
-
-# 清洗单元对应的数值，对应相应的操作
-class Wash(QThread, Ui_Form):
-
-    def __init__(self, wash_frequence) -> None:
-        super().__init__()
-        self.wash_frequence = wash_frequence
-
-
-    def run(self): 
-        if self.wash_frequence == 0:
-            self.wash_frequence = 3
-        for i in range(self.wash_frequence):
-            motor_module.wash_ever(7, 200)     
-
-
-# 脱保护单元对应的数值，对应相应的操作
-class Depro_unit(QThread, Ui_Form):
-
-    def __init__(self) -> None:
-        super().__init__()
-
-    def run(self):
-        speeds = [60, 60, 60, 120, 200]
-        volumes = [40, 70]
-        motor_module.deprotect_unit4(3, speeds, volumes, True)
-
-
-# 耦合单元对应的数值，对应相应的操作
-class Couple_unit(QThread, Ui_Form):
-    
-    def __init__(self) -> None:
-        super().__init__()
-
-    def run(self):
-        speeds = [60, 60, 60, 120, 200]
-        volumes = [40, 70]
-        motor_module.couple_unit4(4, speeds, volumes, True)
-
-
 class Great(QWidget):
     def __init__(self):
         super().__init__()
@@ -325,14 +297,14 @@ class Great(QWidget):
 
 
 
-# def main():
-#     global b
-#     app = QApplication([])
-#     stats = Stats()
-#     stats.show()
-#     app.exec()
+def main():
+    global b
+    app = QApplication([])
+    stats = Stats()
+    stats.show()
+    app.exec()
 
 
-# if __name__ == "__main__":
+if __name__ == "__main__":
 
-#     main()
+    main()
