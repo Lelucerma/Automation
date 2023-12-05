@@ -12,6 +12,7 @@ from Kamor_pump_ui import Ui_Form
 import threading
 
 pump_ever = motor.Pump()
+pump_model = motor.Module()
 motor_module = motor.Module()
 
 
@@ -88,48 +89,51 @@ class Stats(QMainWindow, Ui_Form):
         self.clear_button.clicked.connect(self.clear_result_text)
 
     # 点击开始溶胀操作
-    def swell_start(self):
-        self.motor.swell(5, 3, 200)
+    def swellstart(self):
+        pump_model.swell(5, 3, 200)
 
     # 点击开始第一个单元脱保护
-    def unit1_start(self):
+    def deprotect(self):
         unit1 = threading.Thread(target=self.unit1_start_thread)
         unit1.start()
     def unit1_start_thread(self):
         speeds = [60, 60, 60, 120, 200]
         volumes = [40, 70]
-        self.motor.deprotect_unit(4, speeds, volumes, True)
+        pump_model.deprotect_unit(4, speeds, volumes, True)
 
     # 点击开始第二个单元耦合
-    def unit2_start(self):
+    def couple_unit(self):
         unit2 = threading.Thread(target=self.unit2_start_thread)
         unit2.start()
     def unit2_start_thread(self):
         speeds = [60, 60, 60, 120, 200]
         volumes = [40, 70]
-        self.motor.couple_unit(4, speeds, volumes, True)
+        pump_model.couple_unit(4, speeds, volumes, True)
     
     # 点击开始清洗
-    def wash_start(self):
-        wash = threading.Thread(target=self.wash_start_thread)
-        wash.start()
+    def washstart(self):
+        # wash = threading.Thread(target=self.wash_start_thread)
+        # wash.start()
+        self.wash_frequence = 3
+        for i in range(self.wash_frequence):
+            pump_model.wash_ever(7, 200)
     def wash_start_thread(self): 
-        self.wash_frequence = int(self.ui.wash_frequence.text())
+        self.wash_frequence = int(self.wash_frequence.text())
         if self.wash_frequence == 0:
             self.wash_frequence = 3
         for i in range(self.wash_frequence):
-            self.motor.wash_ever(7, 200)
+            pump_model.wash_ever(7, 200)
         
         
     # 点击开始压力传感器获得相应的数值
-    def pressure_start(self):
+    def pressurestart(self):
         self.file = str(self.ui.file_name.text())
-        self.press_runtime = int(self.ui.pressure_time.text())
+        self.press_runtime = int(self.pressure_time.text())
         self.press_window = Great()
         self.press_window.show()
         self.press_window.presss_start(self.file, self.press_runtime)
     # 显示压力
-    def pressure_display(self):
+    def pressuredisplay(self):
         self.press_window = p.Pre_ui()
         self.press_window.show()
 
@@ -297,14 +301,14 @@ class Great(QWidget):
 
 
 
-def main():
-    global b
-    app = QApplication([])
-    stats = Stats()
-    stats.show()
-    app.exec()
+# def main():
+#     global b
+#     app = QApplication([])
+#     stats = Stats()
+#     stats.show()
+#     app.exec()
 
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
-    main()
+#     main()

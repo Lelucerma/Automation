@@ -327,7 +327,7 @@ class Module:
         self.first_value = relay.Value(11)
         self.second_value = relay.Value(12)
 
-    def deprotect_unit4(self,
+    def deprotect_unit(self,
                       slave_add1=1,
                       speed=None,
                       volume=None,
@@ -415,14 +415,14 @@ class Module:
         # 开启第五个泵
         self.pump_ever.pump_run(8, 1, 1, self.speed5)
         
-        self.second_value.value_start()
-        time.sleep(2)
-        self.pump_ever.pump_run(7, 1, 1, self.speed3)
-        time.sleep(5)
-        self.pump_ever.pump_run(7, 0, 0, self.speed3)
-        self.second_value.value_stop()
+        # self.second_value.value_start()
+        # time.sleep(2)
+        # self.pump_ever.pump_run(7, 1, 1, self.speed3)
+        # time.sleep(5)
+        # self.pump_ever.pump_run(7, 0, 0, self.speed3)
+        # self.second_value.value_stop()
         
-        time.sleep(self.time6+self.pump1_runtime*1.2 - 7)
+        time.sleep(self.time6+self.pump1_runtime)
         
         # 关闭前三个泵（因为如果前两个泵提前关闭，那么会有溶液在前两个泵的出口管道中进行堆积）
         self.pump_ever.pump_run(3, 0, 0, self.speed3)
@@ -433,7 +433,7 @@ class Module:
         self.first_value.value_end()
 
 
-    def couple_unit4(self,
+    def couple_unit(self,
                       slave_add1=1,
                       speed=None,
                       volume=None,
@@ -497,33 +497,33 @@ class Module:
         # 因为要循环，因此肯定是前两个泵进行循环操作，而后洗涤的泵就开启时间较晚
         self.pump_ever.pump_run(5, 1, 1, self.speed1)
 
-        # time.sleep(self.time3-2)
-        time.sleep(10)
+        time.sleep(self.time3-2)
+        # time.sleep(10)
         print(f"self.time3：{self.time3-2}")
 
         # 开启阀门
         print('开启阀门')
-        self.first_value.value_start()
+        # self.first_value.value_start()
         # winsound.Beep(400, 1000)
         # 开启第三个泵
         self.pump_ever.pump_run(6, 1, 1, self.speed3)
 
         # 计算物料输送结束的时间t3
-        # time.sleep(self.pump1_runtime)
-        time.sleep(10)
+        time.sleep(self.pump1_runtime)
+        # time.sleep(10)
         print(f"self.pump1_runtime：{self.pump1_runtime}")
         # 关闭氨基酸泵
         self.pump_ever.pump_run(5, 0, 0, self.speed1)
 
         # 耦合反应时间
-        self.time = self.pump3_runtime-self.pump1_runtime# + 240
-        # time.sleep(self.time)
-        time.sleep(10)
+        self.time = self.pump3_runtime-self.pump1_runtime + 240
+        time.sleep(self.time)
+        # time.sleep(10)
         print(f"self.time：{self.time}")
 
         # 关闭阀门
         print('关闭阀门')
-        self.first_value.value_stop()
+        # self.first_value.value_stop()
         # open wash value
         
         self.pump_ever.pump_run(6, 1, 1, self.speed5)
@@ -531,27 +531,27 @@ class Module:
         # 开启第五个泵
         self.pump_ever.pump_run(8, 1, 1, self.speed5)
         
-        self.second_value.value_start()
-        time.sleep(2)
-        self.pump_ever.pump_run(7, 1, 1, self.speed3)
-        time.sleep(10)
-        self.pump_ever.pump_run(7, 0, 0, self.speed3)
+        # self.second_value.value_start()
+        # time.sleep(2)
+        # self.pump_ever.pump_run(7, 1, 1, self.speed3)
+        # time.sleep(10)
+        # self.pump_ever.pump_run(7, 0, 0, self.speed3)
         
         
         # time.sleep(3)
         
-        time.sleep(self.time6+self.pump1_runtime*1.2 - 12)
+        time.sleep(self.time6+self.pump1_runtime)
         
         # 关闭前三个泵（因为如果前两个泵提前关闭，那么会有溶液在前两个泵的出口管道中进行堆积）
         self.pump_ever.pump_run(6, 0, 0, self.speed3)
-        self.second_value.value_stop()
+        # self.second_value.value_stop()
         # 循环装置鼓泡guanbi
         # self.pump_ever.pump_run(self.slave_add5, 0, 0, self.speed3)
      
         # 关闭第五个泵
         time.sleep(3)
         self.pump_ever.pump_run(8, 0, 0, self.speed5)
-        self.first_value.value_end()
+        # self.first_value.value_end()
 
 
     def wash(self, m):
