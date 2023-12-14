@@ -12,7 +12,7 @@ Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查�
 import math
 import time
 import serial
-import relay
+# import relay
 
 
 # 泵的命令行组成
@@ -324,8 +324,8 @@ class Module:
         self.tube_area, self.tube_volume = None, None
 
         self.pump_ever = Pump()
-        self.first_value = relay.Value(11)
-        self.second_value = relay.Value(12)
+        #self.first_value = relay.Value(11)
+        #self.second_value = relay.Value(12)
 
     def deprotect_unit(self,
                       slave_add1=1,
@@ -393,7 +393,7 @@ class Module:
 
         # 开启阀门
         print('开启阀门')
-        self.first_value.value_start()
+        #self.first_value.value_start()
         # winsound.Beep(400, 1000)
         # 开启第三个泵
         self.pump_ever.pump_run(4, 1, 1, self.speed3)
@@ -409,7 +409,7 @@ class Module:
 
         # 关闭阀门
         print('关闭阀门')
-        self.first_value.value_stop()
+        #self.first_value.value_stop()
         self.pump_ever.pump_run(3, 1, 1, self.speed5)
         # winsound.Beep(400, 2000)
         # 开启第五个泵
@@ -430,7 +430,7 @@ class Module:
         # 关闭第五个泵
         time.sleep(3)
         self.pump_ever.pump_run(8, 0, 0, self.speed5)
-        self.first_value.value_end()
+        #self.first_value.value_end()
 
 
     def couple_unit(self,

@@ -30,6 +30,6 @@ def ser_list():
 
 if __name__ == "__main__":
     port = ser_list()
-    motor.ser_open(port)
+    motor.ser_open("com3")
     pump_ui()
     motor.ser_close()
