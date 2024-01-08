@@ -7,7 +7,7 @@ import numpy as np
 from datetime import datetime
 import pressure as p
 import motor
-import relay
+# import relay
 from Kamor_pump_ui import Ui_Form
 import threading
 
@@ -59,14 +59,14 @@ class Stats(QMainWindow, Ui_Form):
             lambda: self.pump_stop_button(8))
         # 10、第九个泵的控制
         self.pump9_open_button.clicked.connect(
-            lambda: self.value_open_button(9))
+            lambda: self.pump_open_button(9))
         self.pump9_stop_button.clicked.connect(
-            lambda: self.value_stop_button(9))
+            lambda: self.pump_stop_button(9))
         # 10、第十个泵的控制
         self.pump10_open_button.clicked.connect(
-            lambda: self.value_open_button(10))
+            lambda: self.pump_open_button(10))
         self.pump10_stop_button.clicked.connect(
-            lambda: self.value_stop_button(10))
+            lambda: self.pump_stop_button(10))
         # 10、第十一个泵的控制
         self.pump11_open_button.clicked.connect(
             lambda: self.pump_open_button(11))
