@@ -2,16 +2,18 @@ import os.path
 import threading
 import serial
 import time
-from PySide6.QtWidgets import QVBoxLayout, QWidget, QLabel
-from PySide6.QtCore import QTimer
+from PyQt5.QtWidgets import QApplication, QDialog, QGridLayout
+from PyQt5.QtCore import QTimer,pyqtSignal
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 import random
+import sys
 import numpy as np
+from ui.Kamor_pump_ui import Ui_Form
 
-global b
-b = {}
-
+import matplotlib
+matplotlib.use("agg")  # 声明使用QT5
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 
 # 生成命令
 class PressCom():
@@ -170,6 +172,8 @@ class DataSave():
 
 
 class PressUnit():
+    dataEmit = pyqtSignal() #创建槽信号
+
     def __init__(self) -> None:
 
         self.time2 = 0
@@ -227,79 +231,77 @@ class PressUnit():
         self.press_true = self.c1.read_pressure(self.slave_add)
         self.press_tran = str(self.c1.trans(self.press_true))
         self.press_tran += self.unit_data[self.slave_add]
-        self.data[self.slave_add] = self.press_tranW
+        self.data[self.slave_add] = self.press_tran
         self.datas.append(self.data)
+        self.data = random.randint(0, 100)
         # print(self.data)
-        try:
-            b = self.data
-        except (TypeError):
-            pass
+        self.dataEmit.emit(self.data)
 
 
-def data_tran(a):
-    b = a
+# 创建一个matplotlib图形绘制类
+class MyFigure(FigureCanvas):
+    def __init__(self,width=5, height=4, dpi=100):
+        # 第一步：创建一个创建Figure
+        self.fig = Figure(figsize=(width, height), dpi=dpi)
+        # 第二步：在父类中激活Figure窗口
+        super(MyFigure,self).__init__(self.fig)  # 此句必不可少，否则不能显示图形
+        # 第三步：创建一个子图，用于绘制图形用，111表示子图编号，如matlab的subplot(1,1,1)
+        self.axes = self.fig.add_subplot(111)
+        self.pr = PressUnit()
+        self.pr.dataEmit.connect()
+        
+    # 第四步：就是画图，【可以在此类中画，也可以在其它类中画】
+    def mat_plot_drow_axes(self, t, s):
+        """
+        用清除画布刷新的方法绘图
+        :return:
+        """
+        self.axes.cla()  # 清除绘图区
 
+        self.axes.spines['top'].set_visible(False)  # 顶边界不可见
+        self.axes.spines['right'].set_visible(False)  # 右边界不可见
+        # 设置左、下边界在（0，0）处相交
+        # self.axes.spines['bottom'].set_position(('data', 0))  # 设置y轴线原点数据为 0
+        self.axes.spines['left'].set_position(('data', 0))  # 设置x轴线原点数据为 0
+        self.axes.plot(t, s, linewidth=0.5)
+        self.fig.canvas.draw()  # 这里注意是画布重绘，self.figs.canvas
+        self.fig.canvas.flush_events()  # 画布刷新self.figs.canvas
 
-class Pre_ui(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle('压力变化')
-        self.setGeometry(100, 100, 640, 500)
-
-        self.central_widget = QWidget(self)
-        layout = QVBoxLayout(self.central_widget)
-
-        self.text1_label = QLabel('压力1:')
-        self.text2_label = QLabel('压力2:')
-        layout.addWidget(self.text1_label)
-        layout.addWidget(self.text2_label)
-
-        self.fig = Figure(figsize=(6, 4), dpi=100)
-        self.canvas = FigureCanvas(self.fig)
-        layout.addWidget(self.canvas)
-
-        self.ax = self.fig.add_subplot(111)
-        self.ax.set_xlim(0, 10)
-        self.ax.set_ylim(0, 100)
-        self.line1, = self.ax.plot([], [])
-        self.line2, = self.ax.plot([], [])
-
-        self.data_x = np.arange(10)
-        self.data_y1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        self.data_y2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-
+    def plotcos(self):
+        self.x = [1,2,3,4,5,6,7,8,9,10]
+        self.y = [0,0,0,0,0,0,0,0,0,0]
+        self.axes.plot(self.x, self.y)
+        self.fig.suptitle("uv")  # 设置标题
         self.timer = QTimer()
         self.timer.timeout.connect(self.update_plot)
-        self.timer.start(1000)  # 1秒钟更新一次图表
+        self.timer.start(100)  # 1秒钟更新一次图表
 
-    def update_plot(self):
-        # 这里可以替换为你自己的文本数据生成逻辑
-        # print(self.slaves.data)
-        p1 = random.randint(1, 100)
-        p2 = random.randint(1, 100)
-        print(b)
-        text1 = f"压力1: {p1} kpa"
-        text2 = f"压力2: {p2} kpa"
+    def update_plot(self, data):
+        self.p = data
+        self.y.pop(0)
+        self.mat_plot_drow_axes(self.x, self.y)
 
-        self.text1_label.setText(text1)
-        self.text2_label.setText(text2)
-        # self.data_x.pop(0)
-        self.data_y1.pop(0)
-        self.data_y2.pop(0)
-        # 模拟实时数据，这里使用随机数
-        # self.data_x.append(len(self.data_x))
-        # print(self.data_x,self.data_y)
-        self.data_y1.append(p1)
-        self.data_y2.append(p2)
-        self.line1.set_data(self.data_x, self.data_y1)
-        self.line2.set_data(self.data_x, self.data_y2)
-        self.ax.relim()
-        self.ax.autoscale_view()
-        self.canvas.draw()
 
-    def data(self, a):
-        print(a)
+class MainDialogImgBW(QDialog, Ui_Form):
+    def __init__(self):
+        super(MainDialogImgBW,self).__init__()
+        self.setupUi(self)
+        self.setWindowTitle("显示matplotlib绘制图形")
+        self.setMinimumSize(0,0)
 
+        # 第五步：定义MyFigure类的一个实例
+        self.F = MyFigure(width=3, height=2, dpi=100)
+        self.F.plotcos()
+        self.gridlayout = QGridLayout(self.groupBox)  # 继承容器groupBox
+        self.gridlayout.addWidget(self.F,0,1)
+
+
+    def plotcos(self):
+        self.t = np.arange(100)
+        self.s = np.random.random(100)
+        self.F.fig.suptitle("sin")  # 设置标题
+        self.F.mat_plot_drow_axes(self.t, self.s)
+        
 
 def serOpen(compress):
     global ser_press
@@ -318,16 +320,16 @@ def serClose():
     ser_press.close()
 
 
-def main():
-    slave_press = PressUnit()
-    file_name = 'D:\\2 code\\Automation\\data\\230801\\1.txt'
-    slave_press.slaves('com6', 1, 10,
-                       file_name)  # slave_add从第二个开始使用，保留第一个的从机地址
-    print(1)
+# def main():
+#     slave_press = PressUnit()
+#     file_name = 'D:\\2 code\\Automation\\data\\230801\\1.txt'
+#     slave_press.slaves('com6', 1, 10,
+#                        file_name)  # slave_add从第二个开始使用，保留第一个的从机地址
+#     print(1)
 
-
-# if __name__ == "__main__":
-#     t1 = time.time()
-#     main()
-#     t2 = time.time()
-#     print((t2 - t1) / 60)
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    main = MainDialogImgBW()
+    main.show()
+    #app.installEventFilter(main)
+    sys.exit(app.exec())

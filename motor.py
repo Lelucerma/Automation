@@ -4,7 +4,7 @@
 Author: wang w1838978548@126.com
 Date: 2023-09-25 20:54:24
 LastEditors: wang w1838978548@126.com
-LastEditTime: 2023-11-20 11:07:34
+LastEditTime: 2024-05-23 16:16:22
 FilePath: \Automation\motor.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 
 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
@@ -93,6 +93,7 @@ class PumpCom:
         self.cmd = self.slave_add + self.func + self.addh + self.addl
         self.cmd = self.cmd + self.datah + self.datal
         self.cmd = self.crc16(self.cmd)
+        # print(self.cmd)
         return self.cmd
 
     # 需调整
@@ -115,6 +116,7 @@ class PumpCom:
         self.cmd = self.slave_add + self.func + self.addh + self.addl
         self.cmd = self.cmd + self.datalenth + self.data_byte + self.data
         self.cmd = self.crc16(self.cmd)
+        # print(self.cmd)
         return self.cmd
 
     def read_register(self, slave_add, func, data):
@@ -135,6 +137,7 @@ class PumpCom:
         self.cmd = self.slave_add + self.func + self.addh + self.addl
         self.cmd = self.cmd + self.datah + self.datal
         self.cmd = self.crc16(self.cmd)
+        # print(self.cmd)
         return self.cmd
 
     def write_register(self, slave_add, func, data):
@@ -210,6 +213,22 @@ class PumpCom:
         else:
             self.datal = [0]
 
+    # 多通阀的通道控制命令
+    def value_cmd(self, slave_add, passage):
+        """
+        这是多通道阀的控制命令
+        paraments:
+            slave_add : 这个阀门的通讯地址
+            passage : 0:复位，1-10:孔位1-10，11:查询当前孔位
+        """"
+        if passage < 10:
+            self.cmd = [slave_add, 5, 0, passage, 255, 0]
+            self.cmd = self.crc16(self.cmd)
+        else:
+            self.cmd = [17, 4, 0, 0, 0, 2]
+            self.cmd = self.crc16(self.cmd)
+        return self.cmd
+
     # 将速度值转换成命令行
     def trans(self):
         # 转换陈十六进制的数据
@@ -260,8 +279,9 @@ class Pump:
             self.data = 0
         # print(self.data)
         self.begin_cmd = self.cm.write_bits(slave_add, '001', self.data)
-        # print(self.begin_cmd)
+        print(self.begin_cmd)
         self.resp1 = self.answer(self.begin_cmd)
+        print(self.resp1)
 
         # print(self.resp1)
         if run and self.run_speed:
@@ -269,7 +289,7 @@ class Pump:
                                                      self.run_speed)
             # print(self.speed_cmd)
             self.resp2 = self.answer(self.speed_cmd)
-            # print(self.resp2)
+            print(self.resp2)
 
     def speed_change(self, slave_add):
         self.speed_change_cmd = self.cm.write_registers(
@@ -277,6 +297,17 @@ class Pump:
         # print(self.speed_cmd)
         self.resp3 = self.answer(self.speed_change_cmd)
         # print(self.resp3)
+
+    def value_change(self, slave_add, passage):
+        self.value_change_cmd = self.cm.value_cmd(
+            slave_add, passage)
+        # print(self.speed_cmd)
+        self.resp4 = self.answer(self.value_change_cmd)
+        if passage == 11:
+            self.hole_num = self.resp4[6]
+            return self.hole_num
+        else:
+            pass
 
     def answer(self, cmd):
         self.cmd = cmd
@@ -680,9 +711,9 @@ def ser_close():
     ser_pump.close()
 
 
-# ser_open("com5")
+# ser_open("com7")
 # a = Pump()
-# a.pump_run(8,0,0)
+# a.pump_run(1,0,0)
 # pump = Module()
 # # for i in range(3):
 # #     pump.wash_ever(7, 200)

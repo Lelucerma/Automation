@@ -2,14 +2,17 @@
 Author: wang w1838978548@126.com
 Date: 2024-01-08 15:35:26
 LastEditors: wang w1838978548@126.com
-LastEditTime: 2024-01-08 17:58:27
+LastEditTime: 2024-01-10 15:06:43
 FilePath: \practice\test.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
 import matplotlib.pyplot as plt
 import os
+import numpy as np
+from scipy.signal import find_peaks, peak_widths
 
-pathname = "D:\\0 厦门大学\\10 实验\数据\\231217"
+pathname = "D:\\0 厦门大学\\10 实验\\数据\\240123"
+# pathname = "D:\\0 厦门大学\\10 实验\\荧光"
 filenames = os.listdir(pathname)  # 获取该目录下所有的文件
 fileFliter = []
 filesave = filedata = pathname + "\\" + "alls.xls"
@@ -20,9 +23,10 @@ for filename in filenames:
         fileFliter.append(filename)
 areas = []
 
+
 class Data_ana():
-    def data1(self):
-        f = "D:\\0 厦门大学\\10 实验\\数据\\231217\\tyr0.2-0.35@(UV-ch1-310) .txt"
+    def data1(self, filename):
+        f = filename
         file_uv = open(f, 'r')
         datas = []
         data = file_uv.readlines()
@@ -130,28 +134,44 @@ class Data_ana():
         return tran_data
 
     def draw_picture(self, data):
-        xi = data[0]
-        yi = data[1]
+        y = data[0] + data[1]
+        y = np.array(y)
+        y2 = np.array(data[1])
+        peaks1, _ = find_peaks(y, height=100)
+        # peaks2, _ = find_peaks(y2, height=100)
+        width1 = peak_widths(y, peaks1, rel_height=1)
+        # width2 = peak_widths(y2, peaks2, rel_height=1)
         plt.title(filename[:-4])
         plt.ylabel("uv(mAu)")
         plt.xlabel("t(s)")
-        plt.plot(xi, yi)
+        plt.plot(y)
+        # plt.plot(peaks1, y[peaks1], "x")
+        # plt.hlines(*width1[1:], color="C4")
+        # plt.plot(y2)
+        # plt.plot(peaks2, y2[peaks2], "+")
+        # plt.hlines(*width2[1:], color="C3")
+        # print(width)
         plt.show()
 
-# slop_judgement()
-all_ever = 0
-a = Data_ana()
-ever_data = a.data1()
-# print(ever_data[1])
-a,b = a.slop_judgement(ever_data)
-m,n = a.peak_judgement(a,b)
-print(m,n)
-for i in range(len(m)):
-    ever_area = a.data_analysis(ever_data,m[i],n[i])
-    all_ever += ever_area
-    print("%f:%.3f"%(m[i], ever_area))
-print("%.3f"%all_ever)
-a.draw_picture(ever_data)
+for file in fileFliter:
+    # slop_judgement()
+    print(file)
+    all_ever = 0
+    a = Data_ana()
+    file = pathname + "\\" + file
+    ever_data = a.data1(file)
+    # print(ever_data[1])
+    # c, b = a.slop_judgement(ever_data)
+    # m, n = a.peak_judgement(c, b)
+    # print(m, n)
+    # for i in range(len(m)):
+    #     ever_area = a.data_analysis(ever_data, m[i], n[i])
+    #     all_ever += ever_area
+    #     print("%f: %.3f" % (m[i], ever_area))
+    # # print("%.3f"%all_ever)
+
+    a.draw_picture(ever_data)
+
 
 
 # print(dell([0.791, 1.218, 1.925, 2.011, 3.31, 3.345, 3.401, 4.104, 4.107, 4.109, 4.8, 4.803]))

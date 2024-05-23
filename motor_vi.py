@@ -506,13 +506,13 @@ class Stats:
         self.ui.display_text.append(newline)
 
 
-def main():
-    app = QApplication([])
-    stats = Stats()
-    stats.ui.show()
-    app.exec()
+# def main():
+#     app = QApplication([])
+#     stats = Stats()
+#     stats.ui.show()
+#     app.exec()
 
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
-    main()
+#     main()
