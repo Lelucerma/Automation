@@ -4,11 +4,7 @@
 Author: wang w1838978548@126.com
 Date: 2023-09-25 20:54:24
 LastEditors: wang w1838978548@126.com
-<<<<<<< HEAD
 LastEditTime: 2024-05-23 16:16:22
-=======
-LastEditTime: 2024-04-18 17:09:53
->>>>>>> 61f4b704644d5de5477898d9bd4814eb1082d24e
 FilePath: \Automation\motor.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 
 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
@@ -97,11 +93,8 @@ class PumpCom:
         self.cmd = self.slave_add + self.func + self.addh + self.addl
         self.cmd = self.cmd + self.datah + self.datal
         self.cmd = self.crc16(self.cmd)
-<<<<<<< HEAD
         # print(self.cmd)
-=======
-        print(self.cmd)
->>>>>>> 61f4b704644d5de5477898d9bd4814eb1082d24e
+
         return self.cmd
 
     # 需调整
@@ -124,11 +117,8 @@ class PumpCom:
         self.cmd = self.slave_add + self.func + self.addh + self.addl
         self.cmd = self.cmd + self.datalenth + self.data_byte + self.data
         self.cmd = self.crc16(self.cmd)
-<<<<<<< HEAD
         # print(self.cmd)
-=======
-        print(self.cmd)
->>>>>>> 61f4b704644d5de5477898d9bd4814eb1082d24e
+
         return self.cmd
 
     def read_register(self, slave_add, func, data):
@@ -232,7 +222,8 @@ class PumpCom:
         paraments:
             slave_add : 这个阀门的通讯地址
             passage : 0:复位，1-10:孔位1-10，11:查询当前孔位
-        """"
+        """
+        
         if passage < 10:
             self.cmd = [slave_add, 5, 0, passage, 255, 0]
             self.cmd = self.crc16(self.cmd)

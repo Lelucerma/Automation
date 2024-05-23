@@ -139,8 +139,8 @@ class Stats(QDialog, Ui_Form):
             lambda: self.pump_stop_button(17))
         
         # 阀门1和2的控制
-        self.vlaue1_dial.valueChanged.connect(lambda: self.value_tran(101))
-        self.vlaue2_dial.valueChanged.connect(lambda: self.value_tran(102))
+        self.value1_dial.valueChanged.connect(lambda: self.value_tran(101))
+        self.value2_dial.valueChanged.connect(lambda: self.value_tran(102))
 
         # 开始溶胀
         # self.unit1_wash_start_button.clicked.connect(self.swellstart)
@@ -389,13 +389,24 @@ class Stats(QDialog, Ui_Form):
     # 多通阀阀门通道的转换
     def value_tran(self, add):
         self.slave_add = add
-        self.value_passage = int(self.value1_dial.value())
-        if self.value_passage < 10:
+        value_info = {
+        101: {'passage': self.value1_dial, 'label': self.value1_passage_label},
+        102: {'passage': self.value2_dial, 'label': self.valeu2_passage_label}
+        }
+        self.value_value = value_info[self.slave_add]
+        self.value_passage = int(self.value_value['passage'].value())
+        if self.value_passage == 0:
             pump_ever.value_change(self.slave_add, self.value_passage)
-            self.value1_passage_label.setText(str(self.value_passage))
-        else:
             self.hole = pump_ever.value_change(self.slave_add, self.value_passage)
-            self.value1_passage_label.setText(str(self.hole))
+            self.value_value['label'].setText(str(self.hole))
+        if self.value_passage <= 10:
+            self.value_value['label'].setText(str(self.value_passage))
+            pump_ever.value_change(self.slave_add, self.value_passage)            
+        else:           
+            self.hole = pump_ever.value_change(self.slave_add, self.value_passage)
+            self.value_value['label'].setText(str(self.hole))
+            
+            
 
     # 将阀门的值转化为树莓派对应的引脚
     def value_tranlation(self):
