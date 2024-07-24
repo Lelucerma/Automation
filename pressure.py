@@ -279,6 +279,7 @@ class MyFigure(FigureCanvas):
     def update_plot(self, data):
         self.p = data
         self.y.pop(0)
+        self.y.append(self.p)
         self.mat_plot_drow_axes(self.x, self.y)
 
 

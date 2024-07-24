@@ -1364,8 +1364,8 @@ class Ui_Form(object):
 
         self.value2_dial = QDial(self.layoutWidget_2)
         self.value2_dial.setObjectName(u"value2_dial")
-        self.value2_dial.setMinimum(1)
-        self.value2_dial.setMaximum(6)
+        self.value2_dial.setMinimum(0)
+        self.value2_dial.setMaximum(11)
         self.value2_dial.setNotchesVisible(True)
 
         self.horizontalLayout_2.addWidget(self.value2_dial)
@@ -1388,8 +1388,8 @@ class Ui_Form(object):
 
         self.value1_dial = QDial(self.widget)
         self.value1_dial.setObjectName(u"value1_dial")
-        self.value1_dial.setMinimum(1)
-        self.value1_dial.setMaximum(6)
+        self.value1_dial.setMinimum(0)
+        self.value1_dial.setMaximum(11)
         self.value1_dial.setNotchesVisible(True)
 
         self.horizontalLayout.addWidget(self.value1_dial)

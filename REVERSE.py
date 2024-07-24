@@ -11,9 +11,9 @@ import time
 
 a = motor.Pump()
 
-motor.ser_open('com6')
+motor.ser_open('com8')
 # a.pump_run(5,1,0,200)
-for i in range(3,16):
+for i in range(1,16):
     a.pump_run(i, 0, 0, 60)
 # a.pump_run(11, 0, 0, 60)
 
