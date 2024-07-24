@@ -140,8 +140,10 @@ class Stats(QDialog, Ui_Form):
             lambda: self.pump_stop_button(17))
         
         # 阀门1和2的控制
+
         self.value1_dial.valueChanged.connect(lambda: self.value_tran(31))
         # self.value2_dial.valueChanged.connect(lambda: self.value_tran(102))
+
 
         # 开始溶胀
         # self.unit1_wash_start_button.clicked.connect(self.swellstart)
@@ -413,7 +415,7 @@ class Stats(QDialog, Ui_Form):
         else:           
             self.hole = pump_ever.value_change(self.slave_add, self.value_passage)
             self.value_value['label'].setText(str(self.hole))
-              
+
     # 将阀门的值转化为树莓派对应的引脚
     def value_tranlation(self):
         self.values = {9: "11", 10: "12"}  # 第9个按钮，对应的是第一个阀门，对应的树莓上面第17个引脚
