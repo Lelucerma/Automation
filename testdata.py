@@ -2,7 +2,7 @@
 Author: wang w1838978548@126.com
 Date: 2024-01-08 15:35:26
 LastEditors: wang w1838978548@126.com
-LastEditTime: 2024-01-10 15:06:43
+LastEditTime: 2024-07-24 17:54:19
 FilePath: \practice\test.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
@@ -11,7 +11,7 @@ import os
 import numpy as np
 from scipy.signal import find_peaks, peak_widths
 
-pathname = "D:\\0 厦门大学\\10 实验\\数据\\240123"
+pathname = ".\\data\\20240724"
 # pathname = "D:\\0 厦门大学\\10 实验\\荧光"
 filenames = os.listdir(pathname)  # 获取该目录下所有的文件
 fileFliter = []
@@ -36,7 +36,15 @@ class Data_ana():
             temp = ever_line.split('\t')
             temp[1] = temp[1].split('\n')
             x = float(temp[0])
+            # print(x)
             y = float(temp[1][0])
+            # if x > 27 and x < 33:
+            #     pass
+            # elif x > 41:
+            #     pass
+            # else:
+            #     xi.append(x)
+            #     yi.append(y)
             xi.append(x)
             yi.append(y)
         datas.append(xi)
@@ -133,33 +141,42 @@ class Data_ana():
             i += 1
         return tran_data
 
-    def draw_picture(self, data):
-        y = data[0] + data[1]
-        y = np.array(y)
+    def draw_picture(self, data, filename):
+        plt.figure(num=1,figsize=(20,10))
+        filename = filename.split("\\")
+        y = data[1]
+        # y = np.array(y)
+        x = data[0]
         y2 = np.array(data[1])
+        # cls = #55ffff
         peaks1, _ = find_peaks(y, height=100)
         # peaks2, _ = find_peaks(y2, height=100)
         width1 = peak_widths(y, peaks1, rel_height=1)
         # width2 = peak_widths(y2, peaks2, rel_height=1)
-        plt.title(filename[:-4])
+        plt.title(filename[-1][:-4])
         plt.ylabel("uv(mAu)")
-        plt.xlabel("t(s)")
-        plt.plot(y)
+        plt.xlabel("t(min)")
+        xmax = int(max(x)) + 5 
+        my_x_ticks = np.arange(0,xmax,1)
+        plt.plot(x, y, color='#55aaffff')
         # plt.plot(peaks1, y[peaks1], "x")
         # plt.hlines(*width1[1:], color="C4")
         # plt.plot(y2)
         # plt.plot(peaks2, y2[peaks2], "+")
         # plt.hlines(*width2[1:], color="C3")
         # print(width)
+        plt.xticks(my_x_ticks)
         plt.show()
 
 for file in fileFliter:
     # slop_judgement()
-    print(file)
+    # print(file)
     all_ever = 0
     a = Data_ana()
-    file = pathname + "\\" + file
-    ever_data = a.data1(file)
+    file1 = pathname + "\\" + file
+    # print(file1)
+    ever_data = a.data1(file1)
+    # print(ever_data[1])
     # print(ever_data[1])
     # c, b = a.slop_judgement(ever_data)
     # m, n = a.peak_judgement(c, b)
@@ -170,7 +187,7 @@ for file in fileFliter:
     #     print("%f: %.3f" % (m[i], ever_area))
     # # print("%.3f"%all_ever)
 
-    a.draw_picture(ever_data)
+    a.draw_picture(ever_data, file1)
 
 
 

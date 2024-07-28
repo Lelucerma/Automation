@@ -34,7 +34,7 @@ def plt_picture(file_path, file_name):
 
     file_name = str(file_name.split('.txt')[0])
     file1 = file_path + "\\" + file_name + '.txt'
-    a = open(file_name, "r+")
+    a = open(file1, "r+")
     data = a.readlines()
     ever_lines = []
     i = 0
@@ -42,8 +42,9 @@ def plt_picture(file_path, file_name):
     for line in data:
         ever_lines.append(line.strip())
     for ever_data in ever_lines:
-        xi = np.arange(98)
+        xi = np.arange()
         yi = ever_data
+
         # "r" 表示红色，marksize用来设置'D'菱形的大小
         plt.plot(xi, yi, c=col[i], label="pressure")
     # 绘制坐标轴标签
@@ -138,10 +139,10 @@ def floder(path):
 #     # plt_pictures(file_name4)
 #     # plt_pictures(file_name5)
 
-path = 'D:\\2 code\\Automation\data\\230801'
+path = 'D:\\2 code\\Automation\\data\\20240724'
 files = floder(path)
-file_name = 'gly2_depro.txt'
-plt_picture(path)
+file_name = '240724pheouhe1.txt'
+plt_picture(path, file_name)
 # for file_name in files:
 #     plt_pictures(path, file_name)
 
