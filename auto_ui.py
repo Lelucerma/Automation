@@ -7,6 +7,7 @@ import numpy as np
 from datetime import datetime
 import pressure as p
 import motor
+import random
 # import relay
 from ui.Kamor_pump_ui import Ui_Form
 import threading
@@ -139,8 +140,8 @@ class Stats(QDialog, Ui_Form):
             lambda: self.pump_stop_button(17))
         
         # 阀门1和2的控制
-        self.vlaue1_dial.valueChanged.connect(lambda: self.value_tran(101))
-        self.vlaue2_dial.valueChanged.connect(lambda: self.value_tran(102))
+        # self.value1_dial.valueChanged.connect(lambda: self.value_tran(101))
+        # self.value2_dial.valueChanged.connect(lambda: self.value_tran(102))
 
         # 开始溶胀
         # self.unit1_wash_start_button.clicked.connect(self.swellstart)
@@ -176,7 +177,7 @@ class Stats(QDialog, Ui_Form):
         # 开始第二个单元控制
         self.unit1_wash_start_button.clicked.connect(self.washstart)
         # 压力传感器的控制
-        # self.pressure_start.clicked.connect(self.pressure_starts)
+        self.pressure_start.clicked.connect(self.pressurestart_thread)
         # 压力数值的显示
         # self.pressure_display.clicked.connect(self.pressure_stop)
         # 文本框清除按钮
@@ -189,25 +190,34 @@ class Stats(QDialog, Ui_Form):
     #     pump_model.swell(5, 3, 200)
 
     # 点击开始单元脱保护
-    def deprotect(self):
-        unit1 = threading.Thread(target=self.depro_start_thread)
+    def deprotect(self, add):
+        unit1 = threading.Thread(target=self.depro_start_thread,args={add})
         unit1.start()
     
     def depro_start_thread(self, unit_add):
         self.unit_add = unit_add
-        # print(self.slave_add)
+        # print(self.slave_add)/
         unit_info = {
-        1: {'start_pump': [3, 4, 5]},
-        2: {'start_pump': [6, 7, 8]},
-        3: {'start_pump': [9, 10, 11]},
-        4: {'start_pump': [12, 13, 14]},
-        5: {'start_pump': [15, 16, 17]},
+        1: {'start_pump': [3, 4, 5, [4, 17, 1], [12, 17, 1]],'nextwaste':[13, 17,2]},
+        2: {'start_pump': [6, 7, 8, [7, 17, 2], [13, 17, 2]], 'nextwaste':[14, 17,3]},
+        3: {'start_pump': [9, 10, 11, [10, 17, 3], [14, 17, 3]], 'nextwaste':[12, 17,1]},
+        4: {'start_pump': [12, 13, 14, [12, 17, 4], [13, 17, 4]], 'nextwaste':[12, 17,1]},
+        5: {'start_pump': [15, 16, 17, [12, 17, 5], [13, 17, 5]], 'nextwaste':[12, 17,1]},
         }
-        if self.unit_add in unit_info:
-            unit_start_pump = unit_info[self.slave_add]
-        speeds = [60, 60, 60, 120, 200]
-        volumes = [40, 70]
-        pump_model.deprotect_unit(unit_start_pump['start_pump'][0], speeds, volumes, True)
+        
+        if self.unit_add == 4:
+            for i in range(3):
+                self.unit_add = i + 1
+                unit_start_pump = unit_info[self.unit_add]
+                adds = unit_start_pump['start_pump']
+                next_waste = unit_start_pump['nextwaste']            
+                pump_model.deprotect_unit(adds, next_waste=next_waste)
+        else:
+            if self.unit_add in unit_info:
+                unit_start_pump = unit_info[self.unit_add]
+            adds = unit_start_pump['start_pump']
+            next_waste = unit_start_pump['nextwaste']
+            pump_model.deprotect_unit(adds, next_waste=next_waste)
 
     # 点击开始单元耦合
     def couple_unit(self):
@@ -248,16 +258,16 @@ class Stats(QDialog, Ui_Form):
             pump_model.wash_ever(7, 200)
 
     # 点击开始压力传感器获得相应的数值并显示压力
-    def pressure_starts(self):
+    def pressurestart_thread(self):
         self.file = str(self.file_name.text())
         self.press_runtime = int(self.pressure_time.text())
         self.F = MyFigure(width=3, height=2, dpi=100)
         self.F.plotcos()
         self.gridlayout = QGridLayout(self.groupBox)  # 继承容器groupBox
         self.gridlayout.addWidget(self.F, 0, 1)
-        self.press_window.presss_start(self.file, self.press_runtime)
+        
     
-    # def pressure_start(self):
+    # def pressure_starts(self):
     #     pressure = threading.Thread(target=self.pressurestart_thread)
     #     pressure.start()
 
@@ -389,14 +399,23 @@ class Stats(QDialog, Ui_Form):
     # 多通阀阀门通道的转换
     def value_tran(self, add):
         self.slave_add = add
-        self.value_passage = int(self.value1_dial.value())
-        if self.value_passage < 10:
+        value_info = {
+        101: {'passage': self.value1_dial, 'label': self.value1_passage_label},
+        102: {'passage': self.value2_dial, 'label': self.valeu2_passage_label}
+        }
+        self.value_value = value_info[self.slave_add]
+        self.value_passage = int(self.value_value['passage'].value())
+        if self.value_passage == 0:
             pump_ever.value_change(self.slave_add, self.value_passage)
-            self.value1_passage_label.setText(str(self.value_passage))
-        else:
             self.hole = pump_ever.value_change(self.slave_add, self.value_passage)
-            self.value1_passage_label.setText(str(self.hole))
-
+            self.value_value['label'].setText(str(self.hole))
+        if self.value_passage <= 10:
+            self.value_value['label'].setText(str(self.value_passage))
+            pump_ever.value_change(self.slave_add, self.value_passage)            
+        else:           
+            self.hole = pump_ever.value_change(self.slave_add, self.value_passage)
+            self.value_value['label'].setText(str(self.hole))
+              
     # 将阀门的值转化为树莓派对应的引脚
     def value_tranlation(self):
         self.values = {9: "11", 10: "12"}  # 第9个按钮，对应的是第一个阀门，对应的树莓上面第17个引脚
@@ -421,6 +440,7 @@ class MyFigure(FigureCanvas):
         super(MyFigure, self).__init__(self.fig)  # 此句必不可少，否则不能显示图形
         # 第三步：创建一个子图，用于绘制图形用，111表示子图编号，如matlab的subplot(1,1,1)
         self.axes = self.fig.add_subplot(111)
+        self.press = p.PressUnit()
         
     # 第四步：就是画图，【可以在此类中画，也可以在其它类中画】
     def mat_plot_drow_axes(self, t, s):
@@ -440,16 +460,25 @@ class MyFigure(FigureCanvas):
         self.fig.canvas.flush_events()  # 画布刷新self.figs.canvas
 
     def plotcos(self):
-        self.x = np.arange(0.0, 3.0, 0.1)
-        self.y = np.sin(2 * np.pi * self.x)
+        # self.file = file 
+        # self.time1 = time1
+        # self.x = np.arange(0.0, 3.0, 0.1)
+        # a = [0,0,0,0,0,0,0,0,0,0]
+        # self.y = np.array(a*3)
+        self.x = [1,2,3,4,5,6,7,8,9,10]
+        self.y = [0,0,0,0,0,0,0,0,0,0]
         self.axes.plot(self.x, self.y)
-        self.fig.suptitle("uv")  # 设置标题
+        self.fig.suptitle("pressure")  # 设置标题
         self.timer = QTimer()
         self.timer.timeout.connect(self.update_plot)
-        self.timer.start(100)  # 1秒钟更新一次图表
+        self.timer.start(1000)  # 1秒钟更新一次图表
 
     def update_plot(self):
-        self.y = np.random.random(30)
+        # self.press.slaves([3], self.time1, self.file)
+        self.data = random.random()
+        self.y.pop(0)
+        self.y.append(self.data)
+        # self.y = np.random.random(1)
         self.mat_plot_drow_axes(self.x, self.y)
 
 
