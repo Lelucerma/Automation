@@ -138,10 +138,10 @@ def floder(path):
 #     # plt_pictures(file_name4)
 #     # plt_pictures(file_name5)
 
-path = 'D:\\2 code\\Automation\data\\230801'
+path = 'D:\\0 厦门大学\\10 实验\数据\\20240724'
 files = floder(path)
-file_name = 'gly2_depro.txt'
-plt_picture(path)
+file_name = '240724pheouhe1.txt'
+plt_picture(path, file_name)
 # for file_name in files:
 #     plt_pictures(path, file_name)
 
