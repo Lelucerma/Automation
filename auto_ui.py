@@ -140,7 +140,8 @@ class Stats(QDialog, Ui_Form):
             lambda: self.pump_stop_button(17))
         
         # 阀门1和2的控制
-        # self.value1_dial.valueChanged.connect(lambda: self.value_tran(101))
+
+        self.value1_dial.valueChanged.connect(lambda: self.value_tran(31))
         # self.value2_dial.valueChanged.connect(lambda: self.value_tran(102))
 
         # 开始溶胀
@@ -155,10 +156,10 @@ class Stats(QDialog, Ui_Form):
 
         # 开始脱保护单元的控制
         self.unit1_depro_stop_button.clicked.connect(lambda: self.unit_stop(1))
-        self.unit1_depro_stop_button.clicked.connect(lambda: self.unit_stop(2))
-        self.unit1_depro_stop_button.clicked.connect(lambda: self.unit_stop(3))
-        self.unit1_depro_stop_button.clicked.connect(lambda: self.unit_stop(4))
-        self.unit1_depro_stop_button.clicked.connect(lambda: self.unit_stop(5))
+        self.unit2_depro_stop_button.clicked.connect(lambda: self.unit_stop(2))
+        self.unit3_depro_stop_button.clicked.connect(lambda: self.unit_stop(3))
+        self.unit4_depro_stop_button.clicked.connect(lambda: self.unit_stop(4))
+        self.unit5_depro_stop_button.clicked.connect(lambda: self.unit_stop(5))
 
         # 开始耦合单元的控制
         self.unit1_couple_start_button.clicked.connect(lambda: self.couple_unit(1))
@@ -168,11 +169,11 @@ class Stats(QDialog, Ui_Form):
         self.unit5_couple_start_button.clicked.connect(lambda: self.couple_unit(5))
 
         # 开始耦合单元的停止
-        self.unit1_couple_start_button.clicked.connect(lambda: self.unit_stop(1))
-        self.unit2_couple_start_button.clicked.connect(lambda: self.unit_stop(2))
-        self.unit3_couple_start_button.clicked.connect(lambda: self.unit_stop(3))
-        self.unit4_couple_start_button.clicked.connect(lambda: self.unit_stop(4))
-        self.unit5_couple_start_button.clicked.connect(lambda: self.unit_stop(5))
+        self.unit1_couple__stop_button.clicked.connect(lambda: self.unit_stop(1))
+        self.unit2_couple__stop_button.clicked.connect(lambda: self.unit_stop(2))
+        self.unit3_couple__stop_button.clicked.connect(lambda: self.unit_stop(3))
+        self.unit4_couple__stop_button.clicked.connect(lambda: self.unit_stop(4))
+        self.unit5_couple__stop_button.clicked.connect(lambda: self.unit_stop(5))
 
         # 开始第二个单元控制
         self.unit1_wash_start_button.clicked.connect(self.washstart)
@@ -217,31 +218,30 @@ class Stats(QDialog, Ui_Form):
                 unit_start_pump = unit_info[self.unit_add]
             adds = unit_start_pump['start_pump']
             next_waste = unit_start_pump['nextwaste']
-            pump_model.deprotect_unit(adds, next_waste=next_waste)
+            pump_model.deprotect_unit(adds, reaction_time=120, next_waste=next_waste)
+
 
     # 点击开始单元耦合
-    def couple_unit(self):
-        unit2 = threading.Thread(target=self.couple_start_thread)
-        unit2.start()
+    def couple_unit(self, add):
+        unit1 = threading.Thread(target=self.couple_start_thread,args={add})
+        unit1.start()
     
     def couple_start_thread(self, unit_add):
         self.unit_add = unit_add
-        # print(self.slave_add)
+        # print(self.slave_add)/
         unit_info = {
-        1: {'start_pump': [3, 4, 5]},
-        2: {'start_pump': [6, 7, 8]},
-        3: {'start_pump': [9, 10, 11]},
-        4: {'start_pump': [12, 13, 14]},
-        5: {'start_pump': [15, 16, 17]},
+        1: {'start_pump': [3, 4, 5, [4, 17, 1], [12, 17, 1]],'nextwaste':[13, 17,2]},
+        2: {'start_pump': [6, 7, 8, [7, 17, 2], [13, 17, 2]], 'nextwaste':[14, 17,3]},
+        3: {'start_pump': [9, 10, 11, [10, 17, 3], [14, 17, 3]], 'nextwaste':[12, 17,1]},
+        4: {'start_pump': [12, 13, 14, [12, 17, 4], [13, 17, 4]], 'nextwaste':[12, 17,1]},
+        5: {'start_pump': [15, 16, 17, [12, 17, 5], [13, 17, 5]], 'nextwaste':[12, 17,1]},
         }
         if self.unit_add in unit_info:
-            unit_start_pump = unit_info[self.slave_add]
-        # for i in range(unit_start_pump['start_pump']) :
-        #     pump_ever.pump_run(i, 1, 0, self.speed)
-        speeds = [60, 60, 60, 120, 200]
-        volumes = [40, 70]
-        pump_model.couple_unit(unit_start_pump['start_pump'][0], speeds, volumes, True)
-    
+            unit_start_pump = unit_info[self.unit_add]
+        adds = unit_start_pump['start_pump']
+        next_waste = unit_start_pump['nextwaste']
+        pump_model.deprotect_unit(adds, reaction_time=600, next_waste=next_waste)
+
     # 点击开始清洗
     def washstart(self):
         # wash = threading.Thread(target=self.wash_start_thread)
@@ -285,9 +285,9 @@ class Stats(QDialog, Ui_Form):
         5: {'start_pump': [15, 16, 17]},
         }
         if self.unit_add in unit_info:
-            unit_start_pump = unit_info[self.slave_add]
-        for i in range(unit_start_pump['start_pump']) :
-            pump_ever.pump_run(i, 0, 0, self.speed)
+            unit_start_pump = unit_info[self.unit_add]
+        for i in (unit_start_pump['start_pump']) :
+            pump_ever.pump_run(i, 0, 0, 0)
 
     # 点击开始第一种泵的运转
     def pump_open_button(self, add):
@@ -400,8 +400,8 @@ class Stats(QDialog, Ui_Form):
     def value_tran(self, add):
         self.slave_add = add
         value_info = {
-        101: {'passage': self.value1_dial, 'label': self.value1_passage_label},
-        102: {'passage': self.value2_dial, 'label': self.valeu2_passage_label}
+        31: {'passage': self.value1_dial, 'label': self.value1_passage_label},
+        32: {'passage': self.value2_dial, 'label': self.valeu2_passage_label}
         }
         self.value_value = value_info[self.slave_add]
         self.value_passage = int(self.value_value['passage'].value())
@@ -415,7 +415,7 @@ class Stats(QDialog, Ui_Form):
         else:           
             self.hole = pump_ever.value_change(self.slave_add, self.value_passage)
             self.value_value['label'].setText(str(self.hole))
-              
+
     # 将阀门的值转化为树莓派对应的引脚
     def value_tranlation(self):
         self.values = {9: "11", 10: "12"}  # 第9个按钮，对应的是第一个阀门，对应的树莓上面第17个引脚

@@ -365,7 +365,7 @@ class Module:
     def deprotect_unit(self,
                       add,
                       reaction_time=10,
-                      wash_frequence=3,
+                      wash_frequence=5,
                       next_waste=None):
         """反应单元
 
@@ -375,22 +375,24 @@ class Module:
             wash_frequence (int, optional): 洗涤次数. Defaults to 3.
             next_waste (list, optional): 下一个反应单元的废液泵的地址. Defaults to None.
         """
-        rm_add, cycle_add, tran_add = add[0], add[0], add[2]
-        dmfl, wastel = add[3], add[4]
-        # 进液模拟
-        self.solution_transport(dmfl)
-        self.reaction_run(cycle_add, reaction_time, wastel)
-        self.reaction_wash(cycle_add, dmfl, wastel)
-        # for i in range(wash_frequence):
-        #     self.swell_ever(dmfl, wastel)
-        for i in range(wash_frequence):
-            self.resin_transport(tran_add, wastel, dmfl, next_waste)
-        next_waste_add = next_waste[0]
-        self.pump_ever.pump_run(wastel[0], 1, 1, 200)
-        self.pump_ever.pump_run(next_waste_add, 1, 1, 200)
-        time.sleep(5)
-        self.pump_ever.pump_run(wastel[0], 0, 0)
-        self.pump_ever.pump_run(next_waste_add, 0, 0)
+        while True:
+            rm_add, cycle_add, tran_add = add[0], add[0], add[2]
+            dmfl, wastel = add[3], add[4]
+            # 进液模拟
+            self.solution_transport(dmfl)
+            self.reaction_run(cycle_add, reaction_time, wastel)
+            self.reaction_wash(cycle_add, dmfl, wastel)
+            for i in range(wash_frequence):
+                self.swell_ever(dmfl, wastel)
+            for i in range(wash_frequence):
+                self.resin_transport(tran_add, wastel, dmfl, next_waste)
+            next_waste_add = next_waste[0]
+            self.pump_ever.pump_run(wastel[0], 1, 1, 200)
+            self.pump_ever.pump_run(next_waste_add, 1, 1, 200)
+            time.sleep(5)
+            self.pump_ever.pump_run(wastel[0], 0, 0)
+            self.pump_ever.pump_run(next_waste_add, 0, 0)
+
 
     # 偶联单元反应
     def couple_unit(self,
@@ -521,7 +523,7 @@ class Module:
     # 单个溶胀过程
     def swell_ever(self, dmfl, wastel):
         self.waste_extraction(dmfl)
-        time.sleep(2)  # 添加溶液的时间
+        time.sleep(1)  # 添加溶液的时间
         self.pump_ever.pump_run(dmfl[0], 0, 0)
         self.bubble(wastel)
         time.sleep(5)  # 鼓动混合的时间

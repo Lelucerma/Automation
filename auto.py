@@ -26,7 +26,7 @@ def ser_list():
         print('无可用串口')
     else:
         for port in port_list:
-            return port.device
+            return port.device 
 
 if __name__ == "__main__":
     port = ser_list()
