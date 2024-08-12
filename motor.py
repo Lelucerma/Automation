@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-
 '''
 Author: wang w1838978548@126.com
 Date: 2023-09-25 20:54:24
@@ -12,6 +11,7 @@ Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查�
 import math
 import time
 import serial
+
 # import relay
 
 
@@ -328,11 +328,11 @@ class Module:
         #self.second_value = relay.Value(12)
 
     def deprotect_unit(self,
-                      slave_add1=1,
-                      speed=None,
-                      volume=None,
-                      next_unit=None,
-                      speed_before=0):
+                       slave_add1=1,
+                       speed=None,
+                       volume=None,
+                       next_unit=None,
+                       speed_before=0):
         """"
         直接控制一个反应单元，整体的逻辑是先判断那个管路长，依托于设别的构建相应的管路，
         使用
@@ -352,8 +352,8 @@ class Module:
         if slave_add1 == 0:
             pass
         else:
-            self.slave_add1, self.slave_add2 = slave_add1, slave_add1+1
-            self.slave_add3, self.slave_add4 = slave_add1+2, slave_add1+3
+            self.slave_add1, self.slave_add2 = slave_add1, slave_add1 + 1
+            self.slave_add3, self.slave_add4 = slave_add1 + 2, slave_add1 + 3
             self.slave_add5 = slave_add1 + 4
         if not speed:
             pass
@@ -368,11 +368,9 @@ class Module:
 
         if next_unit:
             self.speed_before = speed_before
-            self.pump_ever.pump_run(7, 1, 1,
-                                    200)
+            self.pump_ever.pump_run(7, 1, 1, 200)
             time.sleep(1)
-            self.pump_ever.pump_run(7, 0, 0,
-                                    self.speed_before)
+            self.pump_ever.pump_run(7, 0, 0, self.speed_before)
 
         # 计算各个泵需要的运行时间,不同的进料体积需要不同的进料速度
         self.volume5_time()
@@ -385,10 +383,10 @@ class Module:
         self.time_start = time.time()  # 这个是可以作为部分计时，可以更改
 
         # 溶胀后进行鼓泡操作
-        self.pump_ever.pump_run(8, 1, 0, self.speed1*2)
+        self.pump_ever.pump_run(8, 1, 0, self.speed1 * 2)
         self.pump_ever.pump_run(3, 1, 1, self.speed1)
 
-        time.sleep(self.time3-2)
+        time.sleep(self.time3 - 2)
         print(f"self.time3：{self.time3-2}")
 
         # 开启阀门
@@ -403,7 +401,7 @@ class Module:
         self.pump_ever.pump_run(3, 0, 0, self.speed1)
 
         # 耦合反应时间
-        self.time = self.pump3_runtime-self.pump1_runtime + 120
+        self.time = self.pump3_runtime - self.pump1_runtime + 120
         time.sleep(self.time)
         print(f"self.time：{self.time}")
 
@@ -414,16 +412,16 @@ class Module:
         # winsound.Beep(400, 2000)
         # 开启第五个泵
         self.pump_ever.pump_run(8, 1, 1, self.speed5)
-        
+
         # self.second_value.value_start()
         # time.sleep(2)
         # self.pump_ever.pump_run(7, 1, 1, self.speed3)
         # time.sleep(5)
         # self.pump_ever.pump_run(7, 0, 0, self.speed3)
         # self.second_value.value_stop()
-        
-        time.sleep(self.time6+self.pump1_runtime)
-        
+
+        time.sleep(self.time6 + self.pump1_runtime)
+
         # 关闭前三个泵（因为如果前两个泵提前关闭，那么会有溶液在前两个泵的出口管道中进行堆积）
         self.pump_ever.pump_run(3, 0, 0, self.speed3)
 
@@ -432,13 +430,12 @@ class Module:
         self.pump_ever.pump_run(8, 0, 0, self.speed5)
         #self.first_value.value_end()
 
-
     def couple_unit(self,
-                      slave_add1=1,
-                      speed=None,
-                      volume=None,
-                      next_unit=None,
-                      speed_before=0):
+                    slave_add1=1,
+                    speed=None,
+                    volume=None,
+                    next_unit=None,
+                    speed_before=0):
         """"
         直接控制一个反应单元，整体的逻辑是先判断那个管路长，依托于设别的构建相应的管路，
         使用
@@ -458,8 +455,8 @@ class Module:
         if slave_add1 == 0:
             pass
         else:
-            self.slave_add1, self.slave_add2 = slave_add1, slave_add1+1
-            self.slave_add3, self.slave_add4 = slave_add1+2, slave_add1+3
+            self.slave_add1, self.slave_add2 = slave_add1, slave_add1 + 1
+            self.slave_add3, self.slave_add4 = slave_add1 + 2, slave_add1 + 3
             self.slave_add5 = slave_add1 + 4
         if not speed:
             pass
@@ -476,11 +473,9 @@ class Module:
             self.speed_before = speed_before
             # self.pump_ever.pump_run(self.slave_add1 - 2, 1, 1,
             #                         self.speed_before)
-            self.pump_ever.pump_run(7, 1, 1,
-                                    200)
+            self.pump_ever.pump_run(7, 1, 1, 200)
             time.sleep(1)
-            self.pump_ever.pump_run(7, 0, 0,
-                                    self.speed_before)
+            self.pump_ever.pump_run(7, 0, 0, self.speed_before)
 
         # 计算各个泵需要的运行时间,不同的进料体积需要不同的进料速度
         self.volume5_time()
@@ -493,11 +488,11 @@ class Module:
         self.time_start = time.time()  # 这个是可以作为部分计时，可以更改
 
         # 溶胀后进行鼓泡操作
-        self.pump_ever.pump_run(8, 1, 0, self.speed1*3)
+        self.pump_ever.pump_run(8, 1, 0, self.speed1 * 3)
         # 因为要循环，因此肯定是前两个泵进行循环操作，而后洗涤的泵就开启时间较晚
         self.pump_ever.pump_run(5, 1, 1, self.speed1)
 
-        time.sleep(self.time3-2)
+        time.sleep(self.time3 - 2)
         # time.sleep(10)
         print(f"self.time3：{self.time3-2}")
 
@@ -516,7 +511,7 @@ class Module:
         self.pump_ever.pump_run(5, 0, 0, self.speed1)
 
         # 耦合反应时间
-        self.time = self.pump3_runtime-self.pump1_runtime + 240
+        self.time = self.pump3_runtime - self.pump1_runtime + 240
         time.sleep(self.time)
         # time.sleep(10)
         print(f"self.time：{self.time}")
@@ -525,34 +520,32 @@ class Module:
         print('关闭阀门')
         # self.first_value.value_stop()
         # open wash value
-        
+
         self.pump_ever.pump_run(6, 1, 1, self.speed5)
         # winsound.Beep(400, 2000)
         # 开启第五个泵
         self.pump_ever.pump_run(8, 1, 1, self.speed5)
-        
+
         # self.second_value.value_start()
         # time.sleep(2)
         # self.pump_ever.pump_run(7, 1, 1, self.speed3)
         # time.sleep(10)
         # self.pump_ever.pump_run(7, 0, 0, self.speed3)
-        
-        
+
         # time.sleep(3)
-        
-        time.sleep(self.time6+self.pump1_runtime)
-        
+
+        time.sleep(self.time6 + self.pump1_runtime)
+
         # 关闭前三个泵（因为如果前两个泵提前关闭，那么会有溶液在前两个泵的出口管道中进行堆积）
         self.pump_ever.pump_run(6, 0, 0, self.speed3)
         # self.second_value.value_stop()
         # 循环装置鼓泡guanbi
         # self.pump_ever.pump_run(self.slave_add5, 0, 0, self.speed3)
-     
+
         # 关闭第五个泵
         time.sleep(3)
         self.pump_ever.pump_run(8, 0, 0, self.speed5)
         # self.first_value.value_end()
-
 
     def wash(self, m):
         for i in range(m):

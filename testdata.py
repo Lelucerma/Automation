@@ -82,7 +82,7 @@ class Data_ana():
         for i in range(4):
             if i == 0:
                 for j in width1[i]:
-                    width.append(j/1000)
+                    width.append(j / 1000)
             elif i <= 1:
                 for j in width1[i]:
                     width.append(j)
@@ -117,11 +117,11 @@ class Data_ana():
         x_peaks, y_peaks = peaks[0], peaks[1]
         filename = filename.split("\\")
         fig = plt.figure(figsize=(20, 10))
-        a1 = plt.subplot2grid((1,6),(0,0),colspan = 4)
-        a2 = plt.subplot2grid((1,6),(0,4),colspan = 2)
-        my_x_ticks = np.arange(0, int(max(data[0]))+5, 1)
+        a1 = plt.subplot2grid((1, 6), (0, 0), colspan=4)
+        a2 = plt.subplot2grid((1, 6), (0, 4), colspan=2)
+        my_x_ticks = np.arange(0, int(max(data[0])) + 5, 1)
         for i in y_peaks:
-            a1.text(x_peaks[y_peaks.index(i)], i+80, f'{i}')
+            a1.text(x_peaks[y_peaks.index(i)], i + 80, f'{i}')
         a1.plot(x_peaks, y_peaks, 'x', color='r')
         a1.hlines(*widths[1:], color="r")
         a1.plot(data[0], data[1], color='black')
