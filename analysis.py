@@ -10,7 +10,7 @@ def open_file(file_name):
     a = open(file_name, "r+")
     data = a.readlines()
     num_lenth = len(data)
-    y1,y2 = [], []
+    y1, y2 = [], []
     for line in data:
         ever_line = line.strip()
         m1, m2 = tran_num(ever_line)
@@ -18,6 +18,7 @@ def open_file(file_name):
         y2.append(m2)
     a.close()
     return num_lenth, y1, y2
+
 
 def tran_num(ever_line):
     ever_data = ever_line.split("'")[1:]
@@ -77,18 +78,8 @@ def plt_pictures(file_path, file_name, m=8):
 
     # col = (np.random.random(), np.random.random(), np.random.random())
     # "r" 表示红色，marksize用来设置'D'菱形的大小
-    plt.plot(xi,
-                y1,
-                'r',
-                marker='x',
-                label=f"3th",
-                markersize=3)
-    plt.plot(xi,
-                y2,
-                'b',
-                marker='x',
-                label=f"4th",
-                markersize=3)
+    plt.plot(xi, y1, 'r', marker='x', label=f"3th", markersize=3)
+    plt.plot(xi, y2, 'b', marker='x', label=f"4th", markersize=3)
     # col = (np.random.random(), np.random.random(), np.random.random())
     # "r" 表示红色，marksize用来设置'D'菱形的大小
     # 绘制坐标轴标签
@@ -114,6 +105,7 @@ def plt_pictures(file_path, file_name, m=8):
     # for x1, y1 in zip(x, y):
     #     plt.text(x1, y1, str(y1), ha='center', va='bottom', fontsize=10)
 
+
 def floder(path):
     # path = 'D:\\2 code\\Automation\data\\230816'
 
@@ -138,12 +130,11 @@ def floder(path):
 #     # plt_pictures(file_name4)
 #     # plt_pictures(file_name5)
 
-path = 'D:\\2 code\\Automation\data\\230801'
+path = 'D:\\0 厦门大学\\10 实验\数据\\20240724'
 files = floder(path)
-file_name = 'gly2_depro.txt'
-plt_picture(path)
+file_name = '240724pheouhe1.txt'
+plt_picture(path, file_name)
 # for file_name in files:
 #     plt_pictures(path, file_name)
-
 
 # main()

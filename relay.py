@@ -29,10 +29,10 @@ class Value():
     def value_start(self):
         # 继电器断开
         GPIO.output(self.markerobo_RelayPin, GPIO.HIGH)
-        
+
     def value_stop(self):
         GPIO.output(self.markerobo_RelayPin, GPIO.LOW)
-    
+
     # test
     def test_realy(self):
         while True:

@@ -14,6 +14,7 @@ from scipy.signal import find_peaks, peak_widths
 
 # pathname = ".\\data\\20240724"
 pathname = "D:\\0 厦门大学\\10 实验\\数据\\20240724"
+
 filenames = os.listdir(pathname)  # 获取该目录下所有的文件
 fileFliter = []
 filesave = filedata = pathname + "\\" + "alls.xls"
@@ -136,7 +137,6 @@ class Data_ana():
         lines, labels = a2.get_legend_handles_labels()
         lines2, labels2 = a3.get_legend_handles_labels()
         a2.legend(lines + lines2, labels + labels2, loc='upper right')
-
         plt.show()
 
 
