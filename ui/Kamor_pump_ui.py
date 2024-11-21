@@ -15,9 +15,9 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QAbstractScrollArea, QApplication, QDial, QFormLayout,
-    QFrame, QGroupBox, QHBoxLayout, QLabel,
-    QLayout, QLineEdit, QPushButton, QSizePolicy,
+from PySide6.QtWidgets import (QAbstractScrollArea, QApplication, QDial, QFrame,
+    QGroupBox, QHBoxLayout, QLabel, QLayout,
+    QLineEdit, QPushButton, QSizePolicy, QSpacerItem,
     QSpinBox, QTextBrowser, QToolBox, QVBoxLayout,
     QWidget)
 
@@ -25,14 +25,14 @@ class Ui_Form(object):
     def setupUi(self, Form):
         if not Form.objectName():
             Form.setObjectName(u"Form")
-        Form.resize(812, 609)
+        Form.resize(863, 602)
         sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(1)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(Form.sizePolicy().hasHeightForWidth())
         Form.setSizePolicy(sizePolicy)
-        self.formLayout = QFormLayout(Form)
-        self.formLayout.setObjectName(u"formLayout")
+        self.verticalLayout_3 = QVBoxLayout(Form)
+        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.horizontalLayout_9 = QHBoxLayout()
         self.horizontalLayout_9.setObjectName(u"horizontalLayout_9")
         self.frame = QFrame(Form)
@@ -44,9 +44,10 @@ class Ui_Form(object):
         self.verticalLayout_7.setObjectName(u"verticalLayout_7")
         self.toolBox = QToolBox(self.frame)
         self.toolBox.setObjectName(u"toolBox")
+        self.toolBox.setStyleSheet(u"")
         self.page = QWidget()
         self.page.setObjectName(u"page")
-        self.page.setGeometry(QRect(0, 0, 360, 395))
+        self.page.setGeometry(QRect(0, 0, 399, 359))
         self.layoutWidget = QWidget(self.page)
         self.layoutWidget.setObjectName(u"layoutWidget")
         self.layoutWidget.setGeometry(QRect(10, 11, 340, 244))
@@ -283,7 +284,7 @@ class Ui_Form(object):
         self.toolBox.addItem(self.page, u"unit 1")
         self.page_2 = QWidget()
         self.page_2.setObjectName(u"page_2")
-        self.page_2.setGeometry(QRect(0, 0, 360, 395))
+        self.page_2.setGeometry(QRect(0, 0, 399, 359))
         self.layoutWidget1 = QWidget(self.page_2)
         self.layoutWidget1.setObjectName(u"layoutWidget1")
         self.layoutWidget1.setGeometry(QRect(10, 10, 340, 244))
@@ -520,7 +521,7 @@ class Ui_Form(object):
         self.toolBox.addItem(self.page_2, u"unit 2")
         self.page_3 = QWidget()
         self.page_3.setObjectName(u"page_3")
-        self.page_3.setGeometry(QRect(0, 0, 360, 395))
+        self.page_3.setGeometry(QRect(0, 0, 399, 359))
         self.layoutWidget_4 = QWidget(self.page_3)
         self.layoutWidget_4.setObjectName(u"layoutWidget_4")
         self.layoutWidget_4.setGeometry(QRect(10, 10, 347, 244))
@@ -757,7 +758,7 @@ class Ui_Form(object):
         self.toolBox.addItem(self.page_3, u"unit 3")
         self.page_4 = QWidget()
         self.page_4.setObjectName(u"page_4")
-        self.page_4.setGeometry(QRect(0, 0, 360, 395))
+        self.page_4.setGeometry(QRect(0, 0, 399, 359))
         self.layoutWidget_5 = QWidget(self.page_4)
         self.layoutWidget_5.setObjectName(u"layoutWidget_5")
         self.layoutWidget_5.setGeometry(QRect(10, 10, 347, 244))
@@ -994,7 +995,7 @@ class Ui_Form(object):
         self.toolBox.addItem(self.page_4, u"unit 4")
         self.page_5 = QWidget()
         self.page_5.setObjectName(u"page_5")
-        self.page_5.setGeometry(QRect(0, 0, 360, 395))
+        self.page_5.setGeometry(QRect(0, 0, 399, 359))
         self.layoutWidget_6 = QWidget(self.page_5)
         self.layoutWidget_6.setObjectName(u"layoutWidget_6")
         self.layoutWidget_6.setGeometry(QRect(10, 10, 347, 244))
@@ -1231,7 +1232,7 @@ class Ui_Form(object):
         self.toolBox.addItem(self.page_5, u"unit5")
         self.page_6 = QWidget()
         self.page_6.setObjectName(u"page_6")
-        self.page_6.setGeometry(QRect(0, 0, 360, 395))
+        self.page_6.setGeometry(QRect(0, 0, 399, 359))
         self.layoutWidget2 = QWidget(self.page_6)
         self.layoutWidget2.setObjectName(u"layoutWidget2")
         self.layoutWidget2.setGeometry(QRect(10, 21, 313, 120))
@@ -1364,37 +1365,167 @@ class Ui_Form(object):
 
         self.value2_dial = QDial(self.layoutWidget_2)
         self.value2_dial.setObjectName(u"value2_dial")
-        self.value2_dial.setMinimum(0)
-        self.value2_dial.setMaximum(11)
+        self.value2_dial.setMinimum(1)
+        self.value2_dial.setMaximum(6)
         self.value2_dial.setNotchesVisible(True)
 
         self.horizontalLayout_2.addWidget(self.value2_dial)
 
-        self.widget = QWidget(self.page_6)
-        self.widget.setObjectName(u"widget")
-        self.widget.setGeometry(QRect(10, 150, 200, 102))
-        self.horizontalLayout = QHBoxLayout(self.widget)
+        self.layoutWidget3 = QWidget(self.page_6)
+        self.layoutWidget3.setObjectName(u"layoutWidget3")
+        self.layoutWidget3.setGeometry(QRect(10, 150, 200, 102))
+        self.horizontalLayout = QHBoxLayout(self.layoutWidget3)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
-        self.value1_label_2 = QLabel(self.widget)
+        self.value1_label_2 = QLabel(self.layoutWidget3)
         self.value1_label_2.setObjectName(u"value1_label_2")
 
         self.horizontalLayout.addWidget(self.value1_label_2)
 
-        self.value1_passage_label = QLabel(self.widget)
+        self.value1_passage_label = QLabel(self.layoutWidget3)
         self.value1_passage_label.setObjectName(u"value1_passage_label")
 
         self.horizontalLayout.addWidget(self.value1_passage_label)
 
-        self.value1_dial = QDial(self.widget)
+        self.value1_dial = QDial(self.layoutWidget3)
         self.value1_dial.setObjectName(u"value1_dial")
-        self.value1_dial.setMinimum(0)
-        self.value1_dial.setMaximum(11)
+        self.value1_dial.setMinimum(1)
+        self.value1_dial.setMaximum(6)
         self.value1_dial.setNotchesVisible(True)
 
         self.horizontalLayout.addWidget(self.value1_dial)
 
         self.toolBox.addItem(self.page_6, u"value")
+        self.page_7 = QWidget()
+        self.page_7.setObjectName(u"page_7")
+        self.page_7.setGeometry(QRect(0, 0, 399, 359))
+        self.layoutWidget_3 = QWidget(self.page_7)
+        self.layoutWidget_3.setObjectName(u"layoutWidget_3")
+        self.layoutWidget_3.setGeometry(QRect(5, 20, 351, 311))
+        self.verticalLayout_2 = QVBoxLayout(self.layoutWidget_3)
+        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout_6 = QHBoxLayout()
+        self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
+        self.tepro_vol_label = QLabel(self.layoutWidget_3)
+        self.tepro_vol_label.setObjectName(u"tepro_vol_label")
+
+        self.horizontalLayout_6.addWidget(self.tepro_vol_label)
+
+        self.horizontalSpacer_8 = QSpacerItem(13, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_6.addItem(self.horizontalSpacer_8)
+
+        self.tepro_vol_spinBox = QSpinBox(self.layoutWidget_3)
+        self.tepro_vol_spinBox.setObjectName(u"tepro_vol_spinBox")
+        self.tepro_vol_spinBox.setSingleStep(1)
+        self.tepro_vol_spinBox.setValue(10)
+
+        self.horizontalLayout_6.addWidget(self.tepro_vol_spinBox)
+
+
+        self.verticalLayout_2.addLayout(self.horizontalLayout_6)
+
+        self.horizontalLayout_4 = QHBoxLayout()
+        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
+        self.couple_vol_label = QLabel(self.layoutWidget_3)
+        self.couple_vol_label.setObjectName(u"couple_vol_label")
+
+        self.horizontalLayout_4.addWidget(self.couple_vol_label)
+
+        self.horizontalSpacer_4 = QSpacerItem(13, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_4.addItem(self.horizontalSpacer_4)
+
+        self.couple_vol_spinBox = QSpinBox(self.layoutWidget_3)
+        self.couple_vol_spinBox.setObjectName(u"couple_vol_spinBox")
+        self.couple_vol_spinBox.setValue(10)
+
+        self.horizontalLayout_4.addWidget(self.couple_vol_spinBox)
+
+
+        self.verticalLayout_2.addLayout(self.horizontalLayout_4)
+
+        self.horizontalLayout_3 = QHBoxLayout()
+        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
+        self.tepro_time_label = QLabel(self.layoutWidget_3)
+        self.tepro_time_label.setObjectName(u"tepro_time_label")
+
+        self.horizontalLayout_3.addWidget(self.tepro_time_label)
+
+        self.horizontalSpacer_5 = QSpacerItem(13, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_3.addItem(self.horizontalSpacer_5)
+
+        self.tepro_time_spinBox = QSpinBox(self.layoutWidget_3)
+        self.tepro_time_spinBox.setObjectName(u"tepro_time_spinBox")
+        self.tepro_time_spinBox.setValue(2)
+
+        self.horizontalLayout_3.addWidget(self.tepro_time_spinBox)
+
+
+        self.verticalLayout_2.addLayout(self.horizontalLayout_3)
+
+        self.horizontalLayout_10 = QHBoxLayout()
+        self.horizontalLayout_10.setObjectName(u"horizontalLayout_10")
+        self.couple_time_label = QLabel(self.layoutWidget_3)
+        self.couple_time_label.setObjectName(u"couple_time_label")
+
+        self.horizontalLayout_10.addWidget(self.couple_time_label)
+
+        self.horizontalSpacer_6 = QSpacerItem(28, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_10.addItem(self.horizontalSpacer_6)
+
+        self.couple_time_spinBox = QSpinBox(self.layoutWidget_3)
+        self.couple_time_spinBox.setObjectName(u"couple_time_spinBox")
+        self.couple_time_spinBox.setValue(6)
+
+        self.horizontalLayout_10.addWidget(self.couple_time_spinBox)
+
+
+        self.verticalLayout_2.addLayout(self.horizontalLayout_10)
+
+        self.horizontalLayout_11 = QHBoxLayout()
+        self.horizontalLayout_11.setObjectName(u"horizontalLayout_11")
+        self.wash_label = QLabel(self.layoutWidget_3)
+        self.wash_label.setObjectName(u"wash_label")
+
+        self.horizontalLayout_11.addWidget(self.wash_label)
+
+        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_11.addItem(self.horizontalSpacer)
+
+        self.wash_frequence_spinBox = QSpinBox(self.layoutWidget_3)
+        self.wash_frequence_spinBox.setObjectName(u"wash_frequence_spinBox")
+        self.wash_frequence_spinBox.setValue(5)
+
+        self.horizontalLayout_11.addWidget(self.wash_frequence_spinBox)
+
+
+        self.verticalLayout_2.addLayout(self.horizontalLayout_11)
+
+        self.horizontalLayout_13 = QHBoxLayout()
+        self.horizontalLayout_13.setObjectName(u"horizontalLayout_13")
+        self.start_pushButton = QPushButton(self.layoutWidget_3)
+        self.start_pushButton.setObjectName(u"start_pushButton")
+
+        self.horizontalLayout_13.addWidget(self.start_pushButton)
+
+        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_13.addItem(self.horizontalSpacer_2)
+
+        self.stop_pushButton = QPushButton(self.layoutWidget_3)
+        self.stop_pushButton.setObjectName(u"stop_pushButton")
+
+        self.horizontalLayout_13.addWidget(self.stop_pushButton)
+
+
+        self.verticalLayout_2.addLayout(self.horizontalLayout_13)
+
+        self.toolBox.addItem(self.page_7, u"\u5f00\u59cb\u9875\u9762")
 
         self.verticalLayout_7.addWidget(self.toolBox)
 
@@ -1460,12 +1591,12 @@ class Ui_Form(object):
         self.horizontalLayout_9.addWidget(self.frame_2)
 
 
-        self.formLayout.setLayout(0, QFormLayout.LabelRole, self.horizontalLayout_9)
+        self.verticalLayout_3.addLayout(self.horizontalLayout_9)
 
 
         self.retranslateUi(Form)
 
-        self.toolBox.setCurrentIndex(5)
+        self.toolBox.setCurrentIndex(6)
         self.clear_button.setDefault(False)
 
 
@@ -1474,6 +1605,9 @@ class Ui_Form(object):
 
     def retranslateUi(self, Form):
         Form.setWindowTitle(QCoreApplication.translate("Form", u"Kamor\u6cf5\u7684\u63a7\u5236", None))
+#if QT_CONFIG(tooltip)
+        self.toolBox.setToolTip(QCoreApplication.translate("Form", u"<html><head/><body><p><br/></p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
         self.pump3_label.setText(QCoreApplication.translate("Form", u"pump3:", None))
         self.pump3_open_button.setText(QCoreApplication.translate("Form", u"Open", None))
         self.pump3_stop_button.setText(QCoreApplication.translate("Form", u"Stop", None))
@@ -1634,6 +1768,14 @@ class Ui_Form(object):
         self.value1_label_2.setText(QCoreApplication.translate("Form", u"\u591a\u901a\u96001\u901a\u9053\uff1a", None))
         self.value1_passage_label.setText(QCoreApplication.translate("Form", u"1", None))
         self.toolBox.setItemText(self.toolBox.indexOf(self.page_6), QCoreApplication.translate("Form", u"value", None))
+        self.tepro_vol_label.setText(QCoreApplication.translate("Form", u"\u6258\u4fdd\u62a4\u6db2\u7528\u91cf\uff1a", None))
+        self.couple_vol_label.setText(QCoreApplication.translate("Form", u"\u5076\u8054\u6db2\u7528\u91cf\uff1a", None))
+        self.tepro_time_label.setText(QCoreApplication.translate("Form", u"\u8131\u4fdd\u62a4\u65f6\u95f4\uff1a", None))
+        self.couple_time_label.setText(QCoreApplication.translate("Form", u"\u5076\u8054\u65f6\u95f4\uff1a", None))
+        self.wash_label.setText(QCoreApplication.translate("Form", u"\u6d17\u6da4\u6b21\u6570\uff1a", None))
+        self.start_pushButton.setText(QCoreApplication.translate("Form", u"\u5f00\u59cb\u6309\u94ae", None))
+        self.stop_pushButton.setText(QCoreApplication.translate("Form", u"\u7ed3\u675f\u6309\u94ae", None))
+        self.toolBox.setItemText(self.toolBox.indexOf(self.page_7), QCoreApplication.translate("Form", u"\u5f00\u59cb\u9875\u9762", None))
         self.output_label.setText(QCoreApplication.translate("Form", u"Output & Result", None))
         self.clear_button.setText(QCoreApplication.translate("Form", u"Clear", None))
         self.groupBox.setTitle(QCoreApplication.translate("Form", u"GroupBox", None))

@@ -4,7 +4,7 @@
 Author: wang w1838978548@126.com
 Date: 2023-09-25 20:54:24
 LastEditors: wang w1838978548@126.com
-LastEditTime: 2024-05-23 16:16:22
+LastEditTime: 2024-11-21 14:17:47
 FilePath: \Automation\motor.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 
 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
@@ -364,6 +364,7 @@ class Module:
     # 脱保护单元反应
     def deprotect_unit(self,
                       add,
+                      vol=10,
                       reaction_time=10,
                       wash_frequence=5,
                       next_waste=None):
@@ -379,7 +380,7 @@ class Module:
             rm_add, cycle_add, tran_add = add[0], add[0], add[2]
             dmfl, wastel = add[3], add[4]
             # 进液模拟
-            self.solution_transport(dmfl)
+            self.solution_transport(dmfl,vol)
             self.reaction_run(cycle_add, reaction_time, wastel)
             self.reaction_wash(cycle_add, dmfl, wastel)
             for i in range(wash_frequence):
@@ -630,7 +631,7 @@ class Module:
         self.pump_ever.pump_run(8, 0, 0)
 
     # 溶液输入循环装置
-    def solution_transport(self, add):
+    def solution_transport(self, add, vol):
         """将脱保护液和偶联剂输送至循环装置中
 
         Args:
@@ -638,7 +639,9 @@ class Module:
         """
         # 开启废液抽取泵
         self.waste_extraction(add)
-        time.sleep(1)
+        s = int(vol / 10 )
+        timesleep = s * 2
+        time.sleep(timesleep)
         self.pump_ever.pump_run(add[0], 0, 0)
         # self.pump_ever.pump_run(add, 1, 1, 60)
         # # 计算需要输送的时间，可以使用前面管道和溶剂的时间进行相应的计算

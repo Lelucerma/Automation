@@ -1,3 +1,11 @@
+'''
+Author: wang w1838978548@126.com
+Date: 2024-07-24 16:35:48
+LastEditors: wang w1838978548@126.com
+LastEditTime: 2024-11-21 14:29:23
+FilePath: \Automation\auto_ui.py
+Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+'''
 
 from PySide6.QtWidgets import QApplication,QMainWindow,QGridLayout, QDialog, QLabel
 from PySide6.QtCore import QTimer, QThread
@@ -31,6 +39,9 @@ class Stats(QDialog, Ui_Form):
         self.first = 'pump'
    
     def init_signal_and_slot(self):
+
+        self.start_pushButton.clicked.connect(self.start)
+        self.stop_pushButton.clicked.connect(self.stop)
         
         # 泵的开启与停止控制按钮
         # 6、第三个泵的控制
@@ -266,7 +277,26 @@ class Stats(QDialog, Ui_Form):
         self.gridlayout = QGridLayout(self.groupBox)  # 继承容器groupBox
         self.gridlayout.addWidget(self.F, 0, 1)
         
+    def start(self):        
+        unit1 = threading.Thread(target=self.start_thread)
+        unit1.start()
     
+    def start_thread(self):
+        teproAdd = [3, 4, 5, [4, 17, 1], [12, 17, 1]]
+        coupleAdd = [6, 7, 8, [7, 17, 2], [13, 17, 2]]
+        nextTepro = [13, 17,2]
+        nextCouple = [14, 17,3]
+        teproVol = int(self.tepro_vol_spinBox.text())
+        coupleVol = int(self.couple_vol_spinBox.text())
+        teproTime = int(self.tepro_time_spinBox.text())
+        coupleTime = int(self.couple_time_spinBox.text())
+        washFrequence = int(self.wash_frequence_spinBox.text())
+        pump_model.deprotect_unit(teproAdd, teproTime, teproVol, washFrequence, nextTepro)
+        pump_model.deprotect_unit(coupleAdd, coupleTime, coupleVol, washFrequence, nextCouple)
+
+    def stop(self):
+        for i in range(3, 14):
+            pump_ever.pump_run(i, 0, 0)
     # def pressure_starts(self):
     #     pressure = threading.Thread(target=self.pressurestart_thread)
     #     pressure.start()
