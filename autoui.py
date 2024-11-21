@@ -2,7 +2,7 @@
 Author: wang w1838978548@126.com
 Date: 2024-07-24 16:35:48
 LastEditors: wang w1838978548@126.com
-LastEditTime: 2024-11-21 14:40:17
+LastEditTime: 2024-11-21 15:52:42
 FilePath: \Automation\auto_ui.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
@@ -16,7 +16,8 @@ from datetime import datetime
 import pressure as p
 import motor
 import random
-# import relay
+import os
+import time
 from ui.Kamor_pump_ui import Ui_Form
 import threading
 
@@ -35,7 +36,7 @@ class Stats(QDialog, Ui_Form):
         super(Stats, self).__init__(parent)
         self.setupUi(self)
         self.init_signal_and_slot()
-
+        self.stop_event = threading.Event()
         self.first = 'pump'
 
     def init_signal_and_slot(self):
@@ -311,32 +312,54 @@ class Stats(QDialog, Ui_Form):
         self.gridlayout.addWidget(self.F, 0, 1)
         
     def start(self):        
-        unit1 = threading.Thread(target=self.start_thread)
-        unit1.start()
+        startReaction = threading.Thread(target=self.start_thread)
+        startReaction.start()
     
     def start_thread(self):
-        teproAdd = [3, 4, 5, [4, 17, 1], [12, 17, 1]]
-        coupleAdd = [6, 7, 8, [7, 17, 2], [13, 17, 2]]
-        nextTepro = [13, 17,2]
-        nextCouple = [14, 17,3]
-        teproVol = int(self.tepro_vol_spinBox.text())
-        coupleVol = int(self.couple_vol_spinBox.text())
-        teproTime = int(self.tepro_time_spinBox.text())
-        coupleTime = int(self.couple_time_spinBox.text())
-        washFrequence = int(self.wash_frequence_spinBox.text())
-        pump_model.deprotect_unit(teproAdd, teproTime, teproVol, washFrequence, nextTepro)
-        pump_model.deprotect_unit(coupleAdd, coupleTime, coupleVol, washFrequence, nextCouple)
+        while not self.stop_event.is_set():  # 检查事件是否被设置
+            teproAdd = [3, 4, 5, [4, 17, 1], [12, 17, 1]]
+            coupleAdd = [6, 7, 8, [7, 17, 2], [13, 17, 2]]
+            nextTepro = [13, 17,2]
+            nextCouple = [14, 17,3]
+            teproVol = int(self.tepro_vol_spinBox.text())
+            coupleVol = int(self.couple_vol_spinBox.text())
+            teproTime = int(self.tepro_time_spinBox.text())
+            coupleTime = int(self.couple_time_spinBox.text())
+            washFrequence = int(self.wash_frequence_spinBox.text())
+            pump_model.deprotect_unit(teproAdd, teproTime, teproVol, washFrequence, nextTepro)
+            pump_model.deprotect_unit(coupleAdd, coupleTime, coupleVol, washFrequence, nextCouple)
 
     def stop(self):
+        self.stop_event.set()  # 设置事件，通知线程停止
         for i in range(3, 14):
             pump_ever.pump_run(i, 0, 0)
+    
+    def kill(self, pid):
+        # 本函数用于中止传入pid所对应的进程
+        if os.name == 'nt':
+            # Windows系统
+            cmd = 'taskkill /pid ' + str(self.pid) + ' /f'
+            try:
+                os.system(cmd)
+                print(pid, 'killed')
+            except Exception as e:
+                print(e)
+        elif os.name == 'posix':
+            # Linux系统
+            cmd = 'kill ' + str(pid)
+            try:
+                os.system(cmd)
+                print(pid, 'killed')
+            except Exception as e:
+                print(e)
+        else:
+            print('Undefined os.name')
+        # def pressure_starts(self):
+        #     pressure = threading.Thread(target=self.pressurestart_thread)
+        #     pressure.start()
 
-    # def pressure_starts(self):
-    #     pressure = threading.Thread(target=self.pressurestart_thread)
-    #     pressure.start()
-
-    # def pressure_stop(self):
-    #     self.a = 0
+        # def pressure_stop(self):
+        #     self.a = 0
 
     def unit_stop(self, unit_add):
         self.unit_add = unit_add
@@ -649,7 +672,6 @@ class MyFigure(FigureCanvas):
         self.y.append(self.data)
         # self.y = np.random.random(1)
         self.mat_plot_drow_axes(self.x, self.y)
-
 
 # def main():
 #     global b
