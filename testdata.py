@@ -2,11 +2,7 @@
 Author: wang w1838978548@126.com
 Date: 2024-01-08 15:35:26
 LastEditors: wang w1838978548@126.com
-<<<<<<< HEAD
 LastEditTime: 2024-11-21 14:42:49
-=======
-LastEditTime: 2024-07-29 16:09:15
->>>>>>> 1215b7f3bce8219e5aab18189e83f12cb1d0822c
 FilePath: \practice\test.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
@@ -16,21 +12,6 @@ import numpy as np
 from scipy import integrate
 from scipy.signal import find_peaks, peak_widths
 
-<<<<<<< HEAD
-=======
-# pathname = ".\\data\\20240724"
-pathname = "D:\\0 厦门大学\\10 实验\\数据\\20240724"
-
-filenames = os.listdir(pathname)  # 获取该目录下所有的文件
-fileFliter = []
-filesave = filedata = pathname + "\\" + "alls.xls"
-# 过滤掉后缀不为txt的文件
-for filename in filenames:
-    suffix = os.path.splitext(filename)[-1]
-    if suffix == '.txt':
-        fileFliter.append(filename)
-areas = []
->>>>>>> 1215b7f3bce8219e5aab18189e83f12cb1d0822c
 
 
 class Data_ana():
