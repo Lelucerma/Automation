@@ -1,10 +1,9 @@
 #!/usr/bin/python3
-
 '''
 Author: wang w1838978548@126.com
 Date: 2023-09-25 20:54:24
 LastEditors: wang w1838978548@126.com
-LastEditTime: 2024-11-21 14:17:47
+LastEditTime: 2024-11-21 14:41:12
 FilePath: \Automation\motor.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 
 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
@@ -12,6 +11,7 @@ Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查�
 import math
 import time
 import serial
+
 # import relay
 
 
@@ -223,7 +223,7 @@ class PumpCom:
             slave_add : 这个阀门的通讯地址
             passage : 0:复位，1-10:孔位1-10，11:查询当前孔位
         """
-        
+
         if passage < 10:
             self.cmd = [slave_add, 5, 0, passage, 255, 0]
             self.cmd = self.crc16(self.cmd)
@@ -284,7 +284,7 @@ class Pump:
         self.begin_cmd = self.cm.write_bits(slave_add, '001', self.data)
         # print(self.begin_cmd)
         self.resp1 = self.answer(self.begin_cmd)
-        print(self.resp1)
+        # print(self.resp1)
 
         # print(self.resp1)
         if run and self.run_speed:
@@ -302,8 +302,7 @@ class Pump:
         # print(self.resp3)
 
     def value_change(self, slave_add, channel):
-        self.value_change_cmd = self.cm.value_cmd(
-            slave_add, channel)
+        self.value_change_cmd = self.cm.value_cmd(slave_add, channel)
         # print(self.speed_cmd)
         self.resp4 = self.answer(self.value_change_cmd)
         if channel == 11:
@@ -369,13 +368,13 @@ class Module:
                       wash_frequence=5,
                       next_waste=None):
         """反应单元
-
         Args:
             add (list): 包含了原料输入泵、循环泵、传送泵的地址
             reaction_time (int, optional): 反应时间的确定. Defaults to 10.
             wash_frequence (int, optional): 洗涤次数. Defaults to 3.
             next_waste (list, optional): 下一个反应单元的废液泵的地址. Defaults to None.
         """
+
         while True:
             rm_add, cycle_add, tran_add = add[0], add[0], add[2]
             dmfl, wastel = add[3], add[4]
@@ -396,11 +395,11 @@ class Module:
 
     # 偶联单元反应
     def couple_unit(self,
-                      slave_add1=1,
-                      speed=None,
-                      volume=None,
-                      next_unit=None,
-                      speed_before=0):
+                    slave_add1=1,
+                    speed=None,
+                    volume=None,
+                    next_unit=None,
+                    speed_before=0):
         """"
         直接控制一个反应单元，整体的逻辑是先判断那个管路长，依托于设别的构建相应的管路，
         使用
@@ -420,8 +419,8 @@ class Module:
         if slave_add1 == 0:
             pass
         else:
-            self.slave_add1, self.slave_add2 = slave_add1, slave_add1+1
-            self.slave_add3, self.slave_add4 = slave_add1+2, slave_add1+3
+            self.slave_add1, self.slave_add2 = slave_add1, slave_add1 + 1
+            self.slave_add3, self.slave_add4 = slave_add1 + 2, slave_add1 + 3
             self.slave_add5 = slave_add1 + 4
         if not speed:
             pass
@@ -438,11 +437,9 @@ class Module:
             self.speed_before = speed_before
             # self.pump_ever.pump_run(self.slave_add1 - 2, 1, 1,
             #                         self.speed_before)
-            self.pump_ever.pump_run(7, 1, 1,
-                                    200)
+            self.pump_ever.pump_run(7, 1, 1, 200)
             time.sleep(1)
-            self.pump_ever.pump_run(7, 0, 0,
-                                    self.speed_before)
+            self.pump_ever.pump_run(7, 0, 0, self.speed_before)
 
         # 计算各个泵需要的运行时间,不同的进料体积需要不同的进料速度
         self.volume5_time()
@@ -455,11 +452,11 @@ class Module:
         self.time_start = time.time()  # 这个是可以作为部分计时，可以更改
 
         # 溶胀后进行鼓泡操作
-        self.pump_ever.pump_run(8, 1, 0, self.speed1*3)
+        self.pump_ever.pump_run(8, 1, 0, self.speed1 * 3)
         # 因为要循环，因此肯定是前两个泵进行循环操作，而后洗涤的泵就开启时间较晚
         self.pump_ever.pump_run(5, 1, 1, self.speed1)
 
-        time.sleep(self.time3-2)
+        time.sleep(self.time3 - 2)
         # time.sleep(10)
         print(f"self.time3：{self.time3-2}")
 
@@ -478,7 +475,7 @@ class Module:
         self.pump_ever.pump_run(5, 0, 0, self.speed1)
 
         # 耦合反应时间
-        self.time = self.pump3_runtime-self.pump1_runtime + 240
+        self.time = self.pump3_runtime - self.pump1_runtime + 240
         time.sleep(self.time)
         # time.sleep(10)
         print(f"self.time：{self.time}")
@@ -487,29 +484,28 @@ class Module:
         print('关闭阀门')
         # self.first_value.value_stop()
         # open wash value
-        
+
         self.pump_ever.pump_run(6, 1, 1, self.speed5)
         # winsound.Beep(400, 2000)
         # 开启第五个泵
         self.pump_ever.pump_run(8, 1, 1, self.speed5)
-        
+
         # self.second_value.value_start()
         # time.sleep(2)
         # self.pump_ever.pump_run(7, 1, 1, self.speed3)
         # time.sleep(10)
         # self.pump_ever.pump_run(7, 0, 0, self.speed3)
-        
-        
+
         # time.sleep(3)
-        
-        time.sleep(self.time6+self.pump1_runtime)
-        
+
+        time.sleep(self.time6 + self.pump1_runtime)
+
         # 关闭前三个泵（因为如果前两个泵提前关闭，那么会有溶液在前两个泵的出口管道中进行堆积）
         self.pump_ever.pump_run(6, 0, 0, self.speed3)
         # self.second_value.value_stop()
         # 循环装置鼓泡guanbi
         # self.pump_ever.pump_run(self.slave_add5, 0, 0, self.speed3)
-     
+
         # 关闭第五个泵
         time.sleep(3)
         self.pump_ever.pump_run(8, 0, 0, self.speed5)
@@ -648,8 +644,8 @@ class Module:
         # time1 = 5
         # time.sleep(time1)
         # self.pump_ever.pump_run(add, 0, 0)
-    
-    # 反应运行    
+
+    # 反应运行
     def reaction_run(self, add, time1, wastel, *args):
         """开始使用一个反应单元的反应，从开始循环的过程到循环完毕，
         废液抽取结束
@@ -702,9 +698,9 @@ class Module:
         # 关闭所有的泵
         self.pump_ever.pump_run(pump_add, 0, 0)
         self.pump_ever.pump_run(wastel[0], 0, 0)
-        
+
     # 树脂输送
-    def resin_transport(self, tran_add, bubllel, dmfl, next_waste):   
+    def resin_transport(self, tran_add, bubllel, dmfl, next_waste):
         # 开启DMF输送泵
         self.waste_extraction(dmfl)
         time.sleep(1)
@@ -721,7 +717,7 @@ class Module:
         self.waste_extraction(next_waste)
         time.sleep(13)
         self.pump_ever.pump_run(next_waste[0], 0, 0)
-        
+
     # 鼓泡操作
     def bubble(self, list1):
         """进行鼓泡操作
@@ -731,10 +727,10 @@ class Module:
             value_add (int): 多通道阀的地址
             value_channel (int): 多通道阀的通道
         """
-        pump_add, value_add, value_channel = list1[0], list1[1], list1[2] 
+        pump_add, value_add, value_channel = list1[0], list1[1], list1[2]
         # self.pump_ever.value_change(value_add, value_channel)
         self.pump_ever.pump_run(pump_add, 1, 0, 120)
-    
+
     # 废液抽取
     def waste_extraction(self, list1):
         """进行废液抽取操作
@@ -746,8 +742,8 @@ class Module:
         """
         pump_add, value_add, value_channel = list1[0], list1[1], list1[2]
         # self.pump_ever.value_change(value_add, value_channel)
-        self.pump_ever.pump_run(pump_add, 1, 1, 200)    
-          
+        self.pump_ever.pump_run(pump_add, 1, 1, 200)
+
 
 def ser_open(com_pump):
     global ser_pump

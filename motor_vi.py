@@ -303,7 +303,6 @@ class Pump():
 
 
 class Stats:
-
     def __init__(self):
 
         global ser
@@ -511,7 +510,6 @@ class Stats:
 #     stats = Stats()
 #     stats.ui.show()
 #     app.exec()
-
 
 # if __name__ == "__main__":
 

@@ -9,13 +9,11 @@ Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查�
 
 from minimalmodbus import minimalmodbus
 
-
 # 设置从机地址
 slave_address = 1
 
 # 创建通讯对象
-instrument = minimalmodbus.Instrument(
-    'com6', slaveaddress=slave_address)
+instrument = minimalmodbus.Instrument('com6', slaveaddress=slave_address)
 # 设置串口通信参数
 instrument.serial.baudrate = 9600
 instrument.serial.parity = minimalmodbus.serial.PARITY_NONE
