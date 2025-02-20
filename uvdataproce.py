@@ -2,7 +2,7 @@
 Author: wang w1838978548@126.com
 Date: 2024-01-08 15:35:26
 LastEditors: wang w1838978548@126.com
-LastEditTime: 2024-11-21 14:42:49
+LastEditTime: 2024-12-13 16:10:35
 FilePath: \practice\test.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
@@ -37,9 +37,9 @@ class Data_ana():
             # print(x)
             y = float(temp[1][0])
             # 处理掉无法使用的数据
-            if x > 11 and x < 12.05:
+            if x > 51 and x < 52.05:
                 pass
-            elif x > 16:
+            elif x > 56:
                 pass
             else:
                 xi.append(x)
@@ -116,7 +116,7 @@ class Data_ana():
         a1.hlines(*widths[1:], color="r")
         a1.plot(data[0], data[1], color='black')
         # a1.set_title(f"{filename[-1][:-4]}")
-        a1.set_title("gly偶联反应")
+        a1.set_title("Phe偶联反应")
         a1.set_ylabel("紫外吸光强度(mAu)")
         a1.set_xlabel("反应时间t(min)")
         a1.set_xticks(my_x_ticks)
@@ -158,7 +158,7 @@ def file(pathname):
 if __name__ == '__main__':
     # pathname = ".\\data\\20240724"
     # for i in range(13, 23):
-    pathname = "D:\\0 厦门大学\\23专利\\紫外" 
+    pathname = "D:\\2 code\\Automation\\data" 
     # + "\\" + "20240828"
     file(pathname)
 

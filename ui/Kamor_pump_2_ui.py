@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'Kamor_pump.ui'
+## Form generated from reading UI file 'Kamor_pump_2.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.5.1
 ##
@@ -756,543 +756,15 @@ class Ui_Form(object):
         self.verticalLayout_300.addLayout(self.horizontalLayout_308)
 
         self.toolBox.addItem(self.page_3, u"unit 3")
-        self.page_4 = QWidget()
-        self.page_4.setObjectName(u"page_4")
-        self.page_4.setGeometry(QRect(0, 0, 98, 28))
-        self.layoutWidget_5 = QWidget(self.page_4)
-        self.layoutWidget_5.setObjectName(u"layoutWidget_5")
-        self.layoutWidget_5.setGeometry(QRect(10, 10, 347, 244))
-        self.verticalLayout_400 = QVBoxLayout(self.layoutWidget_5)
-        self.verticalLayout_400.setObjectName(u"verticalLayout_400")
-        self.verticalLayout_400.setContentsMargins(0, 0, 0, 0)
-        self.horizontalLayout_401 = QHBoxLayout()
-        self.horizontalLayout_401.setObjectName(u"horizontalLayout_401")
-        self.pump12_label = QLabel(self.layoutWidget_5)
-        self.pump12_label.setObjectName(u"pump12_label")
-
-        self.horizontalLayout_401.addWidget(self.pump12_label)
-
-        self.pump12_spinbox = QSpinBox(self.layoutWidget_5)
-        self.pump12_spinbox.setObjectName(u"pump12_spinbox")
-        self.pump12_spinbox.setMaximum(300)
-
-        self.horizontalLayout_401.addWidget(self.pump12_spinbox)
-
-        self.pump12_open_button = QPushButton(self.layoutWidget_5)
-        self.pump12_open_button.setObjectName(u"pump12_open_button")
-
-        self.horizontalLayout_401.addWidget(self.pump12_open_button)
-
-        self.pump12_stop_button = QPushButton(self.layoutWidget_5)
-        self.pump12_stop_button.setObjectName(u"pump12_stop_button")
-
-        self.horizontalLayout_401.addWidget(self.pump12_stop_button)
-
-        self.pump12_reverse = QPushButton(self.layoutWidget_5)
-        self.pump12_reverse.setObjectName(u"pump12_reverse")
-
-        self.horizontalLayout_401.addWidget(self.pump12_reverse)
-
-
-        self.verticalLayout_400.addLayout(self.horizontalLayout_401)
-
-        self.horizontalLayout_402 = QHBoxLayout()
-        self.horizontalLayout_402.setObjectName(u"horizontalLayout_402")
-        self.pump13_label = QLabel(self.layoutWidget_5)
-        self.pump13_label.setObjectName(u"pump13_label")
-
-        self.horizontalLayout_402.addWidget(self.pump13_label)
-
-        self.pump13_spinbox = QSpinBox(self.layoutWidget_5)
-        self.pump13_spinbox.setObjectName(u"pump13_spinbox")
-        self.pump13_spinbox.setMaximum(300)
-
-        self.horizontalLayout_402.addWidget(self.pump13_spinbox)
-
-        self.pump13_open_button = QPushButton(self.layoutWidget_5)
-        self.pump13_open_button.setObjectName(u"pump13_open_button")
-
-        self.horizontalLayout_402.addWidget(self.pump13_open_button)
-
-        self.pump13_stop_button = QPushButton(self.layoutWidget_5)
-        self.pump13_stop_button.setObjectName(u"pump13_stop_button")
-
-        self.horizontalLayout_402.addWidget(self.pump13_stop_button)
-
-        self.pump13_reverse = QPushButton(self.layoutWidget_5)
-        self.pump13_reverse.setObjectName(u"pump13_reverse")
-
-        self.horizontalLayout_402.addWidget(self.pump13_reverse)
-
-
-        self.verticalLayout_400.addLayout(self.horizontalLayout_402)
-
-        self.horizontalLayout_403 = QHBoxLayout()
-        self.horizontalLayout_403.setObjectName(u"horizontalLayout_403")
-        self.pump14_label = QLabel(self.layoutWidget_5)
-        self.pump14_label.setObjectName(u"pump14_label")
-
-        self.horizontalLayout_403.addWidget(self.pump14_label)
-
-        self.pump14_spinbox = QSpinBox(self.layoutWidget_5)
-        self.pump14_spinbox.setObjectName(u"pump14_spinbox")
-        self.pump14_spinbox.setMaximum(300)
-
-        self.horizontalLayout_403.addWidget(self.pump14_spinbox)
-
-        self.pump14_open_button = QPushButton(self.layoutWidget_5)
-        self.pump14_open_button.setObjectName(u"pump14_open_button")
-
-        self.horizontalLayout_403.addWidget(self.pump14_open_button)
-
-        self.pump14_stop_button = QPushButton(self.layoutWidget_5)
-        self.pump14_stop_button.setObjectName(u"pump14_stop_button")
-
-        self.horizontalLayout_403.addWidget(self.pump14_stop_button)
-
-        self.pump14_reverse = QPushButton(self.layoutWidget_5)
-        self.pump14_reverse.setObjectName(u"pump14_reverse")
-
-        self.horizontalLayout_403.addWidget(self.pump14_reverse)
-
-
-        self.verticalLayout_400.addLayout(self.horizontalLayout_403)
-
-        self.horizontalLayout_404 = QHBoxLayout()
-        self.horizontalLayout_404.setObjectName(u"horizontalLayout_404")
-        self.unit4_wash = QLabel(self.layoutWidget_5)
-        self.unit4_wash.setObjectName(u"unit4_wash")
-
-        self.horizontalLayout_404.addWidget(self.unit4_wash)
-
-        self.unit4_wash_spinbox = QSpinBox(self.layoutWidget_5)
-        self.unit4_wash_spinbox.setObjectName(u"unit4_wash_spinbox")
-        self.unit4_wash_spinbox.setMaximum(300)
-
-        self.horizontalLayout_404.addWidget(self.unit4_wash_spinbox)
-
-        self.unit4_wash_open_button = QPushButton(self.layoutWidget_5)
-        self.unit4_wash_open_button.setObjectName(u"unit4_wash_open_button")
-
-        self.horizontalLayout_404.addWidget(self.unit4_wash_open_button)
-
-        self.unit4_wahs_stop_button = QPushButton(self.layoutWidget_5)
-        self.unit4_wahs_stop_button.setObjectName(u"unit4_wahs_stop_button")
-
-        self.horizontalLayout_404.addWidget(self.unit4_wahs_stop_button)
-
-        self.unit4_reverse = QPushButton(self.layoutWidget_5)
-        self.unit4_reverse.setObjectName(u"unit4_reverse")
-
-        self.horizontalLayout_404.addWidget(self.unit4_reverse)
-
-
-        self.verticalLayout_400.addLayout(self.horizontalLayout_404)
-
-        self.horizontalLayout_405 = QHBoxLayout()
-        self.horizontalLayout_405.setObjectName(u"horizontalLayout_405")
-        self.unit4_waste_label = QLabel(self.layoutWidget_5)
-        self.unit4_waste_label.setObjectName(u"unit4_waste_label")
-
-        self.horizontalLayout_405.addWidget(self.unit4_waste_label)
-
-        self.unit4_waste_spinbox = QSpinBox(self.layoutWidget_5)
-        self.unit4_waste_spinbox.setObjectName(u"unit4_waste_spinbox")
-        self.unit4_waste_spinbox.setMaximum(300)
-
-        self.horizontalLayout_405.addWidget(self.unit4_waste_spinbox)
-
-        self.unit4_waste_open_button = QPushButton(self.layoutWidget_5)
-        self.unit4_waste_open_button.setObjectName(u"unit4_waste_open_button")
-
-        self.horizontalLayout_405.addWidget(self.unit4_waste_open_button)
-
-        self.unit4_waste_stop_button = QPushButton(self.layoutWidget_5)
-        self.unit4_waste_stop_button.setObjectName(u"unit4_waste_stop_button")
-
-        self.horizontalLayout_405.addWidget(self.unit4_waste_stop_button)
-
-        self.unit4_waste_reverse = QPushButton(self.layoutWidget_5)
-        self.unit4_waste_reverse.setObjectName(u"unit4_waste_reverse")
-
-        self.horizontalLayout_405.addWidget(self.unit4_waste_reverse)
-
-
-        self.verticalLayout_400.addLayout(self.horizontalLayout_405)
-
-        self.horizontalLayout_406 = QHBoxLayout()
-        self.horizontalLayout_406.setSpacing(10)
-        self.horizontalLayout_406.setObjectName(u"horizontalLayout_406")
-        self.unit4_depro_label = QLabel(self.layoutWidget_5)
-        self.unit4_depro_label.setObjectName(u"unit4_depro_label")
-
-        self.horizontalLayout_406.addWidget(self.unit4_depro_label)
-
-        self.unit4_depro_start_button = QPushButton(self.layoutWidget_5)
-        self.unit4_depro_start_button.setObjectName(u"unit4_depro_start_button")
-
-        self.horizontalLayout_406.addWidget(self.unit4_depro_start_button)
-
-        self.unit4_depro_stop_button = QPushButton(self.layoutWidget_5)
-        self.unit4_depro_stop_button.setObjectName(u"unit4_depro_stop_button")
-
-        self.horizontalLayout_406.addWidget(self.unit4_depro_stop_button)
-
-        self.horizontalLayout_406.setStretch(0, 3)
-        self.horizontalLayout_406.setStretch(1, 2)
-        self.horizontalLayout_406.setStretch(2, 2)
-
-        self.verticalLayout_400.addLayout(self.horizontalLayout_406)
-
-        self.horizontalLayout_407 = QHBoxLayout()
-        self.horizontalLayout_407.setObjectName(u"horizontalLayout_407")
-        self.horizontalLayout_407.setSizeConstraint(QLayout.SetDefaultConstraint)
-        self.unit4_couple_label = QLabel(self.layoutWidget_5)
-        self.unit4_couple_label.setObjectName(u"unit4_couple_label")
-
-        self.horizontalLayout_407.addWidget(self.unit4_couple_label)
-
-        self.unit4_couple_start_button = QPushButton(self.layoutWidget_5)
-        self.unit4_couple_start_button.setObjectName(u"unit4_couple_start_button")
-
-        self.horizontalLayout_407.addWidget(self.unit4_couple_start_button)
-
-        self.unit4_couple__stop_button = QPushButton(self.layoutWidget_5)
-        self.unit4_couple__stop_button.setObjectName(u"unit4_couple__stop_button")
-
-        self.horizontalLayout_407.addWidget(self.unit4_couple__stop_button)
-
-        self.horizontalLayout_407.setStretch(0, 3)
-        self.horizontalLayout_407.setStretch(1, 2)
-        self.horizontalLayout_407.setStretch(2, 2)
-
-        self.verticalLayout_400.addLayout(self.horizontalLayout_407)
-
-        self.horizontalLayout_408 = QHBoxLayout()
-        self.horizontalLayout_408.setObjectName(u"horizontalLayout_408")
-        self.unit4_wash_label = QLabel(self.layoutWidget_5)
-        self.unit4_wash_label.setObjectName(u"unit4_wash_label")
-
-        self.horizontalLayout_408.addWidget(self.unit4_wash_label)
-
-        self.unit4_wash_frequence_sppinbox = QSpinBox(self.layoutWidget_5)
-        self.unit4_wash_frequence_sppinbox.setObjectName(u"unit4_wash_frequence_sppinbox")
-        self.unit4_wash_frequence_sppinbox.setMaximum(10)
-
-        self.horizontalLayout_408.addWidget(self.unit4_wash_frequence_sppinbox)
-
-        self.unit4_start_wash_button = QPushButton(self.layoutWidget_5)
-        self.unit4_start_wash_button.setObjectName(u"unit4_start_wash_button")
-
-        self.horizontalLayout_408.addWidget(self.unit4_start_wash_button)
-
-        self.horizontalLayout_408.setStretch(0, 3)
-        self.horizontalLayout_408.setStretch(1, 2)
-        self.horizontalLayout_408.setStretch(2, 2)
-
-        self.verticalLayout_400.addLayout(self.horizontalLayout_408)
-
-        self.toolBox.addItem(self.page_4, u"unit 4")
-        self.page_5 = QWidget()
-        self.page_5.setObjectName(u"page_5")
-        self.page_5.setGeometry(QRect(0, 0, 98, 28))
-        self.layoutWidget_6 = QWidget(self.page_5)
-        self.layoutWidget_6.setObjectName(u"layoutWidget_6")
-        self.layoutWidget_6.setGeometry(QRect(10, 10, 347, 244))
-        self.verticalLayout_500 = QVBoxLayout(self.layoutWidget_6)
-        self.verticalLayout_500.setObjectName(u"verticalLayout_500")
-        self.verticalLayout_500.setContentsMargins(0, 0, 0, 0)
-        self.horizontalLayout_501 = QHBoxLayout()
-        self.horizontalLayout_501.setObjectName(u"horizontalLayout_501")
-        self.pump15_label = QLabel(self.layoutWidget_6)
-        self.pump15_label.setObjectName(u"pump15_label")
-
-        self.horizontalLayout_501.addWidget(self.pump15_label)
-
-        self.pump15_spinbox = QSpinBox(self.layoutWidget_6)
-        self.pump15_spinbox.setObjectName(u"pump15_spinbox")
-        self.pump15_spinbox.setMaximum(300)
-
-        self.horizontalLayout_501.addWidget(self.pump15_spinbox)
-
-        self.pump15_open_button = QPushButton(self.layoutWidget_6)
-        self.pump15_open_button.setObjectName(u"pump15_open_button")
-
-        self.horizontalLayout_501.addWidget(self.pump15_open_button)
-
-        self.pump15_stop_button = QPushButton(self.layoutWidget_6)
-        self.pump15_stop_button.setObjectName(u"pump15_stop_button")
-
-        self.horizontalLayout_501.addWidget(self.pump15_stop_button)
-
-        self.pump15_reverse = QPushButton(self.layoutWidget_6)
-        self.pump15_reverse.setObjectName(u"pump15_reverse")
-
-        self.horizontalLayout_501.addWidget(self.pump15_reverse)
-
-
-        self.verticalLayout_500.addLayout(self.horizontalLayout_501)
-
-        self.horizontalLayout_502 = QHBoxLayout()
-        self.horizontalLayout_502.setObjectName(u"horizontalLayout_502")
-        self.pump16_label = QLabel(self.layoutWidget_6)
-        self.pump16_label.setObjectName(u"pump16_label")
-
-        self.horizontalLayout_502.addWidget(self.pump16_label)
-
-        self.pump16_spinbox = QSpinBox(self.layoutWidget_6)
-        self.pump16_spinbox.setObjectName(u"pump16_spinbox")
-        self.pump16_spinbox.setMaximum(300)
-
-        self.horizontalLayout_502.addWidget(self.pump16_spinbox)
-
-        self.pump16_open_button = QPushButton(self.layoutWidget_6)
-        self.pump16_open_button.setObjectName(u"pump16_open_button")
-
-        self.horizontalLayout_502.addWidget(self.pump16_open_button)
-
-        self.pump16_stop_button = QPushButton(self.layoutWidget_6)
-        self.pump16_stop_button.setObjectName(u"pump16_stop_button")
-
-        self.horizontalLayout_502.addWidget(self.pump16_stop_button)
-
-        self.pump16_reverse = QPushButton(self.layoutWidget_6)
-        self.pump16_reverse.setObjectName(u"pump16_reverse")
-
-        self.horizontalLayout_502.addWidget(self.pump16_reverse)
-
-
-        self.verticalLayout_500.addLayout(self.horizontalLayout_502)
-
-        self.horizontalLayout_503 = QHBoxLayout()
-        self.horizontalLayout_503.setObjectName(u"horizontalLayout_503")
-        self.pump17_label = QLabel(self.layoutWidget_6)
-        self.pump17_label.setObjectName(u"pump17_label")
-
-        self.horizontalLayout_503.addWidget(self.pump17_label)
-
-        self.pump17_spinbox = QSpinBox(self.layoutWidget_6)
-        self.pump17_spinbox.setObjectName(u"pump17_spinbox")
-        self.pump17_spinbox.setMaximum(300)
-
-        self.horizontalLayout_503.addWidget(self.pump17_spinbox)
-
-        self.pump17_open_button = QPushButton(self.layoutWidget_6)
-        self.pump17_open_button.setObjectName(u"pump17_open_button")
-
-        self.horizontalLayout_503.addWidget(self.pump17_open_button)
-
-        self.pump17_stop_button = QPushButton(self.layoutWidget_6)
-        self.pump17_stop_button.setObjectName(u"pump17_stop_button")
-
-        self.horizontalLayout_503.addWidget(self.pump17_stop_button)
-
-        self.pump17_reverse = QPushButton(self.layoutWidget_6)
-        self.pump17_reverse.setObjectName(u"pump17_reverse")
-
-        self.horizontalLayout_503.addWidget(self.pump17_reverse)
-
-
-        self.verticalLayout_500.addLayout(self.horizontalLayout_503)
-
-        self.horizontalLayout_504 = QHBoxLayout()
-        self.horizontalLayout_504.setObjectName(u"horizontalLayout_504")
-        self.unit5_wash = QLabel(self.layoutWidget_6)
-        self.unit5_wash.setObjectName(u"unit5_wash")
-
-        self.horizontalLayout_504.addWidget(self.unit5_wash)
-
-        self.unit5_wash_spinbox = QSpinBox(self.layoutWidget_6)
-        self.unit5_wash_spinbox.setObjectName(u"unit5_wash_spinbox")
-        self.unit5_wash_spinbox.setMaximum(300)
-
-        self.horizontalLayout_504.addWidget(self.unit5_wash_spinbox)
-
-        self.unit5_wash_open_button = QPushButton(self.layoutWidget_6)
-        self.unit5_wash_open_button.setObjectName(u"unit5_wash_open_button")
-
-        self.horizontalLayout_504.addWidget(self.unit5_wash_open_button)
-
-        self.unit5_wahs_stop_button = QPushButton(self.layoutWidget_6)
-        self.unit5_wahs_stop_button.setObjectName(u"unit5_wahs_stop_button")
-
-        self.horizontalLayout_504.addWidget(self.unit5_wahs_stop_button)
-
-        self.unit5_reverse = QPushButton(self.layoutWidget_6)
-        self.unit5_reverse.setObjectName(u"unit5_reverse")
-
-        self.horizontalLayout_504.addWidget(self.unit5_reverse)
-
-
-        self.verticalLayout_500.addLayout(self.horizontalLayout_504)
-
-        self.horizontalLayout_505 = QHBoxLayout()
-        self.horizontalLayout_505.setObjectName(u"horizontalLayout_505")
-        self.unit5_waste_label = QLabel(self.layoutWidget_6)
-        self.unit5_waste_label.setObjectName(u"unit5_waste_label")
-
-        self.horizontalLayout_505.addWidget(self.unit5_waste_label)
-
-        self.unit5_waste_spinbox = QSpinBox(self.layoutWidget_6)
-        self.unit5_waste_spinbox.setObjectName(u"unit5_waste_spinbox")
-        self.unit5_waste_spinbox.setMaximum(300)
-
-        self.horizontalLayout_505.addWidget(self.unit5_waste_spinbox)
-
-        self.unit5_waste_open_button = QPushButton(self.layoutWidget_6)
-        self.unit5_waste_open_button.setObjectName(u"unit5_waste_open_button")
-
-        self.horizontalLayout_505.addWidget(self.unit5_waste_open_button)
-
-        self.unit5_waste_stop_button = QPushButton(self.layoutWidget_6)
-        self.unit5_waste_stop_button.setObjectName(u"unit5_waste_stop_button")
-
-        self.horizontalLayout_505.addWidget(self.unit5_waste_stop_button)
-
-        self.unit5_waste_reverse = QPushButton(self.layoutWidget_6)
-        self.unit5_waste_reverse.setObjectName(u"unit5_waste_reverse")
-
-        self.horizontalLayout_505.addWidget(self.unit5_waste_reverse)
-
-
-        self.verticalLayout_500.addLayout(self.horizontalLayout_505)
-
-        self.horizontalLayout_506 = QHBoxLayout()
-        self.horizontalLayout_506.setSpacing(10)
-        self.horizontalLayout_506.setObjectName(u"horizontalLayout_506")
-        self.unit5_depro_label = QLabel(self.layoutWidget_6)
-        self.unit5_depro_label.setObjectName(u"unit5_depro_label")
-
-        self.horizontalLayout_506.addWidget(self.unit5_depro_label)
-
-        self.unit5_depro_start_button = QPushButton(self.layoutWidget_6)
-        self.unit5_depro_start_button.setObjectName(u"unit5_depro_start_button")
-
-        self.horizontalLayout_506.addWidget(self.unit5_depro_start_button)
-
-        self.unit5_depro_stop_button = QPushButton(self.layoutWidget_6)
-        self.unit5_depro_stop_button.setObjectName(u"unit5_depro_stop_button")
-
-        self.horizontalLayout_506.addWidget(self.unit5_depro_stop_button)
-
-        self.horizontalLayout_506.setStretch(0, 3)
-        self.horizontalLayout_506.setStretch(1, 2)
-        self.horizontalLayout_506.setStretch(2, 2)
-
-        self.verticalLayout_500.addLayout(self.horizontalLayout_506)
-
-        self.horizontalLayout_507 = QHBoxLayout()
-        self.horizontalLayout_507.setObjectName(u"horizontalLayout_507")
-        self.horizontalLayout_507.setSizeConstraint(QLayout.SetDefaultConstraint)
-        self.unit5_couple_label = QLabel(self.layoutWidget_6)
-        self.unit5_couple_label.setObjectName(u"unit5_couple_label")
-
-        self.horizontalLayout_507.addWidget(self.unit5_couple_label)
-
-        self.unit5_couple_start_button = QPushButton(self.layoutWidget_6)
-        self.unit5_couple_start_button.setObjectName(u"unit5_couple_start_button")
-
-        self.horizontalLayout_507.addWidget(self.unit5_couple_start_button)
-
-        self.unit5_couple__stop_button = QPushButton(self.layoutWidget_6)
-        self.unit5_couple__stop_button.setObjectName(u"unit5_couple__stop_button")
-
-        self.horizontalLayout_507.addWidget(self.unit5_couple__stop_button)
-
-        self.horizontalLayout_507.setStretch(0, 3)
-        self.horizontalLayout_507.setStretch(1, 2)
-        self.horizontalLayout_507.setStretch(2, 2)
-
-        self.verticalLayout_500.addLayout(self.horizontalLayout_507)
-
-        self.horizontalLayout_508 = QHBoxLayout()
-        self.horizontalLayout_508.setObjectName(u"horizontalLayout_508")
-        self.unit5_wash_label = QLabel(self.layoutWidget_6)
-        self.unit5_wash_label.setObjectName(u"unit5_wash_label")
-
-        self.horizontalLayout_508.addWidget(self.unit5_wash_label)
-
-        self.unit5_wash_frequence_sppinbox = QSpinBox(self.layoutWidget_6)
-        self.unit5_wash_frequence_sppinbox.setObjectName(u"unit5_wash_frequence_sppinbox")
-        self.unit5_wash_frequence_sppinbox.setMaximum(10)
-
-        self.horizontalLayout_508.addWidget(self.unit5_wash_frequence_sppinbox)
-
-        self.unit5_wash_start_button = QPushButton(self.layoutWidget_6)
-        self.unit5_wash_start_button.setObjectName(u"unit5_wash_start_button")
-
-        self.horizontalLayout_508.addWidget(self.unit5_wash_start_button)
-
-        self.horizontalLayout_508.setStretch(0, 3)
-        self.horizontalLayout_508.setStretch(1, 2)
-        self.horizontalLayout_508.setStretch(2, 2)
-
-        self.verticalLayout_500.addLayout(self.horizontalLayout_508)
-
-        self.toolBox.addItem(self.page_5, u"unit5")
         self.page_6 = QWidget()
         self.page_6.setObjectName(u"page_6")
-        self.page_6.setGeometry(QRect(0, 0, 399, 359))
+        self.page_6.setGeometry(QRect(0, 0, 360, 417))
         self.layoutWidget2 = QWidget(self.page_6)
         self.layoutWidget2.setObjectName(u"layoutWidget2")
         self.layoutWidget2.setGeometry(QRect(10, 21, 313, 120))
         self.verticalLayout = QVBoxLayout(self.layoutWidget2)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
-        self.horizontalLayout_7 = QHBoxLayout()
-        self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
-        self.value1_label = QLabel(self.layoutWidget2)
-        self.value1_label.setObjectName(u"value1_label")
-
-        self.horizontalLayout_7.addWidget(self.value1_label)
-
-        self.value1_spinbox = QSpinBox(self.layoutWidget2)
-        self.value1_spinbox.setObjectName(u"value1_spinbox")
-        self.value1_spinbox.setMinimum(1)
-        self.value1_spinbox.setMaximum(7)
-
-        self.horizontalLayout_7.addWidget(self.value1_spinbox)
-
-        self.value1_open_button = QPushButton(self.layoutWidget2)
-        self.value1_open_button.setObjectName(u"value1_open_button")
-
-        self.horizontalLayout_7.addWidget(self.value1_open_button)
-
-        self.value1_stop_button = QPushButton(self.layoutWidget2)
-        self.value1_stop_button.setObjectName(u"value1_stop_button")
-
-        self.horizontalLayout_7.addWidget(self.value1_stop_button)
-
-
-        self.verticalLayout.addLayout(self.horizontalLayout_7)
-
-        self.horizontalLayout_8 = QHBoxLayout()
-        self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
-        self.value2_label = QLabel(self.layoutWidget2)
-        self.value2_label.setObjectName(u"value2_label")
-
-        self.horizontalLayout_8.addWidget(self.value2_label)
-
-        self.value2_spinbox = QSpinBox(self.layoutWidget2)
-        self.value2_spinbox.setObjectName(u"value2_spinbox")
-        self.value2_spinbox.setMinimum(1)
-        self.value2_spinbox.setMaximum(7)
-
-        self.horizontalLayout_8.addWidget(self.value2_spinbox)
-
-        self.value2_open_button = QPushButton(self.layoutWidget2)
-        self.value2_open_button.setObjectName(u"value2_open_button")
-
-        self.horizontalLayout_8.addWidget(self.value2_open_button)
-
-        self.value2_stop_button = QPushButton(self.layoutWidget2)
-        self.value2_stop_button.setObjectName(u"value2_stop_button")
-
-        self.horizontalLayout_8.addWidget(self.value2_stop_button)
-
-
-        self.verticalLayout.addLayout(self.horizontalLayout_8)
-
         self.horizontalLayout_14 = QHBoxLayout()
         self.horizontalLayout_14.setObjectName(u"horizontalLayout_14")
         self.pressure_time_label = QLabel(self.layoutWidget2)
@@ -1336,10 +808,10 @@ class Ui_Form(object):
 
         self.horizontalLayout_15.addWidget(self.file_name)
 
-        self.pressure_display = QPushButton(self.layoutWidget2)
-        self.pressure_display.setObjectName(u"pressure_display")
+        self.pressure_stop = QPushButton(self.layoutWidget2)
+        self.pressure_stop.setObjectName(u"pressure_stop")
 
-        self.horizontalLayout_15.addWidget(self.pressure_display)
+        self.horizontalLayout_15.addWidget(self.pressure_stop)
 
         self.horizontalLayout_15.setStretch(0, 4)
         self.horizontalLayout_15.setStretch(1, 9)
@@ -1590,13 +1062,15 @@ class Ui_Form(object):
 
         self.horizontalLayout_9.addWidget(self.frame_2)
 
+        self.horizontalLayout_9.setStretch(0, 2)
+        self.horizontalLayout_9.setStretch(1, 8)
 
         self.verticalLayout_3.addLayout(self.horizontalLayout_9)
 
 
         self.retranslateUi(Form)
 
-        self.toolBox.setCurrentIndex(5)
+        self.toolBox.setCurrentIndex(3)
         self.clear_button.setDefault(False)
 
 
@@ -1604,7 +1078,7 @@ class Ui_Form(object):
     # setupUi
 
     def retranslateUi(self, Form):
-        Form.setWindowTitle(QCoreApplication.translate("Form", u"Kamor\u6cf5\u7684\u63a7\u5236", None))
+        Form.setWindowTitle(QCoreApplication.translate("Form", u"\u591a\u80bd\u5408\u6210\u64cd\u4f5c\u754c\u9762", None))
 #if QT_CONFIG(tooltip)
         self.toolBox.setToolTip(QCoreApplication.translate("Form", u"<html><head/><body><p><br/></p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
@@ -1695,74 +1169,10 @@ class Ui_Form(object):
         self.unit3_wash_label.setText(QCoreApplication.translate("Form", u"\u6e05\u6d17\uff1a", None))
         self.unit3_start_wash_button.setText(QCoreApplication.translate("Form", u"\u5f00\u59cb", None))
         self.toolBox.setItemText(self.toolBox.indexOf(self.page_3), QCoreApplication.translate("Form", u"unit 3", None))
-        self.pump12_label.setText(QCoreApplication.translate("Form", u"pump12:", None))
-        self.pump12_open_button.setText(QCoreApplication.translate("Form", u"Open", None))
-        self.pump12_stop_button.setText(QCoreApplication.translate("Form", u"Stop", None))
-        self.pump12_reverse.setText(QCoreApplication.translate("Form", u"reverse", None))
-        self.pump13_label.setText(QCoreApplication.translate("Form", u"pump13:", None))
-        self.pump13_open_button.setText(QCoreApplication.translate("Form", u"Open", None))
-        self.pump13_stop_button.setText(QCoreApplication.translate("Form", u"Stop", None))
-        self.pump13_reverse.setText(QCoreApplication.translate("Form", u"reverse", None))
-        self.pump14_label.setText(QCoreApplication.translate("Form", u"pump14:", None))
-        self.pump14_open_button.setText(QCoreApplication.translate("Form", u"Open", None))
-        self.pump14_stop_button.setText(QCoreApplication.translate("Form", u"Stop", None))
-        self.pump14_reverse.setText(QCoreApplication.translate("Form", u"reverse", None))
-        self.unit4_wash.setText(QCoreApplication.translate("Form", u"wash:", None))
-        self.unit4_wash_open_button.setText(QCoreApplication.translate("Form", u"Open", None))
-        self.unit4_wahs_stop_button.setText(QCoreApplication.translate("Form", u"Stop", None))
-        self.unit4_reverse.setText(QCoreApplication.translate("Form", u"reverse", None))
-        self.unit4_waste_label.setText(QCoreApplication.translate("Form", u"waste:", None))
-        self.unit4_waste_open_button.setText(QCoreApplication.translate("Form", u"Open", None))
-        self.unit4_waste_stop_button.setText(QCoreApplication.translate("Form", u"Stop", None))
-        self.unit4_waste_reverse.setText(QCoreApplication.translate("Form", u"reverse", None))
-        self.unit4_depro_label.setText(QCoreApplication.translate("Form", u"\u8131\u4fdd\u62a4\uff1a", None))
-        self.unit4_depro_start_button.setText(QCoreApplication.translate("Form", u"\u5f00\u59cb", None))
-        self.unit4_depro_stop_button.setText(QCoreApplication.translate("Form", u"\u6682\u505c", None))
-        self.unit4_couple_label.setText(QCoreApplication.translate("Form", u"\u7f29\u5408\uff1a", None))
-        self.unit4_couple_start_button.setText(QCoreApplication.translate("Form", u"\u5f00\u59cb", None))
-        self.unit4_couple__stop_button.setText(QCoreApplication.translate("Form", u"\u6682\u505c", None))
-        self.unit4_wash_label.setText(QCoreApplication.translate("Form", u"\u6e05\u6d17\uff1a", None))
-        self.unit4_start_wash_button.setText(QCoreApplication.translate("Form", u"\u5f00\u59cb", None))
-        self.toolBox.setItemText(self.toolBox.indexOf(self.page_4), QCoreApplication.translate("Form", u"unit 4", None))
-        self.pump15_label.setText(QCoreApplication.translate("Form", u"pump15:", None))
-        self.pump15_open_button.setText(QCoreApplication.translate("Form", u"Open", None))
-        self.pump15_stop_button.setText(QCoreApplication.translate("Form", u"Stop", None))
-        self.pump15_reverse.setText(QCoreApplication.translate("Form", u"reverse", None))
-        self.pump16_label.setText(QCoreApplication.translate("Form", u"pump16:", None))
-        self.pump16_open_button.setText(QCoreApplication.translate("Form", u"Open", None))
-        self.pump16_stop_button.setText(QCoreApplication.translate("Form", u"Stop", None))
-        self.pump16_reverse.setText(QCoreApplication.translate("Form", u"reverse", None))
-        self.pump17_label.setText(QCoreApplication.translate("Form", u"pump17:", None))
-        self.pump17_open_button.setText(QCoreApplication.translate("Form", u"Open", None))
-        self.pump17_stop_button.setText(QCoreApplication.translate("Form", u"Stop", None))
-        self.pump17_reverse.setText(QCoreApplication.translate("Form", u"reverse", None))
-        self.unit5_wash.setText(QCoreApplication.translate("Form", u"wash:", None))
-        self.unit5_wash_open_button.setText(QCoreApplication.translate("Form", u"Open", None))
-        self.unit5_wahs_stop_button.setText(QCoreApplication.translate("Form", u"Stop", None))
-        self.unit5_reverse.setText(QCoreApplication.translate("Form", u"reverse", None))
-        self.unit5_waste_label.setText(QCoreApplication.translate("Form", u"waste:", None))
-        self.unit5_waste_open_button.setText(QCoreApplication.translate("Form", u"Open", None))
-        self.unit5_waste_stop_button.setText(QCoreApplication.translate("Form", u"Stop", None))
-        self.unit5_waste_reverse.setText(QCoreApplication.translate("Form", u"reverse", None))
-        self.unit5_depro_label.setText(QCoreApplication.translate("Form", u"\u8131\u4fdd\u62a4\uff1a", None))
-        self.unit5_depro_start_button.setText(QCoreApplication.translate("Form", u"\u5f00\u59cb", None))
-        self.unit5_depro_stop_button.setText(QCoreApplication.translate("Form", u"\u6682\u505c", None))
-        self.unit5_couple_label.setText(QCoreApplication.translate("Form", u"\u7f29\u5408\uff1a", None))
-        self.unit5_couple_start_button.setText(QCoreApplication.translate("Form", u"\u5f00\u59cb", None))
-        self.unit5_couple__stop_button.setText(QCoreApplication.translate("Form", u"\u6682\u505c", None))
-        self.unit5_wash_label.setText(QCoreApplication.translate("Form", u"\u6e05\u6d17\uff1a", None))
-        self.unit5_wash_start_button.setText(QCoreApplication.translate("Form", u"\u5f00\u59cb", None))
-        self.toolBox.setItemText(self.toolBox.indexOf(self.page_5), QCoreApplication.translate("Form", u"unit5", None))
-        self.value1_label.setText(QCoreApplication.translate("Form", u"value1", None))
-        self.value1_open_button.setText(QCoreApplication.translate("Form", u"Open", None))
-        self.value1_stop_button.setText(QCoreApplication.translate("Form", u"Stop", None))
-        self.value2_label.setText(QCoreApplication.translate("Form", u"value2", None))
-        self.value2_open_button.setText(QCoreApplication.translate("Form", u"Open", None))
-        self.value2_stop_button.setText(QCoreApplication.translate("Form", u"Stop", None))
         self.pressure_time_label.setText(QCoreApplication.translate("Form", u"\u538b\u529b\u6d4b\u91cf\u65f6\u95f4\uff1a", None))
-        self.pressure_start.setText(QCoreApplication.translate("Form", u"\u5f00\u59cb\u538b\u529b\u6d4b\u91cf", None))
+        self.pressure_start.setText(QCoreApplication.translate("Form", u"\u5f00\u59cb", None))
         self.file_name_label.setText(QCoreApplication.translate("Form", u"\u6587\u4ef6\u540d\uff1a", None))
-        self.pressure_display.setText(QCoreApplication.translate("Form", u"\u538b\u529b\u663e\u793a", None))
+        self.pressure_stop.setText(QCoreApplication.translate("Form", u"\u505c\u6b62", None))
         self.value2_label_2.setText(QCoreApplication.translate("Form", u"\u591a\u901a\u96002\u901a\u9053\uff1a", None))
         self.valeu2_passage_label.setText(QCoreApplication.translate("Form", u"1", None))
         self.value1_label_2.setText(QCoreApplication.translate("Form", u"\u591a\u901a\u96001\u901a\u9053\uff1a", None))

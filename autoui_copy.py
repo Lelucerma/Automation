@@ -2,22 +2,20 @@
 Author: wang w1838978548@126.com
 Date: 2024-07-24 16:35:48
 LastEditors: wang w1838978548@126.com
-LastEditTime: 2025-02-18 20:16:53
+LastEditTime: 2025-02-18 20:35:43
 FilePath: \Automation\auto_ui.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
 
-from PySide6.QtWidgets import QApplication,QMainWindow,QGridLayout, QDialog, QLabel
-from PySide6.QtCore import QTimer, QThread
+from PySide6.QtWidgets import QGridLayout, QDialog
+from PySide6.QtCore import QTimer, Qt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
-import numpy as np
 from datetime import datetime
 import pressure as p
 import motor
 import random
 import os
-import time
 from ui.Kamor_pump_2_ui import Ui_Form
 import threading
 
@@ -38,6 +36,7 @@ class Stats(QDialog, Ui_Form):
         self.init_signal_and_slot()
         self.stop_event = threading.Event()
         self.first = 'pump'
+        self.setWindowFlags(self.windowFlags() | Qt.WindowMinimizeButtonHint | Qt.WindowMaximizeButtonHint | Qt.WindowCloseButtonHint)
 
     def init_signal_and_slot(self):
 
@@ -99,42 +98,6 @@ class Stats(QDialog, Ui_Form):
         self.pump11_reverse.clicked.connect(lambda: self.pump_open_reverse(11))
         self.pump11_stop_button.clicked.connect(
             lambda: self.pump_stop_button(11))
-        # 10、第十二个泵的控制
-        self.pump12_open_button.clicked.connect(
-            lambda: self.pump_open_button(12))
-        self.pump12_reverse.clicked.connect(lambda: self.pump_open_reverse(12))
-        self.pump12_stop_button.clicked.connect(
-            lambda: self.pump_stop_button(12))
-        # 10、第十三个泵的控制
-        self.pump13_open_button.clicked.connect(
-            lambda: self.pump_open_button(13))
-        self.pump13_reverse.clicked.connect(lambda: self.pump_open_reverse(13))
-        self.pump13_stop_button.clicked.connect(
-            lambda: self.pump_stop_button(13))
-        # 10、第十四个泵的控制
-        self.pump14_open_button.clicked.connect(
-            lambda: self.pump_open_button(14))
-        self.pump14_reverse.clicked.connect(lambda: self.pump_open_reverse(14))
-        self.pump14_stop_button.clicked.connect(
-            lambda: self.pump_stop_button(14))
-        # 10、第十五个泵的控制
-        self.pump15_open_button.clicked.connect(
-            lambda: self.pump_open_button(15))
-        self.pump15_reverse.clicked.connect(lambda: self.pump_open_reverse(15))
-        self.pump15_stop_button.clicked.connect(
-            lambda: self.pump_stop_button(15))
-        # 10、第十六个泵的控制
-        self.pump16_open_button.clicked.connect(
-            lambda: self.pump_open_button(16))
-        self.pump16_reverse.clicked.connect(lambda: self.pump_open_reverse(16))
-        self.pump16_stop_button.clicked.connect(
-            lambda: self.pump_stop_button(16))
-        # 10、第十七个泵的控制
-        self.pump17_open_button.clicked.connect(
-            lambda: self.pump_open_button(17))
-        self.pump17_reverse.clicked.connect(lambda: self.pump_open_reverse(17))
-        self.pump17_stop_button.clicked.connect(
-            lambda: self.pump_stop_button(17))
 
         # 阀门1和2的控制
 
@@ -151,17 +114,13 @@ class Stats(QDialog, Ui_Form):
             lambda: self.deprotect(2))
         self.unit3_depro_start_button.clicked.connect(
             lambda: self.deprotect(3))
-        self.unit4_depro_start_button.clicked.connect(
-            lambda: self.deprotect(4))
-        self.unit5_depro_start_button.clicked.connect(
-            lambda: self.deprotect(5))
+
 
         # 开始脱保护单元的控制
         self.unit1_depro_stop_button.clicked.connect(lambda: self.unit_stop(1))
         self.unit2_depro_stop_button.clicked.connect(lambda: self.unit_stop(2))
         self.unit3_depro_stop_button.clicked.connect(lambda: self.unit_stop(3))
-        self.unit4_depro_stop_button.clicked.connect(lambda: self.unit_stop(4))
-        self.unit5_depro_stop_button.clicked.connect(lambda: self.unit_stop(5))
+
 
         # 开始耦合单元的控制
         self.unit1_couple_start_button.clicked.connect(
@@ -170,10 +129,7 @@ class Stats(QDialog, Ui_Form):
             lambda: self.couple_unit(2))
         self.unit3_couple_start_button.clicked.connect(
             lambda: self.couple_unit(3))
-        self.unit4_couple_start_button.clicked.connect(
-            lambda: self.couple_unit(4))
-        self.unit5_couple_start_button.clicked.connect(
-            lambda: self.couple_unit(5))
+
 
         # 开始耦合单元的停止
         self.unit1_couple__stop_button.clicked.connect(
@@ -182,10 +138,7 @@ class Stats(QDialog, Ui_Form):
             lambda: self.unit_stop(2))
         self.unit3_couple__stop_button.clicked.connect(
             lambda: self.unit_stop(3))
-        self.unit4_couple__stop_button.clicked.connect(
-            lambda: self.unit_stop(4))
-        self.unit5_couple__stop_button.clicked.connect(
-            lambda: self.unit_stop(5))
+
 
         # 开始第二个单元控制
         self.unit1_wash_start_button.clicked.connect(self.washstart)
@@ -195,8 +148,10 @@ class Stats(QDialog, Ui_Form):
         # self.pressure_display.clicked.connect(self.pressure_stop)
         # 文本框清除按钮
         self.clear_button.clicked.connect(self.clear_result_text)
-        self.F = MyFigure(width=3, height=2, dpi=100)
-        self.F.plotcos()
+        self.pressure_stop.clicked.connect(self.stop_timer)
+
+        # self.F = MyFigure(width=3, height=2, dpi=100)
+        # self.F.plotcos()
 
     # 点击开始溶胀操作
     # def swellstart(self):
@@ -222,15 +177,7 @@ class Stats(QDialog, Ui_Form):
             3: {
                 'start_pump': [9, 10, 11, [10, 17, 3], [14, 17, 3]],
                 'nextwaste': [12, 17, 1]
-            },
-            4: {
-                'start_pump': [12, 13, 14, [12, 17, 4], [13, 17, 4]],
-                'nextwaste': [12, 17, 1]
-            },
-            5: {
-                'start_pump': [15, 16, 17, [12, 17, 5], [13, 17, 5]],
-                'nextwaste': [12, 17, 1]
-            },
+            }
         }
 
         if self.unit_add == 4:
@@ -269,15 +216,7 @@ class Stats(QDialog, Ui_Form):
             3: {
                 'start_pump': [9, 10, 11, [10, 17, 3], [14, 17, 3]],
                 'nextwaste': [12, 17, 1]
-            },
-            4: {
-                'start_pump': [12, 13, 14, [12, 17, 4], [13, 17, 4]],
-                'nextwaste': [12, 17, 1]
-            },
-            5: {
-                'start_pump': [15, 16, 17, [12, 17, 5], [13, 17, 5]],
-                'nextwaste': [12, 17, 1]
-            },
+            }
         }
         if self.unit_add in unit_info:
             unit_start_pump = unit_info[self.unit_add]
@@ -302,15 +241,34 @@ class Stats(QDialog, Ui_Form):
         for i in range(self.wash_frequence):
             pump_model.wash_ever(7, 200)
 
-    # 点击开始压力传感器获得相应的数值并显示压力
+    def clear_layout(self):
+        # 清除groupBox现有的布局及其内容
+        existing_layout = self.groupBox.layout()
+        if existing_layout:
+            # 移除布局中的所有部件
+            while existing_layout.count():
+                item = existing_layout.takeAt(0)
+                widget = item.widget()
+                if widget is not None:
+                    widget.deleteLater()
+            # 删除布局本身
+            existing_layout.deleteLater()
+
     def pressurestart_thread(self):
-        self.file = str(self.file_name.text())
-        self.press_runtime = int(self.pressure_time.text())
+        self.clear_layout()  # 清除旧布局
+        # self.file = str(self.file_name.text())
+        # self.press_runtime = int(self.pressure_time.text())
+        self.ti = QTimer()
         self.F = MyFigure(width=3, height=2, dpi=100)
-        self.F.plotcos()
-        self.gridlayout = QGridLayout(self.groupBox)  # 继承容器groupBox
+        self.F.plotcos(self.ti, 30)
+        # 创建新布局并添加到groupBox
+        self.gridlayout = QGridLayout(self.groupBox)
         self.gridlayout.addWidget(self.F, 0, 1)
-        
+
+    
+    def stop_timer(self):
+        self.ti.stop()
+
     def start(self):        
         startReaction = threading.Thread(target=self.start_thread)
         startReaction.start()
@@ -428,31 +386,7 @@ class Stats(QDialog, Ui_Form):
             11: {
                 'spinbox': self.pump11_spinbox,
                 'suffix': '11 pump open'
-            },
-            12: {
-                'spinbox': self.pump12_spinbox,
-                'suffix': '12 pump open'
-            },
-            13: {
-                'spinbox': self.pump13_spinbox,
-                'suffix': '13 pump open'
-            },
-            14: {
-                'spinbox': self.pump14_spinbox,
-                'suffix': '14 pump open'
-            },
-            15: {
-                'spinbox': self.pump15_spinbox,
-                'suffix': '15 pump open'
-            },
-            16: {
-                'spinbox': self.pump16_spinbox,
-                'suffix': '16 pump open'
-            },
-            17: {
-                'spinbox': self.pump16_spinbox,
-                'suffix': '17 pump open'
-            },
+            }
         }
 
         if self.slave_add in pump_info:
@@ -462,7 +396,7 @@ class Stats(QDialog, Ui_Form):
 
         self.newline(self.first)
         # 第一个泵的开启和命令展示
-        pump_ever.pump_run(self.slave_add, 1, 1, self.speed)
+        # pump_ever.pump_run(self.slave_add, 1, 1, self.speed)
 
     def pump_open_reverse(self, add):
 
@@ -501,31 +435,7 @@ class Stats(QDialog, Ui_Form):
             10: {
                 'spinbox': self.pump10_spinbox,
                 'suffix': '10 pump reverse'
-            },
-            11: {
-                'spinbox': self.pump11_spinbox,
-                'suffix': '11 pump reverse'
-            },
-            12: {
-                'spinbox': self.pump12_spinbox,
-                'suffix': '12 pump reverse'
-            },
-            13: {
-                'spinbox': self.pump13_spinbox,
-                'suffix': '13 pump reverse'
-            },
-            14: {
-                'spinbox': self.pump14_spinbox,
-                'suffix': '14 pump reverse'
-            },
-            15: {
-                'spinbox': self.pump15_spinbox,
-                'suffix': '15 pump reverse'
-            },
-            16: {
-                'spinbox': self.pump16_spinbox,
-                'suffix': '16 pump reverse'
-            },
+            }
         }
 
         if self.slave_add in pump_info:
@@ -535,7 +445,7 @@ class Stats(QDialog, Ui_Form):
 
         self.newline(self.first)
         # 第一个泵的开启和命令展示
-        pump_ever.pump_run(self.slave_add, 1, 0, self.speed)
+        # pump_ever.pump_run(self.slave_add, 1, 0, self.speed)
 
     # 点击开始第二种泵的停止
     def pump_stop_button(self, add):
@@ -549,21 +459,12 @@ class Stats(QDialog, Ui_Form):
             8: '8 pump stop',
             9: '9 pump stop',
             11: '11 pump stop',
-            10: '10 pump stop',
-            12: '12 pump stop',
-            13: '13 pump stop',
-            14: '14 pump stop',
-            15: '15 pump stop',
-            16: '16 pump stop',
-            17: '17 pump stop',
-            18: '18 pump stop',
-            19: '19 pump stop',
-            20: '20 pump stop',
+            10: '10 pump stop'            
         }
         self.pump_data = pump_info[self.slave_add]
 
         # 第一个泵的开启和命令展示
-        pump_ever.pump_run(self.slave_add, 0, 0, 0)
+        # pump_ever.pump_run(self.slave_add, 0, 0, 0)
         self.newline(self.pump_data)
 
     # 点击开始阀门的开启
@@ -633,6 +534,7 @@ class MyFigure(FigureCanvas):
         # 第三步：创建一个子图，用于绘制图形用，111表示子图编号，如matlab的subplot(1,1,1)
         self.axes = self.fig.add_subplot(111)
         self.press = p.PressUnit()
+        self.m = 1
 
     # 第四步：就是画图，【可以在此类中画，也可以在其它类中画】
     def mat_plot_drow_axes(self, t, s):
@@ -646,31 +548,63 @@ class MyFigure(FigureCanvas):
         self.axes.spines['right'].set_visible(False)  # 右边界不可见
         # 设置左、下边界在（0，0）处相交
         # self.axes.spines['bottom'].set_position(('data', 0))  # 设置y轴线原点数据为 0
-        self.axes.spines['left'].set_position(('data', 0))  # 设置x轴线原点数据为 0
+        # self.axes.spines['left'].set_position(('data', 0))  # 设置x轴线原点数据为 0
+        self.axes.set_ylabel("kPa")
+        self.axes.set_xlabel("s")
+        # 获取 x 轴和 y 轴的标签对象
+        x_label = self.axes.xaxis.label
+        y_label = self.axes.yaxis.label
+
+        # 设置 x 轴标签的位置（在 x 轴的最右边）
+        x_label.set_position((1.0, 0.3))  # (x, y) 坐标，x=1.0 表示最右边
+        x_label.set_horizontalalignment('right')  # 水平对齐方式为右对齐
+        # 设置 y 轴标签的位置（在 y 轴的最上端）
+        y_label.set_position((0.0, 1.0))  # (x, y) 坐标，y=1.0 表示最上端
+        y_label.set_verticalalignment('top')  # 垂直对齐方式为上对齐
+
+
         self.axes.plot(t, s, linewidth=0.5)
         self.fig.canvas.draw()  # 这里注意是画布重绘，self.figs.canvas
         self.fig.canvas.flush_events()  # 画布刷新self.figs.canvas
 
-    def plotcos(self):
+    def plotcos(self, ti, stop):
         # self.file = file
         # self.time1 = time1
         # self.x = np.arange(0.0, 3.0, 0.1)
         # a = [0,0,0,0,0,0,0,0,0,0]
         # self.y = np.array(a*3)
-        self.x = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-        self.y = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        self.axes.cla()  # 清除绘图区
+        self.stop = stop
+        self.x = [1]
+        self.y = [0]
         self.axes.plot(self.x, self.y)
         self.fig.suptitle("pressure")  # 设置标题
-        self.timer = QTimer()
+        self.timer = ti
         self.timer.timeout.connect(self.update_plot)
         self.timer.start(1000)  # 1秒钟更新一次图表
 
+    def stop_timer(self):
+        self.timer.stop()
+
     def update_plot(self):
         # self.press.slaves([3], self.time1, self.file)
-        self.data = random.random()
-        self.y.pop(0)
+        self.m += 1
+        self.data = round(random.uniform(0.45, 0.55), 2)
+        self.x.append(self.m)
         self.y.append(self.data)
         # self.y = np.random.random(1)
+        # if self.m < self.stop:
         self.mat_plot_drow_axes(self.x, self.y)
+        if self.m > self.stop:
+            self.stop_timer()
 
+# def main():
+#     global b
+#     app = QApplication([])
+#     stats = Stats()
+#     stats.show()
+#     app.exec()
 
+# if __name__ == "__main__":
+
+#     main()
